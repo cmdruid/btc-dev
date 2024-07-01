@@ -1,0 +1,108 @@
+{
+  "name": "@cmdcode/btc-tools",
+  "version": "0.2.0",
+  "description": "A modern suite of tools for the Bitcoin / Typescript developer.",
+  "type": "module",
+  "main": "./dist/main.cjs",
+  "unpkg": "./dist/browser.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./address": {
+      "import": "./dist/lib/address/index.js",
+      "types": "./dist/lib/address/index.d.ts",
+      "default": "./dist/lib/address/index.js"
+    },
+    "./script": {
+      "import": "./dist/lib/script/index.js",
+      "types": "./dist/lib/script/index.d.ts",
+      "default": "./dist/lib/script/index.js"
+    },
+    "./sighash": {
+      "import": "./dist/lib/sighash/index.js",
+      "types": "./dist/lib/sighash/index.d.ts",
+      "default": "./dist/lib/sighash/index.js"
+    },
+    "./signer": {
+      "import": "./dist/lib/signer/index.js",
+      "types": "./dist/lib/signer/index.d.ts",
+      "default": "./dist/lib/signer/index.js"
+    },
+    "./taproot": {
+      "import": "./dist/lib/taproot/index.js",
+      "types": "./dist/lib/taproot/index.d.ts",
+      "default": "./dist/lib/taproot/index.js"
+    },
+    "./timelock": {
+      "import": "./dist/lib/timelock/index.js",
+      "types": "./dist/lib/timelock/index.d.ts",
+      "default": "./dist/lib/timelock/index.js"
+    },
+    "./tx": {
+      "import": "./dist/lib/tx/index.js",
+      "types": "./dist/lib/tx/index.d.ts",
+      "default": "./dist/lib/tx/index.js"
+    },
+    "./witness": {
+      "import": "./dist/lib/witness/index.js",
+      "types": "./dist/lib/witness/index.d.ts",
+      "default": "./dist/lib/witness/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf ./dist && yarn tsc",
+    "bundle": "yarn rollup -c rollup.config.ts --configPlugin typescript",
+    "load": "tsx --tsconfig test/tsconfig.json",
+    "release": "yarn test && yarn build && yarn bundle",
+    "scratch": "yarn load test/scratch.ts",
+    "test": "yarn load test/tape.ts | tap-spec"
+  },
+  "keywords": [
+    "bitcoin",
+    "transaction",
+    "segwit",
+    "taproot"
+  ],
+  "author": "Christopher Scott",
+  "license": "CC-BY-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmdruid/tapscript.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@cmdcode/buff": "^2.2.5",
+    "@cmdcode/crypto-tools": "^2.7.6",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@cmdcode/core-cmd": "^1.5.0",
+    "@noble/curves": "^1.3.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.10",
+    "@types/tape": "^5.6.4",
+    "rollup": "^4.9.6",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.7.4",
+    "tslib": "^2.6.2",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}

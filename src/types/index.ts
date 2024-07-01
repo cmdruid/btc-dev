@@ -1,0 +1,11 @@
+export * from '@/lib/address/types.js'
+export * from '@/lib/psbt/types.js'
+export * from '@/lib/script/types.js'
+export * from '@/lib/sighash/types.js'
+export * from '@/lib/signer/types.js'
+export * from '@/lib/taproot/types.js'
+export * from '@/lib/timelock/types.js'
+export * from '@/lib/tx/types.js'
+export * from '@/lib/witness/types.js'
+
+export type Network = 'main' | 'testnet' | 'signet' | 'regtest'

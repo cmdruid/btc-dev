@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "baseUrl": "..",
+    "paths": {
+      "@/*"                          : [ "src/*"                     ],
+      "@cmdcode/tapscript2"          : [ "src/index.js"              ],
+      "@cmdcode/tapscript2/address"  : [ "src/lib/address/index.js"  ],
+      "@cmdcode/tapscript2/script"   : [ "src/lib/script/index.js"   ],
+      "@cmdcode/tapscript2/sighash"  : [ "src/lib/sighash/index.js"  ],
+      "@cmdcode/tapscript2/signer"   : [ "src/lib/signer/index.js"   ],
+      "@cmdcode/tapscript2/taproot"  : [ "src/lib/taproot/index.js"  ],
+      "@cmdcode/tapscript2/timelock" : [ "src/lib/timelock/index.js" ],
+      "@cmdcode/tapscript2/tx"       : [ "src/lib/tx/index.js"       ],
+      "@cmdcode/tapscript2/witness"  : [ "src/lib/witness/index.js"  ],
+      "@cmdcode/tapscript2/util"     : [ "src/util/index.js"         ]
+    },
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "pretty": true,
+    "removeComments": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "exclude": [ "node_modules" ],
+  "include": [ "**/*.ts" ]
+}
