@@ -2,7 +2,7 @@ import { Buff }           from '@cmdcode/buff'
 import { Assert }         from '@/util/validate.js'
 import { sha256 }         from '@/util/hash.js'
 import { AddressEncoder } from './encode.js'
-import { AddressUtil }    from './util.js'
+import { AddressTool }    from './util.js'
 
 import {
   AddressData,
@@ -33,7 +33,7 @@ function encode_address (
   network     : ChainNetwork = 'main',
 ) : string {
   const bytes = Buff.bytes(script_hash)
-  const info  = AddressUtil.lookup(network, ADDRESS_TYPE)
+  const info  = AddressTool.lookup(network, ADDRESS_TYPE)
   Assert.exists(info, `unrecognized config: ${ADDRESS_TYPE} on ${network}` )
   Assert.size(bytes, info.size)
   return AddressEncoder.encode({
@@ -46,8 +46,8 @@ function encode_address (
 function decode_address (
   address : string
 ) : AddressData {
-  AddressUtil.assert(address)
-  const info   = AddressUtil.detect(address)
+  AddressTool.assert(address)
+  const info   = AddressTool.detect(address)
   Assert.exists(info,  'unable to detect address type')
   const bytes  = AddressEncoder.decode(address)
   Assert.size(bytes, info.size)

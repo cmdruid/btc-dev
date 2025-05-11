@@ -24,7 +24,7 @@ const ENCODING_TABLE : AddressTableEntry[] = [
   [ 'bcrt1p', 'p2tr',    'regtest', 32, 'bech32m', 1    ]
 ]
 
-export namespace AddressUtil {
+export namespace AddressTool {
   export const TABLE  = ENCODING_TABLE
   export const detect = lookup_by_address_data
   export const lookup = lookup_by_address_type
@@ -99,13 +99,13 @@ function check_address (address : string) : string | null {
 }
 
 function verify_address (address : string) : boolean {
-  return AddressUtil.check(address) === null
+  return AddressTool.check(address) === null
 }
 
 function assert_address (
   address : string
 ) {
-  const error = AddressUtil.check(address)
+  const error = AddressTool.check(address)
   if (error !== null) {
     throw new TypeError('invalid address: ' + error)
   }

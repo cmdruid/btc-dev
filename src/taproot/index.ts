@@ -8,7 +8,7 @@ export * from './encode.js'
 export * from './parse.js'
 export * from './tree.js'
 
-export namespace TxTaproot {
+export namespace TaprootUtil {
   export const create = TapCtrl.create_taproot
   export const verify = TapCtrl.verify_cblock
 

@@ -1,5 +1,5 @@
 import { parse_tx_data } from './parse.js'
-import { TxScript }      from '../script/index.js'
+import { decode_script } from '../script/index.js'
 
 import {
   create_tx_input,
@@ -113,7 +113,7 @@ export class TransactionInput {
   get script_sig () {
     if (this._txin.script_sig === null) return null
     return {
-      asm : TxScript.decode(this._txin.script_sig),
+      asm : decode_script(this._txin.script_sig),
       hex : this._txin.script_sig
     }
   }
@@ -158,7 +158,7 @@ export class TransactionOutput {
   get script_pk () {
     return {
       hex     : this._txout.script_pk,
-      asm     : TxScript.decode(this._txout.script_pk),
+      asm     : decode_script(this._txout.script_pk),
       type    : get_vout_type(this._txout.script_pk),
       version : get_vout_version(this._txout.script_pk)
     }

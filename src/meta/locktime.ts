@@ -21,7 +21,7 @@ export type LockTimeData = TimeLock | HeightLock
 // The threshold between block height and timestamp.
 const LOCKTIME_THRESHOLD = 500000000
 
-export namespace TxLockTime {
+export namespace LockTimeUtil {
   export type Type    = LockTimeData
   export const encode = encode_locktime
   export const decode = decode_locktime

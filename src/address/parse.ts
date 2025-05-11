@@ -5,12 +5,12 @@ import { P2WSH  } from './p2wsh.js'
 import { P2TR   } from './p2tr.js'
 import { Assert } from '@/util/validate.js'
 
-import { AddressUtil } from './util.js'
+import { AddressTool } from './util.js'
 
 import type { AddressData } from '../types/index.js'
 
 export function parse_address (address : string) : AddressData {
-  const info = AddressUtil.detect(address)
+  const info = AddressTool.detect(address)
   Assert.exists(info, 'unable to detect address type')
   switch (info.type) {
     case 'p2pkh':

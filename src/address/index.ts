@@ -6,22 +6,22 @@ import { P2TR   as P2TR_TOOL   } from './p2tr.js'
 
 import { AddressEncoder } from './encode.js'
 import { parse_address }  from './parse.js'
-import { AddressUtil }    from './util.js'
+import { AddressTool }    from './util.js'
 
-export namespace TxAddress {
+export namespace AddressUtil {
   export const P2PKH  = P2PKH_TOOL
   export const P2SH   = P2SH_TOOL
   export const P2WPKH = P2WPKH_TOOL
   export const P2WSH  = P2WSH_TOOL
   export const P2TR   = P2TR_TOOL
-  export const assert = AddressUtil.assert
-  export const check  = AddressUtil.check
-  export const detect = AddressUtil.detect
+  export const assert = AddressTool.assert
+  export const check  = AddressTool.check
+  export const detect = AddressTool.detect
   export const parse  = parse_address
-  export const verify = AddressUtil.verify
+  export const verify = AddressTool.verify
 }
 
-export { AddressEncoder, AddressUtil }
+export { AddressEncoder, AddressTool }
 
 export {
   P2PKH_TOOL  as P2PKH,

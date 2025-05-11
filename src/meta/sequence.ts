@@ -38,7 +38,7 @@ export interface SequenceHeightLock {
 
 /* ===== [ API ] ============================================================ */
 
-export namespace TxSequence {
+export namespace SequenceUtil {
   export const encode = encode_sequence
   export const decode = decode_sequence
 }

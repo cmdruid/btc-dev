@@ -8,7 +8,7 @@ import {
 
 export * from './signer.js'
 
-export namespace TxSighash {
+export namespace SighashUtil {
   export const segwit  = {
     hash_tx : hash_segwit_tx,
     sign_tx : sign_segwit_tx

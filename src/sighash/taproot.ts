@@ -1,7 +1,7 @@
 import { Buff }               from '@cmdcode/buff'
 import { Assert }             from '@/util/index.js'
 import { prefix_script_size } from '../script/util.js'
-import { TxTaproot }          from '../taproot/index.js'
+import { encode_tapscript }   from '../taproot/index.js'
 import { TxUtil }             from '../tx/index.js'
 import { parse_txinput }      from './util.js'
 
@@ -57,7 +57,7 @@ export function hash_taproot_tx (
   let { extension } = config
 
   if (script !== undefined) {
-    extension = TxTaproot.encode.leaf(script).hex
+    extension = encode_tapscript(script).hex
   }
 
   // Define the parameters of the transaction.

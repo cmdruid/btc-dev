@@ -1,6 +1,6 @@
 import { Buff }           from '@cmdcode/buff'
 import { AddressEncoder } from './encode.js'
-import { AddressUtil }    from './util.js'
+import { AddressTool }    from './util.js'
 import { Assert }         from '@/util/index.js'
 
 import {
@@ -20,7 +20,7 @@ function encode_address (
   network : ChainNetwork = 'main'
 ) : string {
   let   bytes = Buff.bytes(pubkey)
-  const info  = AddressUtil.lookup(network, ADDRESS_TYPE)
+  const info  = AddressTool.lookup(network, ADDRESS_TYPE)
   Assert.exists(info, `unrecognized config: ${ADDRESS_TYPE} on ${network}` )
   Assert.size(bytes, info.size)
   return AddressEncoder.encode({
@@ -33,8 +33,8 @@ function encode_address (
 function decode_address (
   address : string
 ) : AddressData {
-  AddressUtil.assert(address)
-  const info  = AddressUtil.detect(address)
+  AddressTool.assert(address)
+  const info  = AddressTool.detect(address)
   Assert.exists(info,  'unable to detect address type')
   const bytes  = AddressEncoder.decode(address)
   Assert.size(bytes, info.size)

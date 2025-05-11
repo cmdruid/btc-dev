@@ -15,7 +15,7 @@ export * from './encode.js'
 export * from './decode.js'
 export * from './util.js'
 
-export namespace TxScript {
+export namespace ScriptUtil {
   export const prefix_size = prefix_script_size
   export const decode      = decode_script
   export const encode      = encode_script

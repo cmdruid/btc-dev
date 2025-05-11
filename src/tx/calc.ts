@@ -7,8 +7,8 @@ import type {
   TxOutput,
   TxOutputType,
   TxSize,
-  TxVirtualInput,
-  TxWitnessVersion
+  VirtualInput,
+  WitnessVersion
 } from '../types/index.js'
 
 import { LOCK_SCRIPT_REGEX, TX_SIZE } from '../const.js'
@@ -24,7 +24,7 @@ export function get_vout_type (
 
 export function get_vout_version (
   script : string
-) : TxWitnessVersion {
+) : WitnessVersion {
   const wit_ver = script.slice(0, 4)
   switch (wit_ver) {
     case '0014':
@@ -57,7 +57,7 @@ export function get_txsize (
 }
 
 export function get_txin_size (
-  txinput : TxVirtualInput
+  txinput : VirtualInput
 ) : number {
   const base_size = TX_SIZE.TXIN_BASE
   const sig_size  = txinput.script_sig

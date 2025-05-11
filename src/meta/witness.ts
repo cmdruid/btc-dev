@@ -3,19 +3,19 @@ import { Buff } from '@cmdcode/buff'
 import { is_valid_script } from '../script/decode.js'
 
 import type {
-  TxWitnessData,
-  TxWitnessType
+  WitnessData,
+  WitnessType
 } from '../types/index.js'
 
 import * as CONST from '../const.js'
 
-export namespace TxWitness {
+export namespace WitnessUtil {
   export const parse = parse_witness_data
 }
 
 export function parse_witness_data (
   witness : string[]
-) : TxWitnessData {
+) : WitnessData {
   // Parse the witness data.
   const elems   = witness.map(e => Buff.hex(e))
   const annex   = parse_annex_data(elems)
@@ -69,7 +69,7 @@ function parse_cblock_data (
 
 function parse_witness_script (
   elems : Uint8Array[],
-  type  : TxWitnessType
+  type  : WitnessType
 ) {
   let script : Uint8Array | undefined
   switch (type) {
@@ -84,7 +84,7 @@ function parse_witness_script (
 function parse_witness_type (
   elems  : Uint8Array[],
   cblock : string | null
-) : TxWitnessType {
+) : WitnessType {
   // Get the important elements of the witness.
   let param_0 = elems.at(0),
       param_1 = elems.at(1),
@@ -121,7 +121,7 @@ function parse_witness_type (
   }
 }
 
-function parse_witness_version (type : TxWitnessType) : number | null {
+function parse_witness_version (type : WitnessType) : number | null {
   if (type.startsWith('p2tr')) return 1
   if (type.startsWith('p2w'))  return 0
   return null
