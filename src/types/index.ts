@@ -1,11 +1,8 @@
-export * from '@/lib/address/types.js'
-export * from '@/lib/psbt/types.js'
-export * from '@/lib/script/types.js'
-export * from '@/lib/sighash/types.js'
-export * from '@/lib/signer/types.js'
-export * from '@/lib/taproot/types.js'
-export * from '@/lib/timelock/types.js'
-export * from '@/lib/tx/types.js'
-export * from '@/lib/witness/types.js'
+export type Bytes = string | Uint8Array
 
-export type Network = 'main' | 'testnet' | 'signet' | 'regtest'
+export * from './address.js'
+export * from './meta.js'
+export * from './sighash.js'
+export * from './taproot.js'
+export * from './txdata.js'
+export * from './witness.js'

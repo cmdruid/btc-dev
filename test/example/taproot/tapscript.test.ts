@@ -1,6 +1,6 @@
 import { Test }          from 'tape'
 import { CoreWallet }    from '@cmdcode/core-cmd'
-import { get_utxo }      from 'test/core.js'
+import { get_utxo }      from '#/core.js'
 import { assert, check } from '@cmdcode/tapscript2/util'
 import { get_pubkey }    from '@cmdcode/crypto-tools/keys'
 

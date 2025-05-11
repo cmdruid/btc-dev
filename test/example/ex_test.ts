@@ -1,5 +1,5 @@
 import { Test }         from 'tape'
-import { get_daemon }   from 'test/core.js'
+import { get_daemon }   from '#/core.js'
 import { key_spend }    from './taproot/keyspend.test.js'
 import { script_spend } from './taproot/tapscript.test.js'
 import { tree_spend }   from './taproot/taptree.test.js'

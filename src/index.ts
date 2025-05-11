@@ -1,15 +1,11 @@
-import Address  from './lib/address/index.js'
-import Script   from './lib/script/index.js'
-import SigHash  from './lib/sighash/index.js'
-import Signer   from './lib/signer/index.js'
-import Taproot  from './lib/taproot/index.js'
-import Timelock from './lib/timelock/index.js'
-import TxData   from './lib/tx/index.js'
-import Witness  from './lib/witness/index.js'
-
-export * as Schema from './schema/index.js'
-export * as Util   from './util/index.js'
+export { TxAddress }   from './address/index.js'
+export { TxLockTime }  from './meta/locktime.js'
+export { TxSequence }  from './meta/sequence.js'
+export { TxWitness }   from './meta/witness.js'
+export { TxScript }    from './script/index.js'
+export { TxSighash }   from './sighash/index.js'
+export { TxTaproot }   from './taproot/index.js'
+export { TxUtil }      from './tx/index.js'
+export { Transaction } from './tx/class.js'
 
 export * from './types/index.js'
-
-export { Address, Script, SigHash, Signer, Taproot, Timelock, TxData, Witness }

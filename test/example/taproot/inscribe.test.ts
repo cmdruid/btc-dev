@@ -3,7 +3,7 @@ import { Buff }       from '@cmdcode/buff'
 import { CoreWallet } from '@cmdcode/core-cmd'
 import fs             from 'fs/promises'
 import { URL }        from 'url'
-import { get_utxo }   from 'test/core.js'
+import { get_utxo }   from '#/core.js'
 
 import { assert, check } from '@cmdcode/tapscript2/util'
 

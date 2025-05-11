@@ -2,17 +2,16 @@
   "compilerOptions": {
     "baseUrl": "..",
     "paths": {
-      "@/*"                          : [ "src/*"                     ],
-      "@cmdcode/tapscript2"          : [ "src/index.js"              ],
-      "@cmdcode/tapscript2/address"  : [ "src/lib/address/index.js"  ],
-      "@cmdcode/tapscript2/script"   : [ "src/lib/script/index.js"   ],
-      "@cmdcode/tapscript2/sighash"  : [ "src/lib/sighash/index.js"  ],
-      "@cmdcode/tapscript2/signer"   : [ "src/lib/signer/index.js"   ],
-      "@cmdcode/tapscript2/taproot"  : [ "src/lib/taproot/index.js"  ],
-      "@cmdcode/tapscript2/timelock" : [ "src/lib/timelock/index.js" ],
-      "@cmdcode/tapscript2/tx"       : [ "src/lib/tx/index.js"       ],
-      "@cmdcode/tapscript2/witness"  : [ "src/lib/witness/index.js"  ],
-      "@cmdcode/tapscript2/util"     : [ "src/util/index.js"         ]
+      "#/*"                   : [ "test/src/*"                ],
+      "@/btc-dev"             : [ "src/index.js"              ],
+      "@/btc-dev/address"     : [ "src/lib/address/index.js"  ],
+      "@/btc-dev/meta"        : [ "src/lib/meta/index.js"     ],
+      "@/btc-dev/psbt"        : [ "src/lib/psbt/index.js"     ],
+      "@/btc-dev/script"      : [ "src/lib/script/index.js"   ],
+      "@/btc-dev/sighash"     : [ "src/lib/sighash/index.js"  ],
+      "@/btc-dev/taproot"     : [ "src/lib/taproot/index.js"  ],
+      "@/btc-dev/tx"          : [ "src/lib/tx/index.js"       ],
+      "@/btc-dev/util"        : [ "src/util/index.js"         ]
     },
     "module": "NodeNext",
     "target": "ESNext",
