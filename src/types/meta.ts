@@ -1,4 +1,4 @@
-export type { LockTimeData } from '../meta/locktime.js'
+export type { LocktimeData } from '../meta/locktime.js'
 
 export type {
   SequenceConfig,

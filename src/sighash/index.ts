@@ -6,7 +6,10 @@ import {
   sign_taproot_tx
 } from './signer.js'
 
+export * from './segwit.js'
+export * from './taproot.js'
 export * from './signer.js'
+export * from './util.js'
 
 export namespace SighashUtil {
   export const segwit  = {

@@ -17,6 +17,12 @@ const onwarn = warning => {
   ) {
     return
   }
+  if (
+    warning.code === 'MIXED_EXPORTS' &&
+    warning.message.includes('zod')
+  ) {
+    return
+  }
   throw new Error(warning)
 }
 
@@ -28,22 +34,21 @@ export default {
       file: 'dist/main.cjs',
       format: 'cjs',
       sourcemap: true,
+      exports: 'named'
     },
     {
       file: 'dist/module.mjs',
       format: 'es',
       sourcemap: true,
-      minifyInternalExports: true
+      minifyInternalExports: true,
+      exports: 'named'
     },
     {
       file: 'dist/browser.js',
       format: 'iife',
-      name: 'tapscript',
+      name: 'btcdev',
       plugins: [terser()],
-      sourcemap: true,
-      globals: {
-        crypto : 'crypto',
-      }
+      sourcemap: true
     }
   ],
   plugins: [ typescript(), nodeResolve(), commonjs() ],

@@ -1,57 +1,66 @@
 {
   "name": "@cmdcode/btc-dev",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "A revision of the bitcoin tapscript library.",
   "type": "module",
   "main": "./dist/main.cjs",
+  "module": "./dist/index.js",
   "unpkg": "./dist/browser.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/main.cjs",
+      "default": "./dist/index.js"
     },
     "./address": {
-      "import": "./dist/address/index.js",
       "types": "./dist/address/index.d.ts",
+      "import": "./dist/address/index.js",
+      "require": "./dist/address/index.cjs",
       "default": "./dist/address/index.js"
     },
     "./meta": {
-      "import": "./dist/meta/index.js",
       "types": "./dist/meta/index.d.ts",
+      "import": "./dist/meta/index.js",
+      "require": "./dist/meta/index.cjs",
       "default": "./dist/meta/index.js"
     },
     "./psbt": {
-      "import": "./dist/psbt/index.js",
       "types": "./dist/psbt/index.d.ts",
+      "import": "./dist/psbt/index.js",
+      "require": "./dist/psbt/index.cjs",
       "default": "./dist/psbt/index.js"
     },
     "./script": {
-      "import": "./dist/script/index.js",
       "types": "./dist/script/index.d.ts",
+      "import": "./dist/script/index.js",
+      "require": "./dist/script/index.cjs",
       "default": "./dist/script/index.js"
     },
     "./sighash": {
-      "import": "./dist/sighash/index.js",
       "types": "./dist/sighash/index.d.ts",
+      "import": "./dist/sighash/index.js",
+      "require": "./dist/sighash/index.cjs",
       "default": "./dist/sighash/index.js"
     },
     "./taproot": {
-      "import": "./dist/taproot/index.js",
       "types": "./dist/taproot/index.d.ts",
+      "import": "./dist/taproot/index.js",
+      "require": "./dist/taproot/index.cjs",
       "default": "./dist/taproot/index.js"
     },
     "./tx": {
-      "import": "./dist/tx/index.js",
       "types": "./dist/tx/index.d.ts",
+      "import": "./dist/tx/index.js",
+      "require": "./dist/tx/index.cjs",
       "default": "./dist/tx/index.js"
     },
-    "./utils": {
-      "import": "./dist/utils/index.js",
-      "types": "./dist/utils/index.d.ts",
-      "default": "./dist/utils/index.js"
+    "./util": {
+      "types": "./dist/util/index.d.ts",
+      "import": "./dist/util/index.js",
+      "require": "./dist/util/index.cjs",
+      "default": "./dist/util/index.js"
     }
   },
   "scripts": {

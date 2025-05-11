@@ -6,8 +6,8 @@ import type {
   TxInput,
   TxOutput,
   TxTemplate,
-  TxSpendInput,
-  TxCoinbaseInput
+  SpendInput,
+  CoinbaseInput
 } from '../types/index.js'
 
 import * as CONST from '../const.js'
@@ -19,7 +19,7 @@ const { COINBASE, DEFAULT } = CONST
 export function create_coinbase_input (
   config   : TxInputTemplate | TxInput,
   validate : boolean = true
-) : TxCoinbaseInput {
+) : CoinbaseInput {
   if (validate) validate_tx_input(config)
   Assert.exists(config.coinbase, 'coinbase is required')
   const coinbase   = config.coinbase
@@ -35,7 +35,7 @@ export function create_coinbase_input (
 export function create_spend_input (
   config   : TxInputTemplate | TxInput,
   validate : boolean = true
-) : TxSpendInput {
+) : SpendInput {
   if (validate) validate_tx_input(config)
   Assert.exists(config.prevout, 'prevout is required')
   const prevout    = config.prevout

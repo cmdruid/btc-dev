@@ -16,13 +16,12 @@ interface HeightLock {
   height : number        // Block height value
 }
 
-export type LockTimeData = TimeLock | HeightLock
+export type LocktimeData = TimeLock | HeightLock
 
 // The threshold between block height and timestamp.
 const LOCKTIME_THRESHOLD = 500000000
 
-export namespace LockTimeUtil {
-  export type Type    = LockTimeData
+export namespace LocktimeUtil {
   export const encode = encode_locktime
   export const decode = decode_locktime
 }
@@ -32,7 +31,7 @@ export namespace LockTimeUtil {
  * According to BIP-65, the value is simply the numeric value as a string.
  */
 function encode_locktime (
-  locktime : LockTimeData
+  locktime : LocktimeData
 ) : number {
   switch (locktime.type) {
     case 'timelock':
@@ -54,7 +53,7 @@ function encode_locktime (
  */
 function decode_locktime (
   locktime : number
-) : LockTimeData | null{
+) : LocktimeData | null {
   // Check if the value is valid (non-negative)
   if (isNaN(locktime) || locktime <= 0) {
     return null

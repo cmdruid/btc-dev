@@ -1,4 +1,4 @@
-import { OPCODE_MAP }        from './words.js'
+import { OPCODE_MAP }    from './words.js'
 import { encode_script } from './encode.js'
 
 import {
@@ -11,9 +11,10 @@ import {
   prefix_script_size
 } from './util.js'
 
-export * from './encode.js'
 export * from './decode.js'
+export * from './encode.js'
 export * from './util.js'
+export * from './words.js'
 
 export namespace ScriptUtil {
   export const prefix_size = prefix_script_size

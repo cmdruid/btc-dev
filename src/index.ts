@@ -1,23 +1,11 @@
-import { AddressUtil }   from './address/index.js'
-import { LockTimeUtil }  from './meta/locktime.js'
-import { SequenceUtil }  from './meta/sequence.js'
-import { WitnessUtil }   from './meta/witness.js'
-import { ScriptUtil }    from './script/index.js'
-import { SighashUtil }   from './sighash/index.js'
-import { TaprootUtil }   from './taproot/index.js'
-import { TxUtil }        from './tx/index.js'
-import { Transaction }   from './tx/class.js'
+export { AddressUtil }   from './address/index.js'
+export { LocktimeUtil }  from './meta/locktime.js'
+export { SequenceUtil }  from './meta/sequence.js'
+export { WitnessUtil }   from './meta/witness.js'
+export { ScriptUtil }    from './script/index.js'
+export { SighashUtil }   from './sighash/index.js'
+export { TaprootUtil }   from './taproot/index.js'
+export { TxUtil }        from './tx/index.js'
+export { Transaction }   from './tx/class.js'
 
-export * from './types/index.js'
-
-export {
-  AddressUtil,
-  LockTimeUtil,
-  SequenceUtil,
-  WitnessUtil,
-  ScriptUtil,
-  SighashUtil,
-  TaprootUtil,
-  TxUtil,
-  Transaction
-}
+export type * from './types/index.js'
