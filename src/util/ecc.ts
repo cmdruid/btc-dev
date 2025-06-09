@@ -185,7 +185,7 @@ function ecc_sign_ecdsa (
   message : string | Uint8Array
 ) : Buff {
   const msg = ecc_serialize_bytes(message)
-  const sig = secp256k1.sign(msg, seckey).toDERRawBytes(true)
+  const sig = secp256k1.sign(msg, seckey).toDERRawBytes()
   return Buff.bytes(sig)
 }
 

@@ -18,12 +18,12 @@ export const P2WSH = {
 }
 
 function create_address (
-  pubkey  : string | Uint8Array,
+  script  : string | Uint8Array,
   network : ChainNetwork = 'main',
 ) : string {
-  const bytes = Buff.bytes(pubkey)
+  const bytes = Buff.bytes(script)
   Assert.size(bytes, 32)
-  // TODO: check if its a valid pubkey
+  // TODO: check if its a valid script
   const hash = sha256(bytes)
   return encode_address(hash, network)
 }
