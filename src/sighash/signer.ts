@@ -1,5 +1,5 @@
 import { Buff }            from '@cmdcode/buff'
-import { ECC }             from '@/util/index.js'
+import { ECC }             from '../util/index.js'
 import { parse_tx_data }   from '../tx/index.js'
 import { hash_segwit_tx }  from './segwit.js'
 import { hash_taproot_tx } from './taproot.js'

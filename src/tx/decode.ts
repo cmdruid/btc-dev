@@ -1,11 +1,11 @@
 import { Buff, Bytes, Stream } from '@cmdcode/buff'
+import { COINBASE }            from '../const.js'
 
 import {
   TxData,
   TxInput,
   TxOutput
 } from '../types/index.js'
-import { COINBASE } from '../const.js'
 
 export function decode_tx_data (
   txhex : Bytes,

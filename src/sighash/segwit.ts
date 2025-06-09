@@ -1,6 +1,6 @@
 import { Buff }          from '@cmdcode/buff'
 import { hash }          from '@cmdcode/crypto-tools'
-import { Assert }        from '@/util/index.js'
+import { Assert }        from '../util/index.js'
 import { parse_txinput } from './util.js'
 
 import {

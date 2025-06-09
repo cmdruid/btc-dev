@@ -1,4 +1,4 @@
-import * as SCHEMA from '@/util/index.js'
+import * as SCHEMA from './util/index.js'
 
 const { zod, big, hex, hex32, uint, byte32 } = SCHEMA
 

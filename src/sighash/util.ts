@@ -1,4 +1,4 @@
-import { Assert } from '@/util/index.js'
+import { Assert } from '../util/index.js'
 
 import {
   SigHashOptions,

@@ -1,7 +1,7 @@
 import { Buff }           from '@cmdcode/buff'
 import { AddressEncoder } from './encode.js'
 import { AddressTool }    from './util.js'
-import { Assert }         from '@/util/index.js'
+import { Assert }         from '../util/index.js'
 
 import {
   AddressData,

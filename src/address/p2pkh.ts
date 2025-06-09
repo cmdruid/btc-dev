@@ -1,6 +1,6 @@
 import { Buff }           from '@cmdcode/buff'
-import { Assert }         from '@/util/validate.js'
-import { hash160 }        from '@/util/hash.js'
+import { Assert }         from '../util/validate.js'
+import { hash160 }        from '../util/hash.js'
 import { AddressEncoder } from './encode.js'
 import { AddressTool }    from './util.js'
 

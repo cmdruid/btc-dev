@@ -1,7 +1,7 @@
 import { Buff } from '@cmdcode/buff'
 
-import { ripemd160 as r160 } from '@noble/hashes/ripemd160'
-import { sha256 as s256 }    from '@noble/hashes/sha256'
+import { ripemd160 as r160 } from '@noble/hashes/legacy'
+import { sha256 as s256 }    from '@noble/hashes/sha2'
 
 export function hash160 (
   ...input : (string | number | Uint8Array)[]

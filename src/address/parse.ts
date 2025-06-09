@@ -3,7 +3,7 @@ import { P2SH   } from './p2sh.js'
 import { P2WPKH } from './p2wpkh.js'
 import { P2WSH  } from './p2wsh.js'
 import { P2TR   } from './p2tr.js'
-import { Assert } from '@/util/validate.js'
+import { Assert } from '../util/validate.js'
 
 import { AddressTool } from './util.js'
 

@@ -1,4 +1,4 @@
-import { hash256 }        from '@/util/index.js'
+import { hash256 }        from '../util/index.js'
 import { parse_tx_data }  from './parse.js'
 import { encode_tx_data } from './encode.js'
 

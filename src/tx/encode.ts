@@ -1,5 +1,5 @@
 import { Buff }          from '@cmdcode/buff'
-import { Assert }        from '@/util/index.js'
+import { Assert }        from '../util/index.js'
 import { parse_tx_data } from './parse.js'
 
 import {

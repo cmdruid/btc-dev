@@ -1,5 +1,5 @@
 import { Buff }               from '@cmdcode/buff'
-import { Assert }             from '@/util/index.js'
+import { Assert }             from '../util/index.js'
 import { prefix_script_size } from '../script/util.js'
 import { encode_tapscript }   from '../taproot/index.js'
 import { TxUtil }             from '../tx/index.js'

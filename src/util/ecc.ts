@@ -1,5 +1,5 @@
 import { Buff }   from '@cmdcode/buff'
-import { Assert } from '@/util/validate.js'
+import { Assert } from './validate.js'
 
 import { secp256k1, schnorr }  from '@noble/curves/secp256k1.js'
 import { Field }               from '@noble/curves/abstract/modular.js'
