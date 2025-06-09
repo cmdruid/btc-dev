@@ -2,7 +2,7 @@ import { Buff, Bytes }             from '@cmdcode/buff'
 import { Assert, ECC }             from '../util/index.js'
 import { merkleize }               from './tree.js'
 import { TAPLEAF_DEFAULT_VERSION } from '../const.js'
-import { TxSchema }                from '../schema.js'
+import * as Schema                 from '../schema.js'
 
 import {
   encode_tapbranch,
@@ -98,8 +98,7 @@ export function validate_taproot_config (
   config : unknown,
   debug  : boolean = false
 ) : asserts config is TaprootConfig {
-  const schema = TxSchema.tap_config
-  const result = schema.safeParse(config)
+  const result = Schema.tap_config.safeParse(config)
   if (!result.success) {
     if (debug) console.log(result.error)
     console.log('taproot configuration failed validation:')
