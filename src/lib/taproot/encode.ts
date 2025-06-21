@@ -1,7 +1,7 @@
 import { Buff }               from '@cmdcode/buff'
 import { hash340 }            from '@/util/hash.js'
 import { Assert }             from '@/util/index.js'
-import { prefix_script_size } from '@/mod/script/index.js'
+import { prefix_script_size } from '@/lib/script/index.js'
 
 import { TAPLEAF_DEFAULT_VERSION } from '@/const.js'
 

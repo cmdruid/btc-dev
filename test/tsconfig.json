@@ -2,16 +2,16 @@
   "compilerOptions": {
     "baseUrl": "..",
     "paths": {
-      "@/test/*"           : [ "test/src/*"            ],
-      "@/dist"             : [ "src/index.js"          ],
-      "@/dist/address"     : [ "src/address/index.js"  ],
-      "@/dist/meta"        : [ "src/meta/index.js"     ],
-      "@/dist/psbt"        : [ "src/psbt/index.js"     ],
-      "@/dist/script"      : [ "src/script/index.js"   ],
-      "@/dist/sighash"     : [ "src/sighash/index.js"  ],
-      "@/dist/taproot"     : [ "src/taproot/index.js"  ],
-      "@/dist/tx"          : [ "src/tx/index.js"       ],
-      "@/dist/util"        : [ "src/util/index.js"     ]
+      "@/test/*"           : [ "test/src/*"                ],
+      "@/src"              : [ "src/index.js"              ],
+      "@/src/address"      : [ "src/lib/address/index.js"  ],
+      "@/src/meta"         : [ "src/lib/meta/index.js"     ],
+      "@/src/psbt"         : [ "src/lib/psbt/index.js"     ],
+      "@/src/script"       : [ "src/lib/script/index.js"   ],
+      "@/src/sighash"      : [ "src/lib/sighash/index.js"  ],
+      "@/src/taproot"      : [ "src/lib/taproot/index.js"  ],
+      "@/src/tx"           : [ "src/lib/tx/index.js"       ],
+      "@/src/util"         : [ "src/util/index.js"         ]
     },
     "module": "NodeNext",
     "target": "ESNext",

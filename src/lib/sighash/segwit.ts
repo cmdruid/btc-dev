@@ -6,7 +6,7 @@ import { parse_txinput } from './util.js'
 import {
   prefix_script_size,
   decode_script
-} from '@/mod/script/index.js'
+} from '@/lib/script/index.js'
 
 import {
   encode_txin_vout,
@@ -16,7 +16,7 @@ import {
   encode_vout_value,
   encode_tx_version,
   parse_tx_data
-} from '@/mod/tx/index.js'
+} from '@/lib/tx/index.js'
 
 import {
   SigHashOptions,

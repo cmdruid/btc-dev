@@ -1,11 +1,11 @@
-import { decode_script }      from '@/mod/script/index.js'
+import { decode_script }      from '@/lib/script/index.js'
 import { TransactionWitness } from './witness.js'
 
 import {
   encode_txin_sequence,
   get_txin_size,
   Sequence
-} from '@/mod/tx/index.js'
+} from '@/lib/tx/index.js'
 
 import type {
   TxInput,

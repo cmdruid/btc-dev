@@ -1,5 +1,5 @@
 import { Buff }             from '@cmdcode/buff'
-import { is_valid_script }  from '@/mod/script/decode.js'
+import { is_valid_script }  from '@/lib/script/decode.js'
 import { TAPLEAF_VERSIONS } from '@/const.js'
 
 import type {

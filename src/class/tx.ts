@@ -11,7 +11,7 @@ import {
   get_tx_value,
   get_txhash,
   encode_tx_locktime,
-} from '@/mod/tx/index.js'
+} from '@/lib/tx/index.js'
 
 import type {
   TxData,

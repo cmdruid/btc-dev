@@ -1,6 +1,6 @@
 import { Buff, Stream }       from '@cmdcode/buff'
 import { Assert, ECC }        from '@/util/index.js'
-import { parse_witness_data } from '@/mod/tx/witness.js'
+import { parse_witness_data } from '@/lib/tx/witness.js'
 
 import {
   encode_tapbranch,

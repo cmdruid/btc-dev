@@ -1,8 +1,8 @@
 import { Buff }               from '@cmdcode/buff'
 import { Assert }             from '@/util/index.js'
-import { prefix_script_size } from '@/mod/script/util.js'
-import { encode_tapscript }   from '@/mod/taproot/encode.js'
-import { parse_tx_data }      from '@/mod/tx/parse.js'
+import { prefix_script_size } from '@/lib/script/util.js'
+import { encode_tapscript }   from '@/lib/taproot/encode.js'
+import { parse_tx_data }      from '@/lib/tx/parse.js'
 import * as CONST             from '@/const.js'
 import { parse_txinput }      from './util.js'
 
@@ -13,7 +13,7 @@ import {
   encode_txin_txid,
   encode_vout_value,
   encode_tx_version
-} from '@/mod/tx/encode.js'
+} from '@/lib/tx/encode.js'
 
 import type {
   SigHashOptions,

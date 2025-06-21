@@ -1,10 +1,10 @@
 import { Buff }          from '@cmdcode/buff'
-import { decode_script } from '@/mod/script/index.js'
+import { decode_script } from '@/lib/script/index.js'
 
 import {
   parse_witness_data,
   get_witness_vsize,
-} from '@/mod/tx/index.js'
+} from '@/lib/tx/index.js'
 
 import type {
   Bytes,

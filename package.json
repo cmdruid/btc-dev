@@ -3,55 +3,6 @@
   "version": "0.0.9",
   "description": "The unofficial, unopinionated, batteries-included toolset for plebian bitcoin development",
   "type": "module",
-  "main": "./dist/main.cjs",
-  "module": "./dist/module.mjs",
-  "unpkg": "./dist/script.js",
-  "types": "./dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./address": {
-      "types": "./dist/mod/address/index.d.ts",
-      "import": "./dist/mod/address/index.js"
-    },
-    "./meta": {
-      "types": "./dist/mod/meta.d.ts",
-      "import": "./dist/mod/meta.js"
-    },
-    "./psbt": {
-      "types": "./dist/mod/psbt/index.d.ts",
-      "import": "./dist/mod/psbt/index.js"
-    },
-    "./script": {
-      "types": "./dist/mod/script/index.d.ts",
-      "import": "./dist/mod/script/index.js"
-    },
-    "./sighash": {
-      "types": "./dist/mod/sighash/index.d.ts",
-      "import": "./dist/mod/sighash/index.js"
-    },
-    "./taproot": {
-      "types": "./dist/mod/taproot/index.d.ts",
-      "import": "./dist/mod/taproot/index.js"
-    },
-    "./tx": {
-      "types": "./dist/mod/tx/index.d.ts",
-      "import": "./dist/mod/tx/index.js"
-    },
-    "./util": {
-      "types": "./dist/util/index.d.ts",
-      "import": "./dist/util/index.js"
-    }
-  },
-  "scripts": {
-    "build": "./scripts/build.sh",
-    "loader": "tsx --tsconfig ./test/tsconfig.json",
-    "release": "npm test | faucet && npm run build",
-    "scratch": "npm run loader test/scratch.ts",
-    "test": "npm run loader test/src/tape.ts"
-  },
   "keywords": [
     "bitcoin",
     "blockchain",
@@ -76,6 +27,55 @@
     "dist",
     "src"
   ],
+  "main": "./dist/main.cjs",
+  "module": "./dist/module.mjs",
+  "unpkg": "./dist/script.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./address": {
+      "types": "./dist/lib/address/index.d.ts",
+      "import": "./dist/lib/address/index.js"
+    },
+    "./meta": {
+      "types": "./dist/lib/meta.d.ts",
+      "import": "./dist/lib/meta.js"
+    },
+    "./psbt": {
+      "types": "./dist/lib/psbt/index.d.ts",
+      "import": "./dist/lib/psbt/index.js"
+    },
+    "./script": {
+      "types": "./dist/lib/script/index.d.ts",
+      "import": "./dist/lib/script/index.js"
+    },
+    "./sighash": {
+      "types": "./dist/lib/sighash/index.d.ts",
+      "import": "./dist/lib/sighash/index.js"
+    },
+    "./taproot": {
+      "types": "./dist/lib/taproot/index.d.ts",
+      "import": "./dist/lib/taproot/index.js"
+    },
+    "./tx": {
+      "types": "./dist/lib/tx/index.d.ts",
+      "import": "./dist/lib/tx/index.js"
+    },
+    "./util": {
+      "types": "./dist/util/index.d.ts",
+      "import": "./dist/util/index.js"
+    }
+  },
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "loader": "tsx --tsconfig ./test/tsconfig.json",
+    "release": "npm test | faucet && npm run build",
+    "scratch": "npm run loader test/scratch.ts",
+    "test": "npm run loader test/src/tape.ts"
+  },
   "dependencies": {
     "@cmdcode/buff": "^2.2.5",
     "@noble/curves": "^1.6.0",

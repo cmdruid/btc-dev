@@ -1,9 +1,9 @@
-import { decode_script } from '@/mod/script/index.js'
+import { decode_script } from '@/lib/script/index.js'
 
 import {
   get_txout_size,
   get_vout_info
-} from '@/mod/tx/index.js'
+} from '@/lib/tx/index.js'
 
 import type { TxOutput, TxOutputInfo } from '@/types/index.js'
 

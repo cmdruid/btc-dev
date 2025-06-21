@@ -1,7 +1,7 @@
 import { Buff }          from '@cmdcode/buff'
 import { Assert }        from '@/util/index.js'
-import { encode_script } from '@/mod/script/encode.js'
-import { decode_script } from '@/mod/script/decode.js'
+import { encode_script } from '@/lib/script/encode.js'
+import { decode_script } from '@/lib/script/decode.js'
 
 import type { InscriptionData } from '@/types/index.js'
 
