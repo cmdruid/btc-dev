@@ -38,3 +38,7 @@ dist
 
 # Core Data
 test/data
+
+# Other stuff
+NOTES.md
+TODO.md

@@ -80,6 +80,7 @@
     "@cmdcode/buff": "^2.2.5",
     "@noble/curves": "^1.6.0",
     "@noble/hashes": "^1.5.0",
+    "@scure/btc-signer": "^1.8.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

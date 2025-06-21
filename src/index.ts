@@ -5,6 +5,8 @@ export * from './class/txout.js'
 export * from './class/witness.js'
 
 export * as Address from './mod/address/index.js'
+export * as Meta    from './mod/meta/index.js'
+export * as PSBT    from './mod/psbt/index.js'
 export * as Script  from './mod/script/index.js'
 export * as Sighash from './mod/sighash/index.js'
 export * as Taproot from './mod/taproot/index.js'
