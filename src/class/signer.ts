@@ -4,7 +4,7 @@ import { ECC }         from '@/util/index.js'
 import {
   sign_segwit_tx,
   sign_taproot_tx
-} from '@/mod/sighash/sign.js'
+} from '@/lib/sighash/sign.js'
 
 import type {
   SigHashOptions,
