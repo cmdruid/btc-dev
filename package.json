@@ -1,11 +1,11 @@
 {
-  "name": "@cmdcode/btc-dev",
-  "version": "0.0.7",
-  "description": "A revision of the bitcoin tapscript library.",
+  "name": "btc-toolkit",
+  "version": "0.0.9",
+  "description": "The unofficial, unopinionated, batteries-included toolset for plebian bitcoin development",
   "type": "module",
   "main": "./dist/main.cjs",
   "module": "./dist/module.mjs",
-  "unpkg": "./dist/browser.js",
+  "unpkg": "./dist/script.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
@@ -13,32 +13,32 @@
       "import": "./dist/index.js"
     },
     "./address": {
-      "types": "./dist/address/index.d.ts",
-      "import": "./dist/address/index.js"
+      "types": "./dist/mod/address/index.d.ts",
+      "import": "./dist/mod/address/index.js"
     },
     "./meta": {
-      "types": "./dist/meta/index.d.ts",
-      "import": "./dist/meta/index.js"
+      "types": "./dist/mod/meta.d.ts",
+      "import": "./dist/mod/meta.js"
     },
     "./psbt": {
-      "types": "./dist/psbt/index.d.ts",
-      "import": "./dist/psbt/index.js"
+      "types": "./dist/mod/psbt/index.d.ts",
+      "import": "./dist/mod/psbt/index.js"
     },
     "./script": {
-      "types": "./dist/script/index.d.ts",
-      "import": "./dist/script/index.js"
+      "types": "./dist/mod/script/index.d.ts",
+      "import": "./dist/mod/script/index.js"
     },
     "./sighash": {
-      "types": "./dist/sighash/index.d.ts",
-      "import": "./dist/sighash/index.js"
+      "types": "./dist/mod/sighash/index.d.ts",
+      "import": "./dist/mod/sighash/index.js"
     },
     "./taproot": {
-      "types": "./dist/taproot/index.d.ts",
-      "import": "./dist/taproot/index.js"
+      "types": "./dist/mod/taproot/index.d.ts",
+      "import": "./dist/mod/taproot/index.js"
     },
     "./tx": {
-      "types": "./dist/tx/index.d.ts",
-      "import": "./dist/tx/index.js"
+      "types": "./dist/mod/tx/index.d.ts",
+      "import": "./dist/mod/tx/index.js"
     },
     "./util": {
       "types": "./dist/util/index.d.ts",
@@ -64,7 +64,7 @@
   "license": "CC-BY-1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cmdruid/btc-dev.git"
+    "url": "https://github.com/cmdruid/btc-toolkit.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

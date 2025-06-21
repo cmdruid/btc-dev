@@ -44,9 +44,9 @@ export default {
       exports: 'named'
     },
     {
-      file: 'dist/browser.js',
+      file: 'dist/script.js',
       format: 'iife',
-      name: 'btcdev',
+      name: 'btc_toolkit',
       plugins: [terser()],
       sourcemap: true
     }

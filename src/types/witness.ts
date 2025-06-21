@@ -1,9 +1,9 @@
 export type WitnessType    = 'p2w-pkh' | 'p2w-sh' | 'p2tr-pk' | 'p2tr-ts' | 'unknown'
 export type WitnessVersion = number | null
 
-export type TxWitness = WitnessData | TaprootScript | SegwitScript | TaprootSpend | SegwitSpend
+export type TxWitness = WitnessInfo | TaprootScript | SegwitScript | TaprootSpend | SegwitSpend
 
-export interface WitnessData {
+export interface WitnessInfo {
   annex   : string | null
   cblock  : string | null
   params  : string[]
@@ -12,25 +12,25 @@ export interface WitnessData {
   version : WitnessVersion
 }
 
-export interface TaprootScript extends WitnessData {
+export interface TaprootScript extends WitnessInfo {
   cblock  : string
   script  : string
   type    : 'p2tr-ts'
   version : 1
 }
 
-export interface SegwitScript extends WitnessData {
+export interface SegwitScript extends WitnessInfo {
   script  : string
   type    : 'p2w-sh'
   version : 0
 }
 
-export interface TaprootSpend extends WitnessData {
+export interface TaprootSpend extends WitnessInfo {
   type    : 'p2tr-pk'
   version : 1
 }
 
-export interface SegwitSpend extends WitnessData {
+export interface SegwitSpend extends WitnessInfo {
   type    : 'p2w-pkh'
   version : 0
 }

@@ -2,9 +2,9 @@ import { Test } from 'tape'
 import { Buff } from '@cmdcode/buff'
 
 import { secp256k1 as secp } from '@noble/curves/secp256k1'
-import { TxData }            from '@cmdcode/tapscript'
-import { segwit }            from '@cmdcode/tapscript/sighash'
-import { parse_tx }          from '@cmdcode/tapscript/tx'
+import { TxData }            from '@/dist/tx'
+import { segwit }            from '@/dist/sighash'
+import { parse_tx }          from '@/dist/tx'
 
 import test_data from './bip0143.vectors.json' assert { type: 'json' }
 

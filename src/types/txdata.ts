@@ -16,6 +16,12 @@ export interface TxSize {
   vsize  : number
 }
 
+export interface TxValue {
+  fees  : bigint
+  vin   : bigint
+  vout  : bigint
+}
+
 export interface TxInputTemplate extends TxOutpoint {
   coinbase?   : string   | null
   prevout?    : TxOutput | null
@@ -45,7 +51,6 @@ export interface SpendInput extends VirtualInput {
 }
 
 export interface TxInputInfo {
-  index   : number
   type    : WitnessType
   version : WitnessVersion
 }
@@ -56,7 +61,6 @@ export interface TxOutput {
 }
 
 export interface TxOutputInfo {
-  index   : number
   type    : TxOutputType
   version : WitnessVersion
 }
