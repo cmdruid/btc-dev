@@ -1,4 +1,4 @@
-import { Buff, Stream }  from '@cmdcode/buff'
+import { Buff, Stream }  from '@vbyte/buff'
 import { get_asm_code, } from './words.js'
 
 // The maximum size of a word in bytes.
@@ -23,7 +23,7 @@ export function encode_script (
   const buffer = Buff.join(bytes)
 
   return (varint)
-    ? buffer.add_varint('le').hex
+    ? buffer.prepend(Buff.varint(buffer.length, 'le')).hex
     : buffer.hex
 }
 

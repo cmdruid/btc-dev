@@ -1,5 +1,5 @@
-import { Buff, Bytes } from '@cmdcode/buff'
-import { ECC }         from '@/util/index.js'
+import { Buff, Bytes } from '@vbyte/buff'
+import { ECC }         from '@vbyte/micro-lib'
 
 import {
   sign_segwit_tx,

@@ -1,4 +1,4 @@
-import { Assert }              from '@/util/index.js'
+import { Assert }              from '@vbyte/micro-lib'
 import { COINBASE, DEFAULT }   from '@/const.js'
 
 import {

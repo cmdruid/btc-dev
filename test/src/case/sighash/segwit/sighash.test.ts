@@ -1,10 +1,17 @@
 import { Test } from 'tape'
-import { Buff } from '@cmdcode/buff'
+import { Buff } from '@vbyte/buff'
 
 import { secp256k1 as secp } from '@noble/curves/secp256k1'
-import { TxData }            from '@/dist/tx'
-import { segwit }            from '@/dist/sighash'
-import { parse_tx }          from '@/dist/tx'
+
+import {
+  hash_segwit_tx,
+  sign_segwit_tx,
+  verify_segwit_tx
+} from '@/src/sighash'
+
+import type { TxData } from '@/src'
+
+import { parse_tx } from '@/src/tx'
 
 import test_data from './bip0143.vectors.json' assert { type: 'json' }
 
@@ -30,7 +37,7 @@ export function sighash_vector_test(t :Test) {
       // console.log('signature:', signature)
     
       try {
-        const hash = segwit.hash_tx(tx, { txindex: index, ...config })
+        const hash = hash_segwit_tx(tx, { txindex: index, ...config })
         t.equal(hash.hex, sigHash, 'Sighash should be equal.')
       } catch (err : any) {
         t.fail(err.message)
@@ -38,12 +45,12 @@ export function sighash_vector_test(t :Test) {
 
       try {
         const txcopy = { ...tx } as TxData
-        const sig = segwit.sign_tx(seckey, txcopy, { txindex: index, ...config })
+        const sig = sign_segwit_tx(seckey, txcopy, { txindex: index, ...config })
         t.equal(sig.hex, signature, 'Signatures should be equal.')
         const nobleVerify = secp.verify(sig.slice(0, -1).hex, sigHash, pubkey)
         t.equal(nobleVerify, true, 'Signature should be valid using Noble.')
         txcopy.vin[index].witness = [ sig, pubkey, redeemScript ]
-        const signerVerify = segwit.verify_tx(txcopy, { txindex: index, ...config })
+        const signerVerify = verify_segwit_tx(txcopy, { txindex: index, ...config })
         t.equal(signerVerify, true, 'Signature should be valid using Signer.')
       } catch (err : any) {
         t.fail(err.message)

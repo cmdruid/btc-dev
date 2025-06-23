@@ -1,4 +1,4 @@
-import { Buff }             from '@cmdcode/buff'
+import { Buff }             from '@vbyte/buff'
 import { is_valid_script }  from '@/lib/script/decode.js'
 import { TAPLEAF_VERSIONS } from '@/const.js'
 

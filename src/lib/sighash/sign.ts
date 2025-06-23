@@ -1,4 +1,4 @@
-import { ECC }             from '@/util/index.js'
+import { ECC }             from '@vbyte/micro-lib'
 import { parse_tx_data }   from '@/lib/tx/parse.js'
 import { SIGHASH_DEFAULT } from '@/const.js'
 import { hash_segwit_tx }  from './segwit.js'

@@ -1,13 +1,13 @@
 import { Test } from 'tape'
-import { Buff } from '@cmdcode/buff'
-import { ECC }  from '@/util/index.js'
+import { Buff } from '@vbyte/buff'
+import { ECC }  from '@vbyte/micro-lib'
 
 import {
   encode_taptweak,
-  get_taproot,
   create_taproot,
-  encode_tapscript
-} from 'tapscript2/taproot'
+  encode_tapscript,
+  get_merkle_root
+} from '@/src/taproot'
 
 import tree_vectors from './tree.vectors.json' assert { type: 'json' }
 
@@ -52,7 +52,7 @@ export default function (t : Test) {
       } else {
         t.test('Testing key: ' + tweakedPubkey, t => {
           t.plan(3)
-          const root     = get_taproot(leafHashes)
+          const root     = get_merkle_root(leafHashes)
           t.equal(root, merkleRoot, 'Root hash should match.')
           const taptweak = encode_taptweak(internalPubkey, merkleRoot as string)
           t.equal(taptweak.hex, tweak, 'Tweak hash should match.')

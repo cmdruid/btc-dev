@@ -1,4 +1,4 @@
-import { Buff }          from '@cmdcode/buff'
+import { Buff }          from '@vbyte/buff'
 import { decode_script } from '@/lib/script/index.js'
 
 import {

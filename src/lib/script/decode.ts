@@ -1,4 +1,4 @@
-import { Stream } from '@cmdcode/buff'
+import { Stream } from '@vbyte/buff'
 
 import {
   get_op_code,

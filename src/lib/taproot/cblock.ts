@@ -1,5 +1,5 @@
-import { Buff, Bytes }             from '@cmdcode/buff'
-import { Assert, ECC }             from '@/util/index.js'
+import { Buff, Bytes }             from '@vbyte/buff'
+import { Assert, ECC }             from '@vbyte/micro-lib'
 import { merkleize }               from './tree.js'
 import { TAPLEAF_DEFAULT_VERSION } from '@/const.js'
 import * as Schema                 from '@/schema/index.js'

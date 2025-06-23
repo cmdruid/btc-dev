@@ -1,4 +1,4 @@
-import { Assert }     from '@/util/validate.js'
+import { Assert }     from '@vbyte/micro-lib'
 import { parse_psbt } from './encoder.js'
 
 import {

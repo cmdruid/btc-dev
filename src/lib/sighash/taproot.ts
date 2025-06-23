@@ -1,5 +1,6 @@
-import { Buff }               from '@cmdcode/buff'
-import { Assert }             from '@/util/index.js'
+import { Buff }               from '@vbyte/buff'
+import { Assert }             from '@vbyte/micro-lib'
+import { hash340, sha256 }    from '@vbyte/micro-lib/hash'
 import { prefix_script_size } from '@/lib/script/util.js'
 import { encode_tapscript }   from '@/lib/taproot/encode.js'
 import { parse_tx_data }      from '@/lib/tx/parse.js'
@@ -21,6 +22,7 @@ import type {
   TxInput,
   TxOutput
 } from '@/types/index.js'
+
 
 
 export function hash_taproot_tx (
@@ -66,12 +68,11 @@ export function hash_taproot_tx (
   const annexBit  = (annex !== undefined) ? 1 : 0
   const extendBit = (extension !== undefined) ? 1 : 0
   const spendType = ((extflag + extendBit) * 2) + annexBit
-  const hashtag   = Buff.str('TapSighash').digest
+  const hashtag   = hash340('TapSighash')
 
   // Begin building our preimage.
   const preimage : (string | Uint8Array)[] = [
-    hashtag,                      // Buffer input with
-    hashtag,                      // 2x hashed strings.
+    hashtag,                      // Buffer input with TapSighash.
     Buff.num(0x00, 1),            // Add zero-byte.
     Buff.num(sigflag, 1),         // Commit to signature flag.
     encode_tx_version(version),   // Commit to tx version.
@@ -145,7 +146,7 @@ export function hash_taproot_tx (
   // Useful for debugging the preimage stack.
   // console.log(preimage.map(e => Buff.raw(e).hex))
 
-  return Buff.join(preimage).digest
+  return sha256(Buff.join(preimage))
 }
 
 export function hash_outpoints (
@@ -156,7 +157,7 @@ export function hash_outpoints (
     stack.push(encode_txin_txid(txid))
     stack.push(encode_txin_vout(vout))
   }
-  return Buff.join(stack).digest
+  return sha256(Buff.join(stack))
 }
 
 export function hash_sequence (
@@ -166,7 +167,7 @@ export function hash_sequence (
   for (const { sequence } of vin) {
     stack.push(encode_txin_sequence(sequence))
   }
-  return Buff.join(stack).digest
+  return sha256(Buff.join(stack))
 }
 
 export function hash_amounts (
@@ -176,7 +177,7 @@ export function hash_amounts (
   for (const { value } of prevouts) {
     stack.push(encode_vout_value(value))
   }
-  return Buff.join(stack).digest
+  return sha256(Buff.join(stack))
 }
 
 export function hash_scripts (
@@ -186,7 +187,7 @@ export function hash_scripts (
   for (const { script_pk } of prevouts) {
     stack.push(prefix_script_size(script_pk))
   }
-  return Buff.join(stack).digest
+  return sha256(Buff.join(stack))
 }
 
 export function hash_outputs (
@@ -197,16 +198,16 @@ export function hash_outputs (
     stack.push(encode_vout_value(value))
     stack.push(prefix_script_size(script_pk))
   }
-  return Buff.join(stack).digest
+  return sha256(Buff.join(stack))
 }
 
 export function hash_output (
   vout : TxOutput
 ) : Buff {
-  return Buff.join([
+  return sha256(
     encode_vout_value(vout.value),
     prefix_script_size(vout.script_pk)
-  ]).digest
+  )
 }
 
 function get_annex_data (
@@ -220,8 +221,10 @@ function get_annex_data (
   const annex = witness.at(-1)
   // If the annex is a string and starts with '50',
   if (typeof annex === 'string' && annex.startsWith('50')) {
-    // return a digest of the annex.
-    return Buff.hex(annex).add_varint('be').digest
+    // Convert the annex to a buffer with a varint prefix.
+    const bytes = Buff.hex(annex).prefix_varint('be')
+    // Return the sha256 of the annex.
+    return sha256(bytes)
   }
   // Else, return undefined.
   return undefined

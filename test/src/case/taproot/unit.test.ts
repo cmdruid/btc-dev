@@ -1,16 +1,16 @@
 import { Test } from 'tape'
-import { P2TR } from 'tapscript2/address'
+import { P2TR } from '@/src/address'
 
-import { encode_script, prefix_script_size } from 'tapscript2/script'
+import { encode_script, prefix_script_size } from '@/src/script'
 
 import {
   encode_taptweak,
   encode_tapleaf,
   encode_tapbranch,
-  verify_cblock,
+  verify_taproot,
   create_taproot,
   encode_tapscript
-} from 'tapscript2/taproot'
+} from '@/src/taproot'
 
 import test_vectors from './unit.vectors.json' assert { type: 'json' }
 
@@ -58,7 +58,7 @@ export default function (t : Test) {
       const decoded = P2TR.decode(address)
       const script  = encode_script(scripts[index])
       const target  = encode_tapscript(script).hex
-      const isValid = verify_cblock(decoded.data, target, cblock)
+      const isValid = verify_taproot(decoded.data, target, cblock)
       t.true(isValid, 'Control block should be valid.')
     }
   })

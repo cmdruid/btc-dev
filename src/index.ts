@@ -14,6 +14,5 @@ export * as Tx      from './lib/tx/index.js'
 
 export * as CONST  from './const.js'
 export * as SCHEMA from './schema/index.js'
-export * as UTIL   from './util/index.js'
 
 export type * from './types/index.js'

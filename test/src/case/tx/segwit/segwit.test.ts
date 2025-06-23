@@ -1,12 +1,12 @@
 import { Test }    from 'tape'
-import { Buff }    from '@cmdcode/buff'
-import { TxInput } from '@cmdcode/tapscript'
+import { Buff }    from '@vbyte/buff'
+import { TxInput } from '@/src/tx'
 
 import {
   create_vin,
   encode_tx,
   decode_tx
-} from '@cmdcode/tapscript/tx'
+} from '@/src/tx'
 
 import test_data from './valid.vectors.json' assert { type: 'json' }
 

@@ -1,45 +1,51 @@
-import { Buff }           from '@cmdcode/buff'
-import { AddressEncoder } from './encode.js'
-import { AddressTool }    from './util.js'
-import { Assert }         from '@/util/index.js'
+import { Buff }           from '@vbyte/buff'
+import { Assert }         from '@vbyte/micro-lib'
+import { encode_address } from './encode.js'
+
+import {
+  get_address_config,
+  parse_address
+} from './util.js'
 
 import type {
-  AddressData,
+  DecodedAddress,
   ChainNetwork
 } from '@/types/index.js'
 
-const ADDRESS_TYPE = 'p2tr'
+const ADDR_TYPE = 'p2tr'
 
-export const P2TR = {
-  encode : encode_address,
-  decode : decode_address
+export namespace P2TR {
+  export const encode = encode_p2tr_address
+  export const decode = decode_p2tr_address
 }
 
-function encode_address (
+function encode_p2tr_address (
   pubkey  : string | Uint8Array,
   network : ChainNetwork = 'main'
 ) : string {
-  let   bytes = Buff.bytes(pubkey)
-  const info  = AddressTool.lookup(network, ADDRESS_TYPE)
-  Assert.exists(info, `unrecognized config: ${ADDRESS_TYPE} on ${network}` )
-  Assert.size(bytes, info.size)
-  return AddressEncoder.encode({
+  // Convert the public key into bytes.
+  const bytes = Buff.bytes(pubkey)
+  // Get the address configuration.
+  const config = get_address_config(network, ADDR_TYPE)
+  // Assert the configuration exists.
+  Assert.exists(config, `unrecognized address config: ${ADDR_TYPE} on ${network}` )
+  // Assert the payload size is correct.
+  Assert.size(bytes, config.size, `invalid payload size: ${bytes.length} !== ${config.size}` )
+  // Encode the address.
+  return encode_address({
     data   : bytes,
     format : 'bech32m',
-    prefix : info.prefix
+    prefix : config.prefix
   })
 }
 
-function decode_address (
+function decode_p2tr_address (
   address : string
-) : AddressData {
-  AddressTool.assert(address)
-  const info  = AddressTool.detect(address)
-  Assert.exists(info,  'unable to detect address type')
-  const bytes  = AddressEncoder.decode(address)
-  Assert.size(bytes, info.size)
-  const data   = Buff.bytes(bytes).hex
-  const script = '5120' + data
-  const asm    = [ 'OP_1', data ]
-  return { ...info, asm, data, script }
+) : DecodedAddress {
+  // Parse the address.
+  const parsed = parse_address(address)
+  // Assert the address type is correct.
+  Assert.ok(parsed.type === 'p2tr', `address type mismatch: ${parsed.type} !== ${ADDR_TYPE}`)
+  // Return the parsed address.
+  return parsed
 }

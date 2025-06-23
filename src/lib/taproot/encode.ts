@@ -1,6 +1,6 @@
-import { Buff }               from '@cmdcode/buff'
-import { hash340 }            from '@/util/hash.js'
-import { Assert }             from '@/util/index.js'
+import { Buff }               from '@vbyte/buff'
+import { hash340 }            from '@vbyte/micro-lib/hash'
+import { Assert }             from '@vbyte/micro-lib'
 import { prefix_script_size } from '@/lib/script/index.js'
 
 import { TAPLEAF_DEFAULT_VERSION } from '@/const.js'
@@ -19,7 +19,7 @@ export function encode_tapleaf (
   data : string | Uint8Array,
   version = DEFAULT_VERSION
 ) : Buff {
-  const vbyte = encode_leaf_version(version)
+  const vbyte = Buff.num(encode_leaf_version(version), 1)
   return hash340('TapLeaf', vbyte, data)
 }
 

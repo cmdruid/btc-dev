@@ -1,5 +1,5 @@
 import { Test }       from 'tape'
-import { Buff }       from '@cmdcode/buff'
+import { Buff }       from '@vbyte/buff'
 import { CoreWallet } from '@cmdcode/core-cmd'
 import fs             from 'fs/promises'
 import { URL }        from 'url'

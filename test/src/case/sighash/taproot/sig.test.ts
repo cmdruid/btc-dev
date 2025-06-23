@@ -1,5 +1,5 @@
 import { Test }    from 'tape'
-import { Buff }    from '@cmdcode/buff'
+import { Buff }    from '@vbyte/buff'
 import { schnorr } from '@noble/curves/secp256k1'
 import { taproot } from '@cmdcode/tapscript/sighash'
 
@@ -18,7 +18,7 @@ import {
   create_vout
 } from '@cmdcode/tapscript/tx'
 
-import * as HASH from '../../../../src/lib/sig/taproot/hash.js'
+import * as HASH from '@/src/lib/sig/taproot/hash.js'
 
 import test_vectors from './sig.vectors.json' assert { type: 'json' }
 
@@ -32,15 +32,15 @@ export function test_computehash(t : Test) {
   t.test('Test the intermediary hashes used for sighash construction.', t => {
     t.plan(5)
     const outpoints = HASH.hash_outpoints(tx.vin)
-    t.equal(Buff.raw(outpoints).hex, precompute.hashPrevouts, 'Outpoint hash should match.')
+    t.equal(Buff.uint(outpoints).hex, precompute.hashPrevouts, 'Outpoint hash should match.')
     const sequence = HASH.hash_sequence(tx.vin)
-    t.equal(Buff.raw(sequence).hex, precompute.hashSequences, 'Sequence hash should match.')
+    t.equal(Buff.uint(sequence).hex, precompute.hashSequences, 'Sequence hash should match.')
     const outputs  = HASH.hash_outputs(tx.vout)
-    t.equal(Buff.raw(outputs).hex, precompute.hashOutputs, 'Output hash should match.')
+    t.equal(Buff.uint(outputs).hex, precompute.hashOutputs, 'Output hash should match.')
     const amounts  = HASH.hash_amounts(prevouts)
-    t.equal(Buff.raw(amounts).hex, precompute.hashAmounts, 'Amounts hash should match.')
+    t.equal(Buff.uint(amounts).hex, precompute.hashAmounts, 'Amounts hash should match.')
     const scripts  = HASH.hash_scripts(prevouts)
-    t.equal(Buff.raw(scripts).hex, precompute.hashScriptPubkeys, 'Scripts hash should match.')
+    t.equal(Buff.uint(scripts).hex, precompute.hashScriptPubkeys, 'Scripts hash should match.')
   })
 }
 
@@ -65,7 +65,7 @@ export function test_signatures(t : Test) {
       t.equal(actual_hash.hex, sigHash, 'The signature hashes should match.')
       // Test our ability to sign the transaction.
       const pubkey        = keys.get_pubkey(tweakedPrivkey, true)
-      const tweakedpub    = Buff.raw(schnorr.getPublicKey(tweakedPrivkey))
+      const tweakedpub    = Buff.uint(schnorr.getPublicKey(tweakedPrivkey))
       t.equal(pubkey.hex, tweakedpub.hex, 'The tweaked pubkeys should be equal.')
       const testsig       = signer.sign_msg(sigHash, tweakedPrivkey)
       const isVerify      = signer.verify_sig(testsig, sigHash, tweakedpub)

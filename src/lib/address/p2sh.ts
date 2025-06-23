@@ -1,57 +1,65 @@
-import { Buff }           from '@cmdcode/buff'
-import { Assert }         from '@/util/validate.js'
-import { hash160 }        from '@/util/hash.js'
-import { AddressEncoder } from './encode.js'
-import { AddressTool }    from './util.js'
+import { Buff }           from '@vbyte/buff'
+import { Assert }         from '@vbyte/micro-lib'
+import { hash160 }        from '@vbyte/micro-lib/hash'
+import { encode_address } from './encode.js'
+
+import {
+  get_address_config,
+  parse_address
+} from './util.js'
 
 import type {
-  AddressData,
+  DecodedAddress,
   ChainNetwork
 } from '@/types/index.js'
 
-const ADDRESS_TYPE = 'p2sh'
+const ADDR_TYPE = 'p2sh'
 
-export const P2SH = {
-  create : create_address,
-  encode : encode_address,
-  decode : decode_address
+export namespace P2SH {
+  export const create = create_p2sh_address
+  export const encode = encode_p2sh_address
+  export const decode = decode_p2sh_address
 }
 
-function create_address (
+function create_p2sh_address (
   script  : string | Uint8Array,
   network : ChainNetwork = 'main',
 ) : string {
+  // Convert the script into bytes.
   const bytes = Buff.bytes(script)
-  // TODO: check if its a valid script?
+  // Convert the bytes into a hash.
   const hash = hash160(bytes)
-  return encode_address(hash, network)
+  // Encode the address.
+  return encode_p2sh_address(hash, network)
 }
 
-function encode_address (
+function encode_p2sh_address (
   script_hash : string | Uint8Array,
   network     : ChainNetwork = 'main',
 ) : string {
-  const bytes = Buff.bytes(script_hash)
-  const info  = AddressTool.lookup(network, ADDRESS_TYPE)
-  Assert.exists(info, `unrecognized config: ${ADDRESS_TYPE} on ${network}` )
-  Assert.size(bytes, info.size)
-  return AddressEncoder.encode({
+  // Convert the script hash into bytes.
+  const bytes  = Buff.bytes(script_hash)
+  // Get the address configuration.
+  const config = get_address_config(network, ADDR_TYPE)
+  // Assert the configuration exists.
+  Assert.exists(config, `unrecognized address config: ${ADDR_TYPE} on ${network}` )
+  // Assert the payload size is correct.
+  Assert.size(bytes, config.size, `invalid payload size: ${bytes.length} !== ${config.size}` )
+  // Encode the address.
+  return encode_address({
     data    : bytes,
     format  : 'base58',
-    version : info.version
+    version : config.version
   })
 }
 
-function decode_address (
+function decode_p2sh_address (
   address : string
-) : AddressData {
-  AddressTool.assert(address)
-  const info   = AddressTool.detect(address)
-  Assert.exists(info,  'unable to detect address type')
-  const bytes  = AddressEncoder.decode(address)
-  Assert.size(bytes, info.size)
-  const data   = Buff.bytes(bytes).hex
-  const script = 'a914' + data + '87'
-  const asm    = [ 'OP_HASH160', data, 'OP_EQUAL' ]
-  return { ...info, asm, data, script }
+) : DecodedAddress {
+  // Parse the address.
+  const parsed = parse_address(address)
+  // Assert the address type is correct.
+  Assert.ok(parsed.type === 'p2sh', `address type mismatch: ${parsed.type} !== ${ADDR_TYPE}`)
+  // Return the parsed address.
+  return parsed
 }

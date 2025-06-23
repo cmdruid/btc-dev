@@ -1,7 +1,7 @@
-import { Buff }          from '@cmdcode/buff'
-import { hash }          from '@cmdcode/crypto-tools'
-import { Assert }        from '@/util/index.js'
-import { parse_txinput } from './util.js'
+import { Buff }             from '@vbyte/buff'
+import { hash160, hash256 } from '@vbyte/micro-lib/hash'
+import { Assert }           from '@vbyte/micro-lib'
+import { parse_txinput }    from './util.js'
 
 import {
   prefix_script_size,
@@ -26,8 +26,6 @@ import {
 } from '@/types/index.js'
 
 import * as CONST from '@/const.js'
-
-const { hash160, hash256 } = hash
 
 export function hash_segwit_tx (
   txdata  : TransactionData,

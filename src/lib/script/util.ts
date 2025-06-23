@@ -1,7 +1,7 @@
-import { Buff } from '@cmdcode/buff'
+import { Buff } from '@vbyte/buff'
 
 export function prefix_script_size (script: string | Uint8Array): string {
-  return Buff.bytes(script).add_varint('le').hex
+  return Buff.bytes(script).prefix_varint('le').hex
 }
 
 export function parse_script_pubkeys (script: string | Uint8Array): string[] {

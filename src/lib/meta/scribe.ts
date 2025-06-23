@@ -1,5 +1,5 @@
-import { Buff }          from '@cmdcode/buff'
-import { Assert }        from '@/util/index.js'
+import { Buff, Stream }          from '@vbyte/buff'
+import { Assert }        from '@vbyte/micro-lib/validate'
 import { encode_script } from '@/lib/script/encode.js'
 import { decode_script } from '@/lib/script/decode.js'
 
@@ -186,9 +186,10 @@ function decode_label (
 function encode_content (
   content : string
 ) : string[] {
-  const stream = Buff.is_hex(content)
-    ? Buff.hex(content).stream
-    : Buff.str(content).stream
+  const bytes = Buff.is_hex(content)
+    ? Buff.hex(content)
+    : Buff.str(content)
+  const stream = new Stream(bytes)
   const chunks : string[]= []
   while (stream.size > 0) {
     if (stream.size > 520) {

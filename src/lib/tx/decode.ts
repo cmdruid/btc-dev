@@ -1,4 +1,4 @@
-import { Buff, Bytes, Stream } from '@cmdcode/buff'
+import { Buff, Bytes, Stream } from '@vbyte/buff'
 import { COINBASE }            from '@/const.js'
 
 import {
@@ -53,7 +53,7 @@ function check_witness_flag (stream : Stream) : boolean {
 
 function read_inputs (stream : Stream) : TxInput[] {
   const inputs = []
-  const vinCount = stream.read_varint()
+  const vinCount = stream.varint()
   for (let i = 0; i < vinCount; i++) {
     inputs.push(read_vin(stream))
   }
@@ -74,7 +74,7 @@ function read_vin (stream : Stream) : TxInput {
 
 function read_outputs (stream : Stream) : TxOutput[] {
   const outputs = []
-  const vcount  = stream.read_varint()
+  const vcount  = stream.varint()
   for (let i = 0; i < vcount; i++) {
     outputs.push(read_vout(stream))
   }
@@ -90,7 +90,7 @@ function read_vout (stream : Stream) : TxOutput {
 
 function read_witness (stream : Stream) : string[] {
   const stack = []
-  const count = stream.read_varint()
+  const count = stream.varint()
   for (let i = 0; i < count; i++) {
     const word = read_data(stream, true)
     stack.push(word ?? '')
@@ -103,7 +103,7 @@ export function read_data (
   varint ?: boolean
 ) : string | null {
   const size = (varint === true)
-    ? stream.read_varint('le')
+    ? stream.varint('le')
     : stream.size
   return size > 0
     ? stream.read(size).hex

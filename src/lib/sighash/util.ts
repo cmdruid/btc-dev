@@ -1,5 +1,5 @@
-import { Buff }   from '@cmdcode/buff'
-import { Assert } from '@/util/index.js'
+import { Buff }   from '@vbyte/buff'
+import { Assert } from '@vbyte/micro-lib'
 
 import type {
   SigHashOptions,

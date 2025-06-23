@@ -1,4 +1,4 @@
-import { Buff }             from '@cmdcode/buff'
+import { Buff }             from '@vbyte/buff'
 import { encode_tapbranch } from './encode.js'
 
 import type { TapTree, MerkleProof } from '@/types/index.js'

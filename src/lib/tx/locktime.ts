@@ -1,4 +1,4 @@
-import { Assert } from '@/util/index.js'
+import { Assert } from '@vbyte/micro-lib'
 
 import type { LocktimeInfo } from '@/types/index.js'
 

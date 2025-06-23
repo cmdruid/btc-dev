@@ -1,4 +1,4 @@
-import { zod, big, hex, hex32, uint } from '@/util/schema.js'
+import { zod, big, hex, hex32, uint } from '@vbyte/micro-lib/schema'
 
 export const sats = big.max(2_100_000_000_000_000n)
 

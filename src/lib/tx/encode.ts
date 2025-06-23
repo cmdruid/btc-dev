@@ -1,5 +1,5 @@
-import { Buff }          from '@cmdcode/buff'
-import { Assert }        from '@/util/index.js'
+import { Buff }          from '@vbyte/buff'
+import { Assert }        from '@vbyte/micro-lib'
 import { parse_tx_data } from './parse.js'
 import { COINBASE }      from '@/const.js'
 
@@ -63,7 +63,7 @@ export function encode_txin_sequence (sequence : number) : Buff {
 
 export function encode_tx_inputs (vin : TxInput[]) : Buff {
   // Create a buffer for the inputs, starting with the array length.
-  const raw : Buff[] = [ Buff.calc_varint(vin.length, 'le') ]
+  const raw : Buff[] = [ Buff.varint(vin.length, 'le') ]
   // For each input in the array,
   for (const input of vin) {
     // Encode the input, and add it to the buffer.
@@ -101,7 +101,7 @@ export function encode_vout_value (value : bigint) : Buff {
 
 export function encode_tx_outputs (vout : TxOutput[]) : Buff {
   // Create a buffer for the outputs, starting with the array length.
-  const buffer : Buff[] = [ Buff.calc_varint(vout.length, 'le') ]
+  const buffer : Buff[] = [ Buff.varint(vout.length, 'le') ]
   // For each output in the array,
   for (const output of vout) {
     // Encode the output, and add it to the buffer.
@@ -123,7 +123,7 @@ export function encode_tx_vout (txout : TxOutput) : Buff {
 
 export function encode_vin_witness (data : string[]) : Buff {
   // Create a buffer for the witness data, starting with the array length.
-  const buffer : Buff[] = [ Buff.calc_varint(data.length) ]
+  const buffer : Buff[] = [ Buff.varint(data.length) ]
   // For each parameter in the witness array,
   for (const param of data) {
     // Encode the parameter, and add it to the buffer.
@@ -146,7 +146,7 @@ export function encode_script_data (
     // Assert that the script is a hex string.
     Assert.is_hex(script)
     // Encode the script, and add it to the buffer.
-    return Buff.hex(script).add_varint('le')
+    return Buff.hex(script).prefix_varint('le')
   } else {
     // Return a single byte of zero.
     return Buff.hex('00')

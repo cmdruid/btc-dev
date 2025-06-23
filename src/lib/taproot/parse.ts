@@ -1,5 +1,5 @@
-import { Buff, Stream }       from '@cmdcode/buff'
-import { Assert, ECC }        from '@/util/index.js'
+import { Buff, Stream }       from '@vbyte/buff'
+import { Assert, ECC }        from '@vbyte/micro-lib'
 import { parse_witness_data } from '@/lib/tx/witness.js'
 
 import {

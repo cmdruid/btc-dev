@@ -1,4 +1,4 @@
-import { Buff }          from '@cmdcode/buff'
+import { Buff }          from '@vbyte/buff'
 import { parse_tx_data } from './parse.js'
 
 import {
