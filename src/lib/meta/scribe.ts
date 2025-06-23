@@ -1,5 +1,5 @@
-import { Buff, Stream }          from '@vbyte/buff'
-import { Assert }        from '@vbyte/micro-lib/validate'
+import { Buff, Stream }  from '@vbyte/buff'
+import { Assert }        from '@vbyte/micro-lib'
 import { encode_script } from '@/lib/script/encode.js'
 import { decode_script } from '@/lib/script/decode.js'
 

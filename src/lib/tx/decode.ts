@@ -1,4 +1,5 @@
 import { Buff, Bytes, Stream } from '@vbyte/buff'
+import { Assert }              from '@vbyte/micro-lib'
 import { COINBASE }            from '@/const.js'
 
 import {
@@ -8,11 +9,13 @@ import {
 } from '@/types/index.js'
 
 export function decode_tx_data (
-  txhex : Bytes,
+  txbytes : Bytes,
   segwit = true
 ) : TxData {
+  // Assert the txhex is a bytes object.
+  Assert.is_bytes(txbytes, 'txbytes must be hex or a unit array')
   // Setup a byte-stream.
-  const stream = new Stream(txhex)
+  const stream = new Stream(txbytes)
   // Parse tx version.
   const version = read_version(stream)
   // Check and enable any flags that are set.

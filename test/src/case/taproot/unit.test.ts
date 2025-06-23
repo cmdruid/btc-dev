@@ -58,7 +58,7 @@ export default function (t : Test) {
       const decoded = P2TR.decode(address)
       const script  = encode_script(scripts[index])
       const target  = encode_tapscript(script).hex
-      const isValid = verify_taproot(decoded.data, target, cblock)
+      const isValid = verify_taproot(decoded.hex, target, cblock)
       t.true(isValid, 'Control block should be valid.')
     }
   })

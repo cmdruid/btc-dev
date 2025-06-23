@@ -37,7 +37,7 @@ export namespace Sequence {
  * @returns A 32-bit integer representing the encoded sequence
  * @throws Error if the input data is invalid or exceeds maximum values
  */
-function encode_sequence (data : SequenceConfig): number {
+export function encode_sequence (data : SequenceConfig): number {
   // If the timelock is based on a block height,
   if (data.mode === 'height') {
     // Validate the height value.
@@ -65,7 +65,7 @@ function encode_sequence (data : SequenceConfig): number {
  * @returns A SequenceData object or null if the sequence doesn't represent special data
  * @throws Error if the sequence value is invalid or exceeds maximum values
  */
-function decode_sequence (sequence: number | string) : SequenceInfo | null {
+export function decode_sequence (sequence: number | string) : SequenceInfo | null {
   // Parse and validate the sequence value.
   const seq = parse_sequence(sequence)
   // If the sequence is disabled, return null.

@@ -1,7 +1,8 @@
-import { hash256 }           from '@vbyte/micro-lib/hash'
-import { encode_tx_data }    from './encode.js'
-import { parse_tx_data }     from './parse.js'
-import { LOCK_SCRIPT_REGEX } from '@/const.js'
+import { hash256 }             from '@vbyte/micro-lib/hash'
+import { LOCK_SCRIPT_REGEX }   from '@/const.js'
+import { encode_tx_data }      from './encode.js'
+import { parse_tx_data }       from './parse.js'
+import { assert_has_prevouts } from './validate.js'
 
 import type {
   TxData,
@@ -11,7 +12,6 @@ import type {
   TxValue,
   WitnessVersion
 } from '@/types/index.js'
-import { assert_has_prevouts } from './validate.js'
 
 export function is_return_script (script : string) : boolean {
   return script.startsWith('6a')

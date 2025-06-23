@@ -19,7 +19,7 @@ export function encode_tapleaf (
   data : string | Uint8Array,
   version = DEFAULT_VERSION
 ) : Buff {
-  const vbyte = Buff.num(encode_leaf_version(version), 1)
+  const vbyte = encode_leaf_version(version)
   return hash340('TapLeaf', vbyte, data)
 }
 

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": "..",
     "paths": {
+      "@/*"                : [ "src/*"                     ],
       "@/test/*"           : [ "test/src/*"                ],
       "@/src"              : [ "src/index.js"              ],
       "@/src/address"      : [ "src/lib/address/index.js"  ],

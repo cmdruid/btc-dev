@@ -14,7 +14,7 @@ export namespace Locktime {
  * Encodes a LockTimeData object into a string representation.
  * According to BIP-65, the value is simply the numeric value as a string.
  */
-function encode_locktime (
+export function encode_locktime (
   locktime : LocktimeInfo
 ) : number {
   switch (locktime.type) {
@@ -35,7 +35,7 @@ function encode_locktime (
  * According to BIP-65, values below LOCKTIME_THRESHOLD are interpreted as block heights,
  * while values at or above this threshold are interpreted as timestamps.
  */
-function decode_locktime (
+export function decode_locktime (
   locktime : number
 ) : LocktimeInfo | null {
   // Check if the value is valid (non-negative)

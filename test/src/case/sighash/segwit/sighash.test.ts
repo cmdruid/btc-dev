@@ -11,7 +11,7 @@ import {
 
 import type { TxData } from '@/src'
 
-import { parse_tx } from '@/src/tx'
+import { parse_tx_data } from '@/src/tx'
 
 import test_data from './bip0143.vectors.json' assert { type: 'json' }
 
@@ -19,7 +19,7 @@ export function sighash_vector_test(t :Test) {
   t.test('Testing segwit sighash vectors.', t => {
     const { redeemScript, txdata, sign_vectors } = test_data
 
-    const tx = parse_tx(txdata)
+    const tx = parse_tx_data(txdata)
 
     t.plan(sign_vectors.length * 4)
     for (const vector of sign_vectors) {
@@ -46,8 +46,8 @@ export function sighash_vector_test(t :Test) {
       try {
         const txcopy = { ...tx } as TxData
         const sig = sign_segwit_tx(seckey, txcopy, { txindex: index, ...config })
-        t.equal(sig.hex, signature, 'Signatures should be equal.')
-        const nobleVerify = secp.verify(sig.slice(0, -1).hex, sigHash, pubkey)
+        t.equal(sig, signature, 'Signatures should be equal.')
+        const nobleVerify = secp.verify(sig.slice(0, -2), sigHash, pubkey)
         t.equal(nobleVerify, true, 'Signature should be valid using Noble.')
         txcopy.vin[index].witness = [ sig, pubkey, redeemScript ]
         const signerVerify = verify_segwit_tx(txcopy, { txindex: index, ...config })

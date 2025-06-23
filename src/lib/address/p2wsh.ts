@@ -9,8 +9,8 @@ import {
 } from './util.js'
 
 import type {
-  DecodedAddress,
-  ChainNetwork
+  ChainNetwork,
+  AddressData
 } from '@/types/index.js'
 
 const ADDR_TYPE = 'p2w-sh'
@@ -55,7 +55,7 @@ function encode_p2wsh_address (
 
 function decode_p2wsh_address (
   address : string
-) : DecodedAddress {
+) : AddressData {
   // Parse the address.
   const parsed = parse_address(address)
   // Assert the address type is correct.

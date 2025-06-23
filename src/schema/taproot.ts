@@ -1,8 +1,10 @@
-import { zod, byte32, uint } from '@vbyte/micro-lib/schema'
+import { z } from 'zod'
 
-export const taptree = zod.union([ zod.array(byte32), byte32 ])
+import { byte32, uint } from '@vbyte/micro-lib/schema'
 
-export const config = zod.object({
+export const taptree = z.union([ z.array(byte32), byte32 ])
+
+export const config = z.object({
   pubkey  : byte32,
   leaves  : taptree.array().optional(),
   target  : byte32.optional(),

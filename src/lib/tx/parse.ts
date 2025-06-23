@@ -1,15 +1,16 @@
-import { decode_tx_data } from './decode.js'
-import { create_tx_data } from './create.js'
+import { decode_tx_data }     from './decode.js'
+import { create_tx_data }     from './create.js'
+import { assert_tx_template } from './validate.js'
 
-import type {
-  TransactionData,
-  TxData
-} from '@/types/index.js'
+import type { TxData } from '@/types/index.js'
 
 export function parse_tx_data (
-  txdata : TransactionData
+  txdata : unknown
 ) : TxData {
-  return (typeof txdata === 'string')
-    ? decode_tx_data(txdata)
-    : create_tx_data(txdata)
+  if (typeof txdata === 'string') {
+    return decode_tx_data(txdata)
+  } else {
+    assert_tx_template(txdata)
+    return create_tx_data(txdata)
+  }
 }

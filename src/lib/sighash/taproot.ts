@@ -23,8 +23,6 @@ import type {
   TxOutput
 } from '@/types/index.js'
 
-
-
 export function hash_taproot_tx (
   template : TxData | string,
   config   : SigHashOptions = {}
