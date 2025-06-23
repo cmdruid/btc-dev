@@ -17,7 +17,8 @@ import type {
   TxData,
   TxTemplate,
   TxSize,
-  TxValue
+  TxValue,
+  TransactionData
 } from '@/types/index.js'
 
 export class Transaction {
@@ -42,8 +43,19 @@ export class Transaction {
     this._value = get_tx_value(this._tx)
   }
 
-  get data () : TxData {
-    return Object.assign({}, this._tx)
+  get data () : TransactionData {
+    return {
+      hash     : this.hash,
+      locktime : this.locktime,
+      return   : this.return,
+      size     : this.size,
+      spends   : this.spends,
+      txid     : this.txid,
+      value    : this.value,
+      version  : this.version,
+      vin      : this.vin.map(txin => txin.data),
+      vout     : this.vout.map(txout => txout.data)
+    }
   }
 
   get hash () : string {
@@ -53,15 +65,9 @@ export class Transaction {
   get locktime () {
     return {
       hex   : encode_tx_locktime(this._tx.locktime).hex,
-      info  : Locktime.decode(this._tx.locktime),
+      data  : Locktime.decode(this._tx.locktime),
       value : this._tx.locktime
     }
-  }
-
-  get prevouts () {
-    return this._tx.vin
-      .filter(txin => txin.prevout !== null)
-      .map(txin => txin.prevout)
   }
 
   get return () {
@@ -71,10 +77,17 @@ export class Transaction {
   get size () {
     return {
       ...this._size,
-      txin    : this._vin.reduce((acc, txin)   => acc + txin.size,  0),
-      txout   : this._vout.reduce((acc, txout) => acc + txout.size, 0),
-      witness : this._vin.reduce((acc, txin)   => acc + (txin.witness?.vsize ?? 0), 0)
+      segwit  : this._vin.reduce((acc, txin)   => acc + (txin.witness?.vsize ?? 0), 0),
+      vin     : this._vin.reduce((acc, txin)   => acc + txin.size,  0),
+      vout    : this._vout.reduce((acc, txout) => acc + txout.size, 0),
+      witness : this._vin.reduce((acc, txin)   => acc + (txin.witness?.size ?? 0), 0)
     }
+  }
+
+  get spends () : TransactionOutput[] {
+    return this._tx.vin
+      .filter(txin => txin.prevout !== null)
+      .map(txin => new TransactionOutput(txin.prevout!))
   }
 
   get txid () : string {
@@ -97,8 +110,8 @@ export class Transaction {
     return this._vout
   }
 
-  toJSON   () { return this._tx }
-  toString () { return JSON.stringify(this._tx) }
+  toJSON   () { return this.data }
+  toString () { return JSON.stringify(this.data) }
 }
 
 

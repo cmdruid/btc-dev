@@ -3,11 +3,14 @@ import { decode_script } from '@/lib/script/index.js'
 
 import {
   parse_witness_data,
-  get_witness_vsize,
+  get_witness_size,
 } from '@/lib/tx/index.js'
 
 import type {
+  ScriptField,
+  WitnessField,
   WitnessInfo,
+  WitnessSize,
   WitnessType
 } from '@/types/index.js'
 
@@ -15,40 +18,54 @@ export class TransactionWitness {
 
   private readonly _data  : Buff[]
   private readonly _meta  : WitnessInfo
-  private readonly _vsize : number
+  private readonly _size  : WitnessSize
 
   constructor (witness : Bytes[]) {
     this._data  = witness.map(e => Buff.bytes(e))
     this._meta  = parse_witness_data(witness)
-    this._vsize = get_witness_vsize(witness)
+    this._size  = get_witness_size(witness)
   }
 
   get annex () : string | null {
     return this._meta.annex
   }
 
-  get bytes () : Bytes[] {
-    return this._data.map(e => new Uint8Array(e))
-  }
-
   get cblock () : string | null {
     return this._meta.cblock
   }
 
-  get data () : string[] {
-    return this._data.map(e => e.hex)
+  get data () : WitnessField {
+    return {
+      annex   : this.annex,
+      cblock  : this.cblock,
+      params  : this.params,
+      script  : this.script,
+      size    : this.size,
+      stack   : this.stack,
+      type    : this.type,
+      version : this.version,
+      vsize   : this.vsize
+    }
   }
 
   get params () : string[] {
     return this._meta.params
   }
 
-  get script () : { hex : string, asm : string[] } | null {
+  get script () : ScriptField | null {
     if (this._meta.script === null) return null
     return {
       hex : this._meta.script,
       asm : decode_script(this._meta.script)
     }
+  }
+
+  get size () : number {
+    return this._size.size
+  }
+
+  get stack () : string[] {
+    return this._data.map(e => e.hex)
   }
 
   get type () : WitnessType {
@@ -60,9 +77,9 @@ export class TransactionWitness {
   }
 
   get vsize () : number {
-    return this._vsize
+    return this._size.vsize
   }
 
-  toJSON   () { return this._data }
-  toString () { return JSON.stringify(this._data) }
+  toJSON   () { return this.data }
+  toString () { return JSON.stringify(this.data) }
 }

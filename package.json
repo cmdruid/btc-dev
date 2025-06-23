@@ -34,7 +34,9 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/main.cjs",
+      "default": "./dist/index.js"
     },
     "./address": {
       "types": "./dist/lib/address/index.d.ts",

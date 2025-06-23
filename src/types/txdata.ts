@@ -1,25 +1,8 @@
-import type { WitnessType, WitnessVersion } from './witness.js'
-
-export type TxOutputType    = WitnessType   | 'p2pkh' | 'p2sh' | 'opreturn'
-export type TxInput         = CoinbaseInput | SpendInput | VirtualInput
-export type TransactionData = string | TxData | TxTemplate
+export type TxInput = CoinbaseInput | SpendInput | VirtualInput
 
 export interface TxOutpoint {
   txid : string
   vout : number
-}
-
-export interface TxSize {
-  base   : number
-  full   : number
-  weight : number
-  vsize  : number
-}
-
-export interface TxValue {
-  fees  : bigint
-  vin   : bigint
-  vout  : bigint
 }
 
 export interface TxInputTemplate extends TxOutpoint {
@@ -50,19 +33,9 @@ export interface SpendInput extends VirtualInput {
   prevout : TxOutput
 }
 
-export interface TxInputInfo {
-  type    : WitnessType
-  version : WitnessVersion
-}
-
 export interface TxOutput {
   script_pk : string
   value     : bigint
-}
-
-export interface TxOutputInfo {
-  type    : TxOutputType
-  version : WitnessVersion
 }
 
 export interface TxTemplate {

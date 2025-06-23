@@ -1,7 +1,6 @@
-export type WitnessType    = 'p2w-pkh' | 'p2w-sh' | 'p2tr-pk' | 'p2tr-ts' | 'unknown'
+export type WitnessContext = WitnessInfo | TaprootScript | SegwitScript | TaprootSpend | SegwitSpend
 export type WitnessVersion = number | null
-
-export type TxWitness = WitnessInfo | TaprootScript | SegwitScript | TaprootSpend | SegwitSpend
+export type WitnessType    = 'p2w-pkh' | 'p2w-sh' | 'p2tr-pk' | 'p2tr-ts' | 'unknown'
 
 export interface WitnessInfo {
   annex   : string | null

@@ -1,4 +1,5 @@
 import { decode_script }      from '@/lib/script/index.js'
+import { TransactionOutput }  from './txout.js'
 import { TransactionWitness } from './witness.js'
 
 import {
@@ -9,7 +10,7 @@ import {
 
 import type {
   TxInput,
-  TxOutput
+  TxInputField
 } from '@/types/index.js'
 
 export class TransactionInput {
@@ -30,8 +31,17 @@ export class TransactionInput {
     return this._txin.coinbase
   }
 
-  get data () : TxInput {
-    return this._txin
+  get data () : TxInputField {
+    return {
+      coinbase    : this.coinbase,
+      prevout     : this.prevout?.data ?? null,
+      script_sig  : this.script_sig,
+      sequence    : this.sequence,
+      size        : this.size,
+      txid        : this.txid,
+      vout        : this.vout,
+      witness     : this.witness?.data ?? null
+    }
   }
 
   get has_prevout () : boolean {
@@ -42,8 +52,10 @@ export class TransactionInput {
     return this._txin.coinbase !== null
   }
 
-  get prevout () : TxOutput | null {
+  get prevout () : TransactionOutput | null {
     return this._txin.prevout
+      ? new TransactionOutput(this._txin.prevout)
+      : null
   }
 
   get script_sig () {
@@ -57,7 +69,7 @@ export class TransactionInput {
   get sequence () {
     return {
       hex   : encode_txin_sequence(this._txin.sequence).hex,
-      info  : Sequence.decode(this._txin.sequence),
+      data  : Sequence.decode(this._txin.sequence),
       value : this._txin.sequence
     }
   }
@@ -78,6 +90,6 @@ export class TransactionInput {
     return this._witness
   }
 
-  toJSON   () { return this._txin }
-  toString () { return JSON.stringify(this._txin) }
+  toJSON   () { return this.data }
+  toString () { return JSON.stringify(this.data) }
 }

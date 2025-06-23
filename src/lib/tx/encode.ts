@@ -6,11 +6,11 @@ import { COINBASE }      from '@/const.js'
 import {
   TxInput,
   TxOutput,
-  TransactionData
+  TxData
 } from '@/types/index.js'
 
 export function encode_tx_data (
-  txdata : TransactionData,
+  txdata : TxData,
   segwit = true
 ) : Buff {
   const tx = parse_tx_data(txdata)

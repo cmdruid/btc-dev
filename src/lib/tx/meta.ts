@@ -2,7 +2,6 @@ import { hash256 }             from '@vbyte/micro-lib/hash'
 import { LOCK_SCRIPT_REGEX }   from '@/const.js'
 import { encode_tx_data }      from './encode.js'
 import { parse_tx_data }       from './parse.js'
-import { assert_has_prevouts } from './validate.js'
 
 import type {
   TxData,
@@ -67,12 +66,8 @@ export function get_tx_value (
   txdata : string | TxData
 ) : TxValue {
   const tx   = parse_tx_data(txdata)
-  assert_has_prevouts(tx.vin)
-  const vin  = tx.vin.reduce((acc, txin) => acc + txin.prevout.value, 0n)
+  const vin  = tx.vin.reduce((acc, txin) => acc + (txin.prevout?.value ?? 0n), 0n)
   const vout = tx.vout.reduce((acc, txout) => acc + txout.value, 0n)
-  return {
-    fees : vin - vout,
-    vin  : vin,
-    vout : vout
-  }
+  const fees = (vin > vout) ? (vin - vout) : 0n
+  return { fees, vin, vout }
 }
