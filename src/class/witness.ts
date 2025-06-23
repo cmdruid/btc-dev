@@ -1,4 +1,4 @@
-import { Buff }          from '@vbyte/buff'
+import { Buff, Bytes }   from '@vbyte/buff'
 import { decode_script } from '@/lib/script/index.js'
 
 import {
@@ -7,7 +7,6 @@ import {
 } from '@/lib/tx/index.js'
 
 import type {
-  Bytes,
   WitnessInfo,
   WitnessType
 } from '@/types/index.js'

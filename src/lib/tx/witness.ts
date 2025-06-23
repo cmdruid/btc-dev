@@ -1,9 +1,8 @@
-import { Buff }             from '@vbyte/buff'
+import { Buff, Bytes }      from '@vbyte/buff'
 import { is_valid_script }  from '@/lib/script/decode.js'
 import { TAPLEAF_VERSIONS } from '@/const.js'
 
 import type {
-  Bytes,
   WitnessInfo,
   WitnessType
 } from '@/types/index.js'

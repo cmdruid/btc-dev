@@ -1,8 +1,4 @@
-export * from './class/signer.js'
-export * from './class/tx.js'
-export * from './class/txin.js'
-export * from './class/txout.js'
-export * from './class/witness.js'
+export * from './class/index.js'
 
 export * as Address from './lib/address/index.js'
 export * as Meta    from './lib/meta/index.js'

@@ -28,7 +28,7 @@
     "src"
   ],
   "main": "./dist/main.cjs",
-  "module": "./dist/module.mjs",
+  "module": "./dist/index.js",
   "unpkg": "./dist/script.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
@@ -39,6 +39,10 @@
     "./address": {
       "types": "./dist/lib/address/index.d.ts",
       "import": "./dist/lib/address/index.js"
+    },
+    "./class": {
+      "types": "./dist/class/index.d.ts",
+      "import": "./dist/class/index.js"
     },
     "./meta": {
       "types": "./dist/lib/meta.d.ts",
@@ -63,10 +67,6 @@
     "./tx": {
       "types": "./dist/lib/tx/index.d.ts",
       "import": "./dist/lib/tx/index.js"
-    },
-    "./util": {
-      "types": "./dist/util/index.d.ts",
-      "import": "./dist/util/index.js"
     }
   },
   "scripts": {
@@ -77,11 +77,11 @@
     "test": "npm run loader test/src/tape.ts"
   },
   "dependencies": {
-    "@vbyte/buff": "^1.0.2",
-    "@vbyte/micro-lib": "^1.0.7",
     "@noble/curves": "^1.9.2",
     "@noble/hashes": "^1.8.0",
     "@scure/btc-signer": "^1.8.1",
+    "@vbyte/buff": "^1.0.2",
+    "@vbyte/micro-lib": "^1.0.7",
     "zod": "^3.25.67"
   },
   "devDependencies": {

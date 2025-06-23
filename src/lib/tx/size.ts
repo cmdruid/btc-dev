@@ -1,4 +1,4 @@
-import { Buff }          from '@vbyte/buff'
+import { Buff, Bytes }   from '@vbyte/buff'
 import { parse_tx_data } from './parse.js'
 
 import {
@@ -11,7 +11,6 @@ import {
 } from './encode.js'
 
 import type {
-  Bytes,
   TxData,
   TxInput,
   TxOutput,

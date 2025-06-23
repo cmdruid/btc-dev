@@ -5,9 +5,9 @@
     "target": "ESNext",
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*" : [ "./*" ]
+      "@/*" : [ "src/*" ]
     },
     "declaration": true,
     "importHelpers": true,

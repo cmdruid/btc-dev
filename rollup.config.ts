@@ -10,13 +10,18 @@ const treeshake = {
 	tryCatchDeoptimization  : false
 }
 
+/**
+ * Handler for silencing rollup warnings.
+ */
 const onwarn = warning => {
+  // Silence annotation warnings.
   if (
     warning.code === 'INVALID_ANNOTATION' && 
     warning.message.includes('@__PURE__')
   ) {
     return
   }
+  // Silence zod warnings.
   if (
     warning.code === 'MIXED_EXPORTS' &&
     warning.message.includes('zod')
@@ -51,7 +56,11 @@ export default {
       sourcemap: true
     }
   ],
-  plugins: [ typescript(), nodeResolve(), commonjs() ],
+  plugins: [ 
+    typescript(), 
+    nodeResolve(), 
+    commonjs() 
+  ],
   strictDeprecations: true,
   treeshake
 }
