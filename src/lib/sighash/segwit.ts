@@ -20,7 +20,7 @@ import {
 
 import {
   SigHashOptions,
-  TransactionData,
+  TxData,
   TxInput,
   TxOutput
 } from '@/types/index.js'
@@ -28,7 +28,7 @@ import {
 import * as CONST from '@/const.js'
 
 export function hash_segwit_tx (
-  txdata  : TransactionData,
+  txdata  : TxData,
   options : SigHashOptions = {}
 ) : Buff {
   // Unpack the sigflag from our config object.

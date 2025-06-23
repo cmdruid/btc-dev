@@ -7,12 +7,12 @@ import { format_sigflag }  from './util.js'
 
 import type {
   SigHashOptions,
-  TransactionData
+  TxData
 } from '@/types/index.js'
 
 export function sign_segwit_tx (
   seckey  : string,
-  txdata  : TransactionData,
+  txdata  : TxData,
   options : SigHashOptions,
 ) {
   const tx   = parse_tx_data(txdata)
@@ -24,7 +24,7 @@ export function sign_segwit_tx (
 
 export function sign_taproot_tx (
   seckey  : string,
-  txdata  : TransactionData,
+  txdata  : TxData,
   options : SigHashOptions,
 ) {
   const tx   = parse_tx_data(txdata)

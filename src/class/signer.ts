@@ -8,7 +8,7 @@ import {
 
 import type {
   SigHashOptions,
-  TransactionData
+  TxData
 } from '@/types/index.js'
 
 export class TxSigner {
@@ -40,8 +40,8 @@ export class TxSigner {
 
   get sign_tx () {
     return {
-      segwit  : (tx : TransactionData, options : SigHashOptions) => sign_segwit_tx(this._seckey, tx, options),
-      taproot : (tx : TransactionData, options : SigHashOptions) => sign_taproot_tx(this._seckey, tx, options)
+      segwit  : (tx : TxData, options : SigHashOptions) => sign_segwit_tx(this._seckey, tx, options),
+      taproot : (tx : TxData, options : SigHashOptions) => sign_taproot_tx(this._seckey, tx, options)
     }
   }
 }

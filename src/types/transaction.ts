@@ -2,7 +2,6 @@ import { TxOutput } from './txdata.js'
 import { LocktimeInfo, SequenceInfo } from './txmeta.js'
 
 import type {
-  WitnessInfo,
   WitnessType,
   WitnessVersion
 } from './witness.js'
