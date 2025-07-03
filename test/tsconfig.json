@@ -10,8 +10,10 @@
       "@/src/psbt"         : [ "src/lib/psbt/index.js"     ],
       "@/src/script"       : [ "src/lib/script/index.js"   ],
       "@/src/sighash"      : [ "src/lib/sighash/index.js"  ],
+      "@/src/signer"       : [ "src/lib/signer/index.js"   ],
       "@/src/taproot"      : [ "src/lib/taproot/index.js"  ],
       "@/src/tx"           : [ "src/lib/tx/index.js"       ],
+      "@/src/witness"      : [ "src/lib/witness/index.js"  ],
       "@/src/util"         : [ "src/util/index.js"         ]
     },
     "module": "NodeNext",

@@ -1,6 +1,6 @@
 import { Buff }          from '@vbyte/buff'
 import { Assert }        from '@vbyte/micro-lib'
-import { parse_tx_data } from './parse.js'
+import { parse_tx }      from './parse.js'
 import { COINBASE }      from '@/const.js'
 
 import {
@@ -9,11 +9,11 @@ import {
   TxData
 } from '@/types/index.js'
 
-export function encode_tx_data (
+export function encode_tx (
   txdata : TxData,
   segwit = true
 ) : Buff {
-  const tx = parse_tx_data(txdata)
+  const tx = parse_tx(txdata)
   // Unpack the transaction data.
   const { version, vin, vout, locktime } = tx
   // Create a buffer for the transaction.

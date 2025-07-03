@@ -1,6 +1,6 @@
 import { Buff, Stream }       from '@vbyte/buff'
 import { Assert, ECC }        from '@vbyte/micro-lib'
-import { parse_witness_data } from '@/lib/tx/witness.js'
+import { parse_witness_data } from '@/lib/witness/parse.js'
 
 import {
   encode_tapbranch,

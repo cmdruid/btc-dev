@@ -1,12 +1,12 @@
+import { LocktimeUtil }      from '@/lib/meta/index.js'
 import { TransactionInput }  from './txin.js'
 import { TransactionOutput } from './txout.js'
 
 import {
-  decode_tx_data,
+  decode_tx,
   get_txid,
   is_return_script,
-  parse_tx_data,
-  Locktime,
+  parse_tx,
   get_txsize,
   get_tx_value,
   get_txhash,
@@ -32,8 +32,8 @@ export class Transaction {
 
   constructor (txdata : string | TxData | TxTemplate) {
     this._tx = (typeof txdata !== 'string')
-      ? parse_tx_data(txdata)
-      : decode_tx_data(txdata)
+      ? parse_tx(txdata)
+      : decode_tx(txdata)
 
     this._vin  = this._tx.vin.map(txin => new TransactionInput(txin))
     this._vout = this._tx.vout.map(txout => new TransactionOutput(txout))
@@ -65,7 +65,7 @@ export class Transaction {
   get locktime () {
     return {
       hex   : encode_tx_locktime(this._tx.locktime).hex,
-      data  : Locktime.decode(this._tx.locktime),
+      data  : LocktimeUtil.decode(this._tx.locktime),
       value : this._tx.locktime
     }
   }

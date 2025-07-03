@@ -1,7 +1,7 @@
 import { hash256 }             from '@vbyte/micro-lib/hash'
 import { LOCK_SCRIPT_REGEX }   from '@/const.js'
-import { encode_tx_data }      from './encode.js'
-import { parse_tx_data }       from './parse.js'
+import { encode_tx }           from './encode.js'
+import { parse_tx }            from './parse.js'
 
 import type {
   TxData,
@@ -49,23 +49,23 @@ export function get_vout_version (
 export function get_txid (
   txdata : string | TxData
 ) : string {
-  const json = parse_tx_data(txdata)
-  const data = encode_tx_data(json, false)
+  const json = parse_tx(txdata)
+  const data = encode_tx(json, false)
   return hash256(data).reverse().hex
 }
 
 export function get_txhash (
   txdata : string | TxData
 ) : string {
-  const json = parse_tx_data(txdata)
-  const data = encode_tx_data(json, true)
+  const json = parse_tx(txdata)
+  const data = encode_tx(json, true)
   return hash256(data).reverse().hex
 }
 
 export function get_tx_value (
   txdata : string | TxData
 ) : TxValue {
-  const tx   = parse_tx_data(txdata)
+  const tx   = parse_tx(txdata)
   const vin  = tx.vin.reduce((acc, txin) => acc + (txin.prevout?.value ?? 0n), 0n)
   const vout = tx.vout.reduce((acc, txout) => acc + txout.value, 0n)
   const fees = (vin > vout) ? (vin - vout) : 0n

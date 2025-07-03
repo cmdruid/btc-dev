@@ -13,13 +13,13 @@ import type {
   TxInput,
   TxOutput,
   TxTemplate,
-  SpendInput,
-  CoinbaseInput
+  TxSpendInput,
+  TxCoinbaseInput
 } from '@/types/index.js'
 
 export function create_coinbase_input (
   config : TxInputTemplate | TxInput
-) : CoinbaseInput {
+) : TxCoinbaseInput {
   assert_vin_template(config)
   Assert.exists(config.coinbase, 'coinbase is required')
   const coinbase   = config.coinbase
@@ -34,7 +34,7 @@ export function create_coinbase_input (
 
 export function create_spend_input (
   config : TxInputTemplate | TxInput
-) : SpendInput {
+) : TxSpendInput {
   assert_vin_template(config)
   Assert.exists(config.prevout, 'prevout is required')
   const prevout    = config.prevout
@@ -69,7 +69,7 @@ export function create_tx_output (
   return { script_pk, value : BigInt(value) }
 }
 
-export function create_tx_data (
+export function create_tx (
   config: TxTemplate | TxData
 ) : TxData {
   assert_tx_template(config)

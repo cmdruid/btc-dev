@@ -1,25 +1,24 @@
-import { Test } from 'tape'
-import { Buff } from '@vbyte/buff'
-
+import { Test }              from 'tape'
+import { Buff }              from '@vbyte/buff'
+import { parse_tx }          from '@/src/tx'
+import { hash_segwit_tx }    from '@/src/sighash'
 import { secp256k1 as secp } from '@noble/curves/secp256k1'
 
 import {
-  hash_segwit_tx,
   sign_segwit_tx,
   verify_segwit_tx
-} from '@/src/sighash'
+} from '@/src/signer'
 
 import type { TxData } from '@/src'
 
-import { parse_tx_data } from '@/src/tx'
 
-import test_data from './bip0143.vectors.json' assert { type: 'json' }
+import test_data from './bip0143.vectors.json' with { type: 'json' }
 
 export function sighash_vector_test(t :Test) {
   t.test('Testing segwit sighash vectors.', t => {
     const { redeemScript, txdata, sign_vectors } = test_data
 
-    const tx = parse_tx_data(txdata)
+    const tx = parse_tx(txdata)
 
     t.plan(sign_vectors.length * 4)
     for (const vector of sign_vectors) {

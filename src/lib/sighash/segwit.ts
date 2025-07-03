@@ -15,7 +15,7 @@ import {
   encode_txin_txid,
   encode_vout_value,
   encode_tx_version,
-  parse_tx_data
+  parse_tx
 } from '@/lib/tx/index.js'
 
 import {
@@ -34,7 +34,7 @@ export function hash_segwit_tx (
   // Unpack the sigflag from our config object.
   const { sigflag = 0x01, txindex } = options
   // Normalize the tx into JSON format.
-  const tx = parse_tx_data(txdata)
+  const tx = parse_tx(txdata)
   // Check if the ANYONECANPAY flag is set.
   const is_anypay = (sigflag & 0x80) === 0x80
   // Save a normalized version of the sigflag.

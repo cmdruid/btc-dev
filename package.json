@@ -41,10 +41,6 @@
       "types": "./dist/lib/address/index.d.ts",
       "import": "./dist/lib/address/index.js"
     },
-    "./class": {
-      "types": "./dist/class/index.d.ts",
-      "import": "./dist/class/index.js"
-    },
     "./meta": {
       "types": "./dist/lib/meta.d.ts",
       "import": "./dist/lib/meta.js"
@@ -61,6 +57,10 @@
       "types": "./dist/lib/sighash/index.d.ts",
       "import": "./dist/lib/sighash/index.js"
     },
+    "./signer": {
+      "types": "./dist/lib/signer/index.d.ts",
+      "import": "./dist/lib/signer/index.js"
+    },
     "./taproot": {
       "types": "./dist/lib/taproot/index.d.ts",
       "import": "./dist/lib/taproot/index.js"
@@ -68,6 +68,10 @@
     "./tx": {
       "types": "./dist/lib/tx/index.d.ts",
       "import": "./dist/lib/tx/index.js"
+    },
+    "./witness": {
+      "types": "./dist/lib/witness/index.d.ts",
+      "import": "./dist/lib/witness/index.js"
     }
   },
   "scripts": {

@@ -1,8 +1,8 @@
 import { Buff, Bytes }   from '@vbyte/buff'
-import { parse_tx_data } from './parse.js'
+import { parse_tx }      from './parse.js'
 
 import {
-  encode_tx_data,
+  encode_tx,
   encode_tx_inputs,
   encode_tx_outputs,
   encode_tx_vout,
@@ -14,12 +14,10 @@ import type {
   TxData,
   TxInput,
   TxOutput,
-  TxSize,
-  WitnessSize,
+  TxSize
 } from '@/types/index.js'
 
-const WIT_FLAG_BYTES  = 2
-const WIT_LENGTH_BYTE = 1
+const WIT_FLAG_BYTES = 2
 
 export function get_vsize (
   bytes : Bytes
@@ -32,9 +30,9 @@ export function get_vsize (
 export function get_txsize (
   txdata : string | TxData
 ) : TxSize {
-  const json   = parse_tx_data(txdata)
-  const base   = encode_tx_data(json, false).length
-  const size   = encode_tx_data(json, true).length
+  const json   = parse_tx(txdata)
+  const base   = encode_tx(json, false).length
+  const size   = encode_tx(json, true).length
   const weight = base * 3 + size
   const remain = (weight % 4 > 0) ? 1 : 0
   const vsize  = Math.floor(weight / 4) + remain
@@ -67,11 +65,4 @@ export function get_txin_size (txinput : TxInput) : number {
 export function get_txout_size (txoutput : TxOutput) : number {
   const bytes = encode_tx_vout(txoutput)
   return bytes.length
-}
-
-export function get_witness_size (witness : Bytes[]) : WitnessSize {
-  const stack = witness.map(e => Buff.bytes(e))
-  const size  = stack.reduce((prev, next) => prev + next.length, 0)
-  const vsize = Math.ceil(WIT_LENGTH_BYTE + size / 4) 
-  return { size, vsize }
 }

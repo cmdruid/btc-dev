@@ -1,4 +1,4 @@
-export type TxInput = CoinbaseInput | SpendInput | VirtualInput
+export type TxInput = TxCoinbaseInput | TxSpendInput | TxVirtualInput
 
 export interface TxOutpoint {
   txid : string
@@ -13,7 +13,7 @@ export interface TxInputTemplate extends TxOutpoint {
   witness?    : string[]
 }
 
-export interface CoinbaseInput extends TxOutpoint {
+export interface TxCoinbaseInput extends TxOutpoint {
   coinbase   : string
   prevout    : null
   script_sig : null
@@ -21,7 +21,7 @@ export interface CoinbaseInput extends TxOutpoint {
   witness    : string[]
 }
 
-export interface VirtualInput extends TxOutpoint {
+export interface TxVirtualInput extends TxOutpoint {
   coinbase   : null
   prevout    : TxOutput | null
   script_sig : string   | null
@@ -29,7 +29,7 @@ export interface VirtualInput extends TxOutpoint {
   witness    : string[]
 }
 
-export interface SpendInput extends VirtualInput {
+export interface TxSpendInput extends TxVirtualInput {
   prevout : TxOutput
 }
 

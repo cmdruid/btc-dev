@@ -7,9 +7,9 @@ import {
   TxData,
   TxInput,
   TxOutput,
-  CoinbaseInput,
-  VirtualInput,
-  SpendInput
+  TxCoinbaseInput,
+  TxVirtualInput,
+  TxSpendInput
 } from '@/types/index.js'
 
 interface TxEncoderConfig {
@@ -22,7 +22,7 @@ const DEFAULT_CONFIG : TxEncoderConfig = {
   segwit   : true
 }
 
-export function decode_tx_data (
+export function decode_tx (
   txbytes : Bytes,
   options : Partial<TxEncoderConfig> = {}
 ) : TxData {
@@ -87,11 +87,11 @@ function read_vin (stream : Stream, prevout : TxOutput | null = null) : TxInput 
   const sequence   = stream.read(4).reverse().num
   const witness : string[] = []
   if (txid === COINBASE.TXID && vout === COINBASE.VOUT) {
-    return { coinbase : script_sig, prevout: null, script_sig : null, sequence, txid, vout, witness } as CoinbaseInput
+    return { coinbase : script_sig, prevout: null, script_sig : null, sequence, txid, vout, witness } as TxCoinbaseInput
   } else if (prevout !== null) {
-    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as SpendInput
+    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as TxSpendInput
   } else {
-    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as VirtualInput
+    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as TxVirtualInput
   }
 }
 

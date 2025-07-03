@@ -1,4 +1,4 @@
-export namespace TxPointer {
+export namespace RefEncoder {
   export const outpoint = {
     encode : encode_outpoint,
     decode : decode_outpoint,

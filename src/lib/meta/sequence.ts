@@ -23,7 +23,7 @@ const TIMELOCK_GRANULARITY = 512         // Seconds per timestamp unit (BIP-68 s
 
 /* ===== [ API ] ============================================================ */
 
-export namespace Sequence {
+export namespace SequenceUtil {
   export const encode = encode_sequence
   export const decode = decode_sequence
 }

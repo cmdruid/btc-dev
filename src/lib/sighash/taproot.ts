@@ -3,7 +3,7 @@ import { Assert }             from '@vbyte/micro-lib'
 import { hash340, sha256 }    from '@vbyte/micro-lib/hash'
 import { prefix_script_size } from '@/lib/script/util.js'
 import { encode_tapscript }   from '@/lib/taproot/encode.js'
-import { parse_tx_data }      from '@/lib/tx/parse.js'
+import { parse_tx }           from '@/lib/tx/parse.js'
 import * as CONST             from '@/const.js'
 import { parse_txinput }      from './util.js'
 
@@ -37,7 +37,7 @@ export function hash_taproot_tx (
     separator_pos = 0xFFFFFFFF
   } = config
   // Normalize the txdata object.
-  const tx = parse_tx_data(template)
+  const tx = parse_tx(template)
   // Unpack the txdata object.
   const { version, vin: input, vout: output, locktime } = tx
   // Parse the input we are signing from the config.

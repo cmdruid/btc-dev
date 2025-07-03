@@ -4,7 +4,7 @@ import { ECC }         from '@vbyte/micro-lib'
 import {
   sign_segwit_tx,
   sign_taproot_tx
-} from '@/lib/sighash/sign.js'
+} from '@/lib/signer/sign.js'
 
 import type {
   SigHashOptions,

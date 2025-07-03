@@ -5,7 +5,7 @@ import type { LocktimeInfo } from '@/types/index.js'
 // The threshold between block height and timestamp.
 const LOCKTIME_THRESHOLD = 500000000
 
-export namespace Locktime {
+export namespace LocktimeUtil {
   export const encode = encode_locktime
   export const decode = decode_locktime
 }

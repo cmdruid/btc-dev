@@ -9,7 +9,7 @@ import {
   get_merkle_root
 } from '@/src/taproot'
 
-import tree_vectors from './tree.vectors.json' assert { type: 'json' }
+import tree_vectors from './tree.vectors.json' with { type: 'json' }
 
 interface Vector {
   internalPubkey : string

@@ -12,7 +12,7 @@ import {
   encode_tapscript
 } from '@/src/taproot'
 
-import test_vectors from './unit.vectors.json' assert { type: 'json' }
+import test_vectors from './unit.vectors.json' with { type: 'json' }
 
 export default function (t : Test) {
   t.test('Testing tapleaf creation:', t => {

@@ -9,7 +9,7 @@ const _0n  = BigInt(0)
 const _1n  = BigInt(1)
 const _26n = BigInt(26)
 
-export namespace Inscription {
+export namespace ScribeEncoder {
   export const encode = encode_inscription
   export const decode = decode_inscription
 }

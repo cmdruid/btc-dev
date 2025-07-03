@@ -1,14 +1,11 @@
 import { Test }    from 'tape'
 import { Buff }    from '@vbyte/buff'
-import { TxInput } from '@/src/tx'
 
-import {
-  create_vin,
-  encode_tx,
-  decode_tx
-} from '@/src/tx'
+import { create_spend_input, decode_tx, encode_tx } from '@/src/tx'
 
-import test_data from './valid.vectors.json' assert { type: 'json' }
+import test_data from './valid.vectors.json' with { type: 'json' }
+
+import type { TxSpendInput } from '@/index.js'
 
 type TestInput = [
   prev_hash : string,
@@ -25,7 +22,7 @@ type TestData = [
 
 interface TestVector {
   txhex  : string
-  inputs : TxInput[]
+  inputs : TxSpendInput[]
   flags  : string[]
 }
 
@@ -68,12 +65,12 @@ export function parse_vectors(vectors : typeof test_data) : TestVector[] {
             ? parseInt(e)
             : 'OP_' + e
       )
-      return create_vin({
+      return create_spend_input({
         txid: Buff.hex(prev_hash).reverse().hex,
         vout: prev_idx,
         prevout: {
-          value: prev_value ?? 0,
-          scriptPubKey: script
+          value     : BigInt(prev_value ?? 0),
+          script_pk : String(script)
         },
         sequence: 0xFFFFFFFF
       })

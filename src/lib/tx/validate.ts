@@ -1,7 +1,7 @@
 import * as Schema from '@/schema/index.js'
 
 import {
-  SpendInput,
+  TxSpendInput,
   TxData,
   TxInput,
   TxInputTemplate,
@@ -13,7 +13,7 @@ export function assert_tx_template (txdata : unknown) : asserts txdata is TxTemp
   Schema.tx.tx_template.parse(txdata)
 }
 
-export function assert_has_prevouts (vin : TxInput[]) : asserts vin is SpendInput[] {
+export function assert_has_prevouts (vin : TxInput[]) : asserts vin is TxSpendInput[] {
   if (vin.some(txin => txin.prevout === null)) {
     throw new Error('transaction missing prevouts')
   }

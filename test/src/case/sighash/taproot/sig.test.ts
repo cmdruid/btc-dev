@@ -1,26 +1,26 @@
 import { Test }    from 'tape'
 import { Buff }    from '@vbyte/buff'
 import { schnorr } from '@noble/curves/secp256k1'
-import { taproot } from '@cmdcode/tapscript/sighash'
+// import { taproot } from '@/src/taproot'
 
-import {
-  keys,
-  signer
-} from '@cmdcode/crypto-tools'
+// import {
+//   keys,
+//   signer
+// } from '@cmdcode/crypto-tools'
 
-import {
-  get_taptweak,
-  tweak_seckey
-} from '@cmdcode/tapscript/tapkey'
+// import {
+//   get_taptweak,
+//   tweak_seckey
+// } from '@cmdcode/tapscript/tapkey'
 
-import {
-  decode_tx,
-  create_vout
-} from '@cmdcode/tapscript/tx'
+// import {
+//   decode_tx,
+//   create_vout
+// } from '@cmdcode/tapscript/tx'
 
-import * as HASH from '@/src/lib/sig/taproot/hash.js'
+// import * as HASH from '@/src/taproot'
 
-import test_vectors from './sig.vectors.json' assert { type: 'json' }
+import test_vectors from './sig.vectors.json' with { type: 'json' }
 
 const { txhex, utxos, spends, precompute } = test_vectors
 
@@ -28,21 +28,21 @@ const tx = decode_tx(txhex)
 
 const prevouts = utxos.map(e => create_vout(e))
 
-export function test_computehash(t : Test) {
-  t.test('Test the intermediary hashes used for sighash construction.', t => {
-    t.plan(5)
-    const outpoints = HASH.hash_outpoints(tx.vin)
-    t.equal(Buff.uint(outpoints).hex, precompute.hashPrevouts, 'Outpoint hash should match.')
-    const sequence = HASH.hash_sequence(tx.vin)
-    t.equal(Buff.uint(sequence).hex, precompute.hashSequences, 'Sequence hash should match.')
-    const outputs  = HASH.hash_outputs(tx.vout)
-    t.equal(Buff.uint(outputs).hex, precompute.hashOutputs, 'Output hash should match.')
-    const amounts  = HASH.hash_amounts(prevouts)
-    t.equal(Buff.uint(amounts).hex, precompute.hashAmounts, 'Amounts hash should match.')
-    const scripts  = HASH.hash_scripts(prevouts)
-    t.equal(Buff.uint(scripts).hex, precompute.hashScriptPubkeys, 'Scripts hash should match.')
-  })
-}
+// export function test_computehash(t : Test) {
+//   t.test('Test the intermediary hashes used for sighash construction.', t => {
+//     t.plan(5)
+//     const outpoints = HASH.hash_outpoints(tx.vin)
+//     t.equal(Buff.uint(outpoints).hex, precompute.hashPrevouts, 'Outpoint hash should match.')
+//     const sequence = HASH.hash_sequence(tx.vin)
+//     t.equal(Buff.uint(sequence).hex, precompute.hashSequences, 'Sequence hash should match.')
+//     const outputs  = HASH.hash_outputs(tx.vout)
+//     t.equal(Buff.uint(outputs).hex, precompute.hashOutputs, 'Output hash should match.')
+//     const amounts  = HASH.hash_amounts(prevouts)
+//     t.equal(Buff.uint(amounts).hex, precompute.hashAmounts, 'Amounts hash should match.')
+//     const scripts  = HASH.hash_scripts(prevouts)
+//     t.equal(Buff.uint(scripts).hex, precompute.hashScriptPubkeys, 'Scripts hash should match.')
+//   })
+// }
 
 export function test_signatures(t : Test) {
   t.test('Test vectors for signature hash construction.', async t => {

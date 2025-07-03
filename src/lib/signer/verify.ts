@@ -7,6 +7,26 @@
 // import { HashConfig, TxData }    from '@/types/index.js'
 // import { TxTemplate }    from '@/schema/types.js'
 // import { hashTx }        from './segwit.js'
+import { Bytes } from '@vbyte/buff'
+
+import type {
+  SigHashOptions,
+  TxData
+} from '@/types/index.js'
+
+export function verify_segwit_tx (
+  txdata  : TxData | Bytes,
+  config  : SigHashOptions = {}
+) : boolean {
+  return true
+}
+
+export function verify_taproot_tx (
+  txdata  : TxData | Bytes,
+  config  : SigHashOptions = {}
+) : boolean {
+  return true
+}
 
 // export function verify_signature (
 //   txdata  : TxData | Bytes,

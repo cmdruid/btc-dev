@@ -1,5 +1,3 @@
 export * from './segwit.js'
-export * from './sign.js'
 export * from './taproot.js'
-export * from './verify.js'
 export * from './util.js'

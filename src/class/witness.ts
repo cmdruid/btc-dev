@@ -4,7 +4,7 @@ import { decode_script } from '@/lib/script/index.js'
 import {
   parse_witness_data,
   get_witness_size,
-} from '@/lib/tx/index.js'
+} from '@/lib/witness/index.js'
 
 import type {
   ScriptField,

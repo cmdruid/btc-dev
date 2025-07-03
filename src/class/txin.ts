@@ -1,11 +1,11 @@
 import { decode_script }      from '@/lib/script/index.js'
+import { SequenceUtil }       from '@/lib/meta/index.js'
 import { TransactionOutput }  from './txout.js'
 import { TransactionWitness } from './witness.js'
 
 import {
   encode_txin_sequence,
   get_txin_size,
-  Sequence
 } from '@/lib/tx/index.js'
 
 import type {
@@ -69,7 +69,7 @@ export class TransactionInput {
   get sequence () {
     return {
       hex   : encode_txin_sequence(this._txin.sequence).hex,
-      data  : Sequence.decode(this._txin.sequence),
+      data  : SequenceUtil.decode(this._txin.sequence),
       value : this._txin.sequence
     }
   }
