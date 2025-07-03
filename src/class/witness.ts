@@ -9,7 +9,6 @@ import {
 
 import type {
   ScriptField,
-  WitnessField,
   WitnessData,
   WitnessSize,
   WitnessType
@@ -36,17 +35,8 @@ export class TransactionWitness {
     return this._data.cblock
   }
 
-  get data () : WitnessField {
-    return {
-      annex   : this.annex,
-      cblock  : this.cblock,
-      params  : this.params,
-      script  : this.script,
-      size    : this.size,
-      stack   : this.stack,
-      type    : this.type,
-      version : this.version
-    }
+  get data () : WitnessData {
+    return this._data
   }
 
   get params () : string[] {

@@ -1,6 +1,6 @@
 import type { LocktimeData, SequenceData }               from './meta.js'
 import type { TxOutput, TxOutputType, TxSize, TxValue }  from './txdata.js'
-import type { WitnessSize, WitnessType, WitnessVersion } from './witness.js'
+import type { WitnessData, WitnessVersion }              from './witness.js'
 
 export interface LocktimeField {
   hex   : string
@@ -32,17 +32,6 @@ export interface TransactionData {
   vout     : TransactionOutputData[]
 }
 
-export interface WitnessField {
-  annex   : string | null
-  cblock  : string | null
-  params  : string[]
-  script  : ScriptField | null
-  size    : WitnessSize
-  stack   : string[]
-  type    : WitnessType
-  version : WitnessVersion
-}
-
 export interface TransactionInputData {
   coinbase?   : string                | null
   prevout?    : TransactionOutputData | null
@@ -51,7 +40,7 @@ export interface TransactionInputData {
   size        : number
   txid        : string
   vout        : number
-  witness?    : WitnessField | null
+  witness?    : WitnessData | null
 }
 
 export interface TransactionOutputData {

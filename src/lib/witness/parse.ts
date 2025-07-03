@@ -12,6 +12,7 @@ export function parse_witness (
 ) : WitnessData {
   // Parse the witness data.
   const elems   = witness.map(e => Buff.bytes(e))
+  const stack   = witness.map(e => Buff.bytes(e).hex)
   const annex   = parse_annex_data(elems)
   if (annex !== null) elems.pop()
   const cblock  = parse_cblock_data(elems)
@@ -21,7 +22,7 @@ export function parse_witness (
   const script  = parse_witness_script(elems, type)
   if (script !== null) elems.pop()
   const params  = elems.map(e => e.hex)
-  return { annex, cblock, params, script, type, version }
+  return { annex, cblock, params, script, stack, type, version }
 }
 
 function parse_annex_data (

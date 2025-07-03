@@ -12,6 +12,7 @@ export interface WitnessData {
   cblock  : string | null
   params  : string[]
   script  : string | null
+  stack   : string[]
   type    : WitnessType
   version : WitnessVersion
 }

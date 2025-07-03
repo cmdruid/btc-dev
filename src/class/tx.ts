@@ -13,16 +13,18 @@ import {
   get_tx_value,
   get_txhash,
   encode_tx_locktime,
+  create_tx_input,
+  create_tx_output,
 } from '@/lib/tx/index.js'
 
 import type {
   TxData,
   TxTemplate,
   TransactionData,
-  TxInput,
   TxOutput,
   TxSize,
-  TxValue
+  TxValue,
+  TxInputTemplate
 } from '@/types/index.js'
 
 export class Transaction {
@@ -36,7 +38,7 @@ export class Transaction {
   private _vin   : TransactionInput[]
   private _vout  : TransactionOutput[]
 
-  constructor (txdata : string | TxData | TxTemplate) {
+  constructor (txdata : string | TxData | TxTemplate = {}) {
     this._tx = (typeof txdata !== 'string')
       ? parse_tx(txdata)
       : decode_tx(txdata)
@@ -109,18 +111,21 @@ export class Transaction {
     return this._vout
   }
 
-  add_vin (txin : TxInput) {
+  add_vin (tx_input : TxInputTemplate) {
+    const txin = create_tx_input(tx_input)
     this._tx.vin.push(txin)
     this._update_vin()
   }
 
-  add_vout (txout : TxOutput) {
+  add_vout (tx_output : TxOutput) {
+    const txout = create_tx_output(tx_output)
     this._tx.vout.push(txout)
     this._update_vout()
   }
 
-  insert_vin (index : number, txin : TxInput) {
+  insert_vin (index : number, tx_input : TxInputTemplate) {
     Assert.ok(index >= 0 && index <= this._tx.vin.length, 'input goes out of bounds')
+    const txin = create_tx_input(tx_input)
     if (index === this._tx.vin.length) {
       this._tx.vin.push(txin)
     } else {
@@ -129,8 +134,9 @@ export class Transaction {
     this._update_vin()
   }
 
-  insert_vout (index : number, txout : TxOutput) {
+  insert_vout (index : number, tx_output : TxOutput) {
     Assert.ok(index >= 0 && index <= this._tx.vout.length, 'output goes out of bounds')
+    const txout = create_tx_output(tx_output)
     if (index === this._tx.vout.length) {
       this._tx.vout.push(txout)
     } else {
