@@ -32,11 +32,11 @@ export function get_txsize (
 ) : TxSize {
   const json   = parse_tx(txdata)
   const base   = encode_tx(json, false).length
-  const size   = encode_tx(json, true).length
-  const weight = base * 3 + size
+  const total  = encode_tx(json, true).length
+  const weight = base * 3 + total
   const remain = (weight % 4 > 0) ? 1 : 0
   const vsize  = Math.floor(weight / 4) + remain
-  return { base, real: size, vsize, weight }
+  return { base, total, vsize, weight }
 }
 
 export function get_vin_size (vin : TxInput[]) : number {

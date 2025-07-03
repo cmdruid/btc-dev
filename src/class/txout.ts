@@ -2,20 +2,17 @@ import { decode_script } from '@/lib/script/index.js'
 
 import {
   get_txout_size,
-  get_vout_info
+  get_vout_type,
+  get_vout_version
 } from '@/lib/tx/index.js'
 
-import type { TxOutput, TransactionOutputData, TxOutputInfo } from '@/types/index.js'
+import type { TxOutput, TransactionOutputData } from '@/types/index.js'
 
 export class TransactionOutput {
 
-  private readonly _info  : TxOutputInfo
-  private readonly _size  : number
   private readonly _txout : TxOutput
 
   constructor (txout : TxOutput) {
-    this._info  = get_vout_info(txout)
-    this._size  = get_txout_size(txout)
     this._txout = txout
   }
 
@@ -37,11 +34,11 @@ export class TransactionOutput {
   }
 
   get size () {
-    return this._size
+    return get_txout_size(this._txout)
   }
 
   get type () {
-    return this._info.type
+    return get_vout_type(this._txout.script_pk)
   }
 
   get value () : bigint {
@@ -49,7 +46,7 @@ export class TransactionOutput {
   }
 
   get version () {
-    return this._info.version
+    return get_vout_version(this._txout.script_pk)
   }
 
   toJSON   () { return this.data }

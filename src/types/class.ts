@@ -1,6 +1,6 @@
-import type { LocktimeData, SequenceData }              from './meta.js'
-import type { TxOutput, TxOutputType, TxSize, TxValue } from './txdata.js'
-import type { WitnessType, WitnessVersion }             from './witness.js'
+import type { LocktimeData, SequenceData }               from './meta.js'
+import type { TxOutput, TxOutputType, TxSize, TxValue }  from './txdata.js'
+import type { WitnessSize, WitnessType, WitnessVersion } from './witness.js'
 
 export interface LocktimeField {
   hex   : string
@@ -37,11 +37,10 @@ export interface WitnessField {
   cblock  : string | null
   params  : string[]
   script  : ScriptField | null
-  size    : number
+  size    : WitnessSize
   stack   : string[]
   type    : WitnessType
   version : WitnessVersion
-  vsize   : number
 }
 
 export interface TransactionInputData {

@@ -1,6 +1,6 @@
 import { Buff, Stream }       from '@vbyte/buff'
 import { Assert, ECC }        from '@vbyte/micro-lib'
-import { parse_witness_data } from '@/lib/witness/parse.js'
+import { parse_witness } from '@/lib/witness/parse.js'
 
 import {
   encode_tapbranch,
@@ -11,7 +11,7 @@ import {
 import type { ControlBlock } from '@/types/index.js'
 
 export function parse_taproot_witness (witness : string[]) {
-  const { cblock, params, script } = parse_witness_data(witness)
+  const { cblock, params, script } = parse_witness(witness)
 
   Assert.exists(cblock, 'cblock is null')
   Assert.exists(script, 'script is null')

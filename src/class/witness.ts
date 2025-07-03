@@ -2,36 +2,38 @@ import { Buff, Bytes }   from '@vbyte/buff'
 import { decode_script } from '@/lib/script/index.js'
 
 import {
-  parse_witness_data,
+  parse_witness,
   get_witness_size,
 } from '@/lib/witness/index.js'
 
 import type {
   ScriptField,
   WitnessField,
-  WitnessInfo,
+  WitnessData,
   WitnessSize,
   WitnessType
 } from '@/types/index.js'
+import { Assert } from '@vbyte/micro-lib'
 
 export class TransactionWitness {
 
-  private readonly _data  : Buff[]
-  private readonly _meta  : WitnessInfo
-  private readonly _size  : WitnessSize
+  private readonly _elems : Buff[]
+
+  private _data : WitnessData
+  private _size : WitnessSize
 
   constructor (witness : Bytes[]) {
-    this._data  = witness.map(e => Buff.bytes(e))
-    this._meta  = parse_witness_data(witness)
-    this._size  = get_witness_size(witness)
+    this._elems = witness.map(e => Buff.bytes(e))
+    this._data  = parse_witness(this._elems)
+    this._size  = get_witness_size(this._elems)
   }
 
   get annex () : string | null {
-    return this._meta.annex
+    return this._data.annex
   }
 
   get cblock () : string | null {
-    return this._meta.cblock
+    return this._data.cblock
   }
 
   get data () : WitnessField {
@@ -43,41 +45,61 @@ export class TransactionWitness {
       size    : this.size,
       stack   : this.stack,
       type    : this.type,
-      version : this.version,
-      vsize   : this.vsize
+      version : this.version
     }
   }
 
   get params () : string[] {
-    return this._meta.params
+    return this._data.params
   }
 
   get script () : ScriptField | null {
-    if (this._meta.script === null) return null
+    if (this._data.script === null) return null
     return {
-      hex : this._meta.script,
-      asm : decode_script(this._meta.script)
+      hex : this._data.script,
+      asm : decode_script(this._data.script)
     }
   }
 
-  get size () : number {
-    return this._size.size
+  get size () : WitnessSize {
+    return this._size
   }
 
   get stack () : string[] {
-    return this._data.map(e => e.hex)
+    return this._elems.map(e => e.hex)
   }
 
   get type () : WitnessType {
-    return this._meta.type
+    return this._data.type
   }
 
   get version () : number | null {
-    return this._meta.version
+    return this._data.version
   }
 
-  get vsize () : number {
-    return this._size.vsize
+  _update () {
+    this._data = parse_witness(this._elems)
+    this._size = get_witness_size(this._elems)
+  }
+
+  add (elem : Bytes) {
+    this._elems.push(Buff.bytes(elem))
+    this._update()
+  }
+
+  insert (index : number, elem : Bytes) {
+    Assert.ok(index >= 0 && index <= this._elems.length, 'index out of bounds')
+    if (index === this._elems.length) {
+      this._elems.push(Buff.bytes(elem))
+    } else {
+      this._elems.splice(index, 0, Buff.bytes(elem))
+    }
+    this._update()
+  }
+
+  remove (index : number) {
+    this._elems.splice(index, 1)
+    this._update()
   }
 
   toJSON   () { return this.data }

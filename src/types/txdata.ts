@@ -67,7 +67,7 @@ export interface TxData {
 
 export interface TxSize {
   base   : number
-  real   : number
+  total  : number
   weight : number
   vsize  : number
 }

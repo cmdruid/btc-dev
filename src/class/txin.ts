@@ -15,16 +15,10 @@ import type {
 
 export class TransactionInput {
 
-  private readonly _size    : number
-  private readonly _txin    : TxInput
-  private readonly _witness : TransactionWitness | null
+  private readonly _txin : TxInput
 
   constructor (txin : TxInput) {
-    this._size    = get_txin_size(txin)
-    this._txin    = txin
-    this._witness = txin.witness.length > 0
-      ? new TransactionWitness(txin.witness)
-      : null
+    this._txin = txin
   }
 
   get coinbase () : string | null {
@@ -75,7 +69,7 @@ export class TransactionInput {
   }
 
   get size () {
-    return this._size
+    return get_txin_size(this._txin)
   }
 
   get txid () : string {
@@ -87,7 +81,9 @@ export class TransactionInput {
   }
 
   get witness () {
-    return this._witness
+    return this._txin.witness.length > 0
+      ? new TransactionWitness(this._txin.witness)
+      : null
   }
 
   toJSON   () { return this.data }

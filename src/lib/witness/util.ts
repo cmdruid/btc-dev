@@ -8,5 +8,5 @@ export function get_witness_size (witness : Bytes[]) : WitnessSize {
   const stack = witness.map(e => Buff.bytes(e))
   const size  = stack.reduce((prev, next) => prev + next.length, 0)
   const vsize = Math.ceil(WIT_LENGTH_BYTE + size / 4) 
-  return { size, vsize }
+  return { total: size, vsize }
 }
