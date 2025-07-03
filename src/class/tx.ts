@@ -20,7 +20,6 @@ import {
 import type {
   TxData,
   TxTemplate,
-  TransactionData,
   TxOutput,
   TxSize,
   TxValue,
@@ -50,19 +49,8 @@ export class Transaction {
     this._vout  = this._tx.vout.map(txout => new TransactionOutput(txout))
   }
 
-  get data () : TransactionData {
-    return {
-      hash     : this.hash,
-      locktime : this.locktime,
-      return   : this.return,
-      size     : this.size,
-      spends   : this.spends,
-      txid     : this.txid,
-      value    : this.value,
-      version  : this.version,
-      vin      : this.vin.map(txin => txin.data),
-      vout     : this.vout.map(txout => txout.data)
-    }
+  get data () : TxData {
+    return this._tx
   }
 
   get hash () : string {

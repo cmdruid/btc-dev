@@ -6,7 +6,7 @@ import {
   get_vout_version
 } from '@/lib/tx/index.js'
 
-import type { TxOutput, TransactionOutputData } from '@/types/index.js'
+import type { TxOutput } from '@/types/index.js'
 
 export class TransactionOutput {
 
@@ -16,14 +16,8 @@ export class TransactionOutput {
     this._txout = txout
   }
 
-  get data () : TransactionOutputData {
-    return {
-      script_pk : this.script_pk,
-      size      : this.size,
-      type      : this.type,
-      value     : this.value,
-      version   : this.version
-    }
+  get data () : TxOutput {
+    return this._txout
   }
 
   get script_pk () {

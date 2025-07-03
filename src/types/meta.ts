@@ -1,6 +1,19 @@
+import type{ WitnessType, WitnessVersion } from './witness.js'
+
 export type LocktimeData   = LocktimeStamp | LocktimeHeight
 export type SequenceConfig = Partial<SequenceData>
 export type SequenceData   = SequenceHeightLock | SequenceStampLock
+export type TxOutputType   = WitnessType | 'p2pkh' | 'p2sh' | 'opreturn'
+
+export interface TxOutputInfo {
+  type    : TxOutputType
+  version : WitnessVersion
+}
+
+export interface TxInputInfo {
+  type    : WitnessType
+  version : WitnessVersion
+}  
 
 export interface LocktimeStamp {
   type  : 'timelock'  // Discriminator for timelock type
@@ -22,6 +35,23 @@ export interface SequenceStampLock {
 export interface SequenceHeightLock {
   height : number     // Block height.
   mode   : 'height'   // Discriminator for heightlock mode.
+}
+
+export interface LocktimeField {
+  hex   : string
+  data  : LocktimeData | null
+  value : number
+}
+
+export interface SequenceField {
+  hex   : string
+  data  : SequenceData | null
+  value : number
+}
+
+export interface ScriptField {
+  asm : string[]
+  hex : string
 }
 
 export interface InscriptionData {

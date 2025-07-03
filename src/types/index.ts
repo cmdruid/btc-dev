@@ -1,5 +1,4 @@
 export * from './address.js'
-export * from './class.js'
 export * from './meta.js'
 export * from './psbt.js'
 export * from './sighash.js'

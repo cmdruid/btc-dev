@@ -8,10 +8,7 @@ import {
   get_txin_size,
 } from '@/lib/tx/index.js'
 
-import type {
-  TxInput,
-  TransactionInputData
-} from '@/types/index.js'
+import type { TxInput } from '@/types/index.js'
 
 export class TransactionInput {
 
@@ -25,17 +22,8 @@ export class TransactionInput {
     return this._txin.coinbase
   }
 
-  get data () : TransactionInputData {
-    return {
-      coinbase    : this.coinbase,
-      prevout     : this.prevout?.data ?? null,
-      script_sig  : this.script_sig,
-      sequence    : this.sequence,
-      size        : this.size,
-      txid        : this.txid,
-      vout        : this.vout,
-      witness     : this.witness?.data ?? null
-    }
+  get data () : TxInput {
+    return this._txin
   }
 
   get has_prevout () : boolean {
