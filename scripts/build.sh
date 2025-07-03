@@ -29,7 +29,7 @@ build_project() {
   fi
 
   echo "Running Rollup bundler..."
-  if ! npx rollup -c rollup.config.ts --configPlugin typescript; then
+  if ! npx rollup -c rollup.config.js; then
     echo "Rollup build failed."
     exit 1
   fi

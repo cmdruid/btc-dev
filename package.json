@@ -73,10 +73,11 @@
   },
   "scripts": {
     "build": "./scripts/build.sh",
-    "loader": "tsx --tsconfig ./test/tsconfig.json",
-    "release": "npm test | faucet && npm run build",
-    "scratch": "npm run loader test/scratch.ts",
-    "test": "npm run loader test/src/tape.ts"
+    "package": "npm test | faucet && npm run build",
+    "release": "./scripts/release.sh",
+    "scratch": "npm run script test/scratch.ts",
+    "script": "tsx --tsconfig ./test/tsconfig.json",
+    "test": "npm run script test/src/tape.ts"
   },
   "dependencies": {
     "@noble/curves": "^1.9.2",
