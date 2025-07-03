@@ -9,7 +9,7 @@ import {
 import type {
   ScriptField,
   WitnessField,
-  WitnessData,
+  WitnessInfo,
   WitnessSize,
   WitnessType
 } from '@/types/index.js'
@@ -17,7 +17,7 @@ import type {
 export class TransactionWitness {
 
   private readonly _data  : Buff[]
-  private readonly _meta  : WitnessData
+  private readonly _meta  : WitnessInfo
   private readonly _size  : WitnessSize
 
   constructor (witness : Bytes[]) {

@@ -3,13 +3,13 @@ import { is_valid_script }  from '@/lib/script/decode.js'
 import { TAPLEAF_VERSIONS } from '@/const.js'
 
 import type {
-  WitnessData,
+  WitnessInfo,
   WitnessType
 } from '@/types/index.js'
 
 export function parse_witness_data (
   witness : Bytes[]
-) : WitnessData {
+) : WitnessInfo {
   // Parse the witness data.
   const elems   = witness.map(e => Buff.bytes(e))
   const annex   = parse_annex_data(elems)
