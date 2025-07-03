@@ -1,4 +1,5 @@
 import { Buff, Bytes }   from '@vbyte/buff'
+import { Assert }        from '@vbyte/micro-lib'
 import { decode_script } from '@/lib/script/index.js'
 
 import {
@@ -13,7 +14,6 @@ import type {
   WitnessSize,
   WitnessType
 } from '@/types/index.js'
-import { Assert } from '@vbyte/micro-lib'
 
 export class TransactionWitness {
 
