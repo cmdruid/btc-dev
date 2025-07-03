@@ -18,7 +18,16 @@ import type {
   WitnessSize,
 } from '@/types/index.js'
 
-const WIT_FLAG_BYTES = 2
+const WIT_FLAG_BYTES  = 2
+const WIT_LENGTH_BYTE = 1
+
+export function get_vsize (
+  bytes : Bytes
+) : number {
+  const weight = Buff.bytes(bytes).length
+  const remain = (weight % 4 > 0) ? 1 : 0
+  return Math.floor(weight / 4) + remain
+}
 
 export function get_txsize (
   txdata : string | TxData
@@ -61,9 +70,8 @@ export function get_txout_size (txoutput : TxOutput) : number {
 }
 
 export function get_witness_size (witness : Bytes[]) : WitnessSize {
-  const hex   = witness.map(e => Buff.bytes(e).hex)
-  const bytes = encode_vin_witness(hex)
-  const size  = bytes.length / 2
-  const vsize = Math.ceil((size) / 4)
+  const stack = witness.map(e => Buff.bytes(e))
+  const size  = stack.reduce((prev, next) => prev + next.length, 0)
+  const vsize = Math.ceil(WIT_LENGTH_BYTE + size / 4) 
   return { size, vsize }
 }

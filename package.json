@@ -1,7 +1,7 @@
 {
-  "name": "@vbyte/btc-toolkit",
-  "version": "1.0.2",
-  "description": "The unofficial, unopinionated, batteries-included toolset for plebian bitcoin development",
+  "name": "@vbyte/btc-dev",
+  "version": "1.0.0",
+  "description": "Batteries-included toolset for plebian bitcoin development",
   "type": "module",
   "keywords": [
     "bitcoin",
@@ -15,7 +15,7 @@
   "license": "CC-BY-1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cmdruid/btc-toolkit.git"
+    "url": "https://github.com/cmdruid/btc-dev.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

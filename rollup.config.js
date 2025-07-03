@@ -51,7 +51,7 @@ export default {
     {
       file: 'dist/script.js',
       format: 'iife',
-      name: 'btc_toolkit',
+      name: 'btc_devkit',
       plugins: [terser()],
       sourcemap: true
     }
