@@ -15,16 +15,18 @@ import type {
 } from '@/types/index.js'
 
 export function verify_segwit_tx (
-  txdata  : TxData | Bytes,
-  config  : SigHashOptions = {}
+  _txdata  : TxData | Bytes,
+  _config  : SigHashOptions = {}
 ) : boolean {
+  console.warn('verify_segwit_tx is not implemented')
   return true
 }
 
 export function verify_taproot_tx (
-  txdata  : TxData | Bytes,
-  config  : SigHashOptions = {}
+  _txdata  : TxData | Bytes,
+  _config  : SigHashOptions = {}
 ) : boolean {
+  console.warn('verify_taproot_tx is not implemented')
   return true
 }
 

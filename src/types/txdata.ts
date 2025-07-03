@@ -1,4 +1,17 @@
-export type TxInput = TxCoinbaseInput | TxSpendInput | TxVirtualInput
+import type { WitnessType, WitnessVersion } from './witness.js'
+
+export type TxInput      = TxCoinbaseInput | TxSpendInput | TxVirtualInput
+export type TxOutputType = WitnessType | 'p2pkh' | 'p2sh' | 'opreturn'
+
+export interface TxOutputInfo {
+  type    : TxOutputType
+  version : WitnessVersion
+}
+
+export interface TxInputInfo {
+  type    : WitnessType
+  version : WitnessVersion
+}  
 
 export interface TxOutpoint {
   txid : string
@@ -50,4 +63,17 @@ export interface TxData {
   vin      : TxInput[]
   vout     : TxOutput[]
   version  : number
+}
+
+export interface TxSize {
+  base   : number
+  real   : number
+  weight : number
+  vsize  : number
+}
+
+export interface TxValue {
+  fees : bigint
+  vin  : bigint
+  vout : bigint
 }

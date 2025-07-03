@@ -1,6 +1,6 @@
-export type LocktimeInfo   = LocktimeStamp | LocktimeHeight
-export type SequenceConfig = Partial<SequenceInfo>
-export type SequenceInfo   = SequenceHeightLock | SequenceStampLock
+export type LocktimeData   = LocktimeStamp | LocktimeHeight
+export type SequenceConfig = Partial<SequenceData>
+export type SequenceData   = SequenceHeightLock | SequenceStampLock
 
 export interface LocktimeStamp {
   type  : 'timelock'  // Discriminator for timelock type

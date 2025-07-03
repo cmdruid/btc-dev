@@ -1,6 +1,6 @@
 {
   "name": "@vbyte/btc-dev",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Batteries-included toolset for plebian bitcoin development",
   "type": "module",
   "keywords": [
@@ -42,8 +42,8 @@
       "import": "./dist/lib/address/index.js"
     },
     "./meta": {
-      "types": "./dist/lib/meta.d.ts",
-      "import": "./dist/lib/meta.js"
+      "types": "./dist/lib/meta/index.d.ts",
+      "import": "./dist/lib/meta/index.js"
     },
     "./psbt": {
       "types": "./dist/lib/psbt/index.d.ts",

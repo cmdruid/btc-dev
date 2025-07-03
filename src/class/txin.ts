@@ -10,7 +10,7 @@ import {
 
 import type {
   TxInput,
-  TxInputField
+  TransactionInputData
 } from '@/types/index.js'
 
 export class TransactionInput {
@@ -31,7 +31,7 @@ export class TransactionInput {
     return this._txin.coinbase
   }
 
-  get data () : TxInputField {
+  get data () : TransactionInputData {
     return {
       coinbase    : this.coinbase,
       prevout     : this.prevout?.data ?? null,

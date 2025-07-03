@@ -5,7 +5,7 @@ import {
   get_vout_info
 } from '@/lib/tx/index.js'
 
-import type { TxOutput, TxOutputField, TxOutputInfo } from '@/types/index.js'
+import type { TxOutput, TransactionOutputData, TxOutputInfo } from '@/types/index.js'
 
 export class TransactionOutput {
 
@@ -19,7 +19,7 @@ export class TransactionOutput {
     this._txout = txout
   }
 
-  get data () : TxOutputField {
+  get data () : TransactionOutputData {
     return {
       script_pk : this.script_pk,
       size      : this.size,

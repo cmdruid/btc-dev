@@ -1,6 +1,6 @@
 import { Assert } from '@vbyte/micro-lib'
 
-import type { LocktimeInfo } from '@/types/index.js'
+import type { LocktimeData } from '@/types/index.js'
 
 // The threshold between block height and timestamp.
 const LOCKTIME_THRESHOLD = 500000000
@@ -15,7 +15,7 @@ export namespace LocktimeUtil {
  * According to BIP-65, the value is simply the numeric value as a string.
  */
 export function encode_locktime (
-  locktime : LocktimeInfo
+  locktime : LocktimeData
 ) : number {
   switch (locktime.type) {
     case 'timelock':
@@ -37,7 +37,7 @@ export function encode_locktime (
  */
 export function decode_locktime (
   locktime : number
-) : LocktimeInfo | null {
+) : LocktimeData | null {
   // Check if the value is valid (non-negative)
   if (isNaN(locktime) || locktime <= 0) {
     return null

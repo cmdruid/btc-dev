@@ -11,7 +11,7 @@
  * that allows additional metadata to be encoded in the sequence field (to be used by on-chain indexers).
  */
 
-import type { SequenceConfig, SequenceInfo } from '@/types/index.js'
+import type { SequenceConfig, SequenceData } from '@/types/index.js'
 
 /* ===== [ Constants ] ===================================================== */
 
@@ -65,7 +65,7 @@ export function encode_sequence (data : SequenceConfig): number {
  * @returns A SequenceData object or null if the sequence doesn't represent special data
  * @throws Error if the sequence value is invalid or exceeds maximum values
  */
-export function decode_sequence (sequence: number | string) : SequenceInfo | null {
+export function decode_sequence (sequence: number | string) : SequenceData | null {
   // Parse and validate the sequence value.
   const seq = parse_sequence(sequence)
   // If the sequence is disabled, return null.
