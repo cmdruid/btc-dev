@@ -1,6 +1,6 @@
 {
   "name": "@vbyte/btc-dev",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Batteries-included toolset for plebian bitcoin development",
   "type": "module",
   "keywords": [
