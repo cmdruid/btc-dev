@@ -1,7 +1,8 @@
+import { Assert }        from '@vbyte/micro-lib'
+import { Transaction }   from './tx.js'
 import { decode_script } from '@/lib/script/index.js'
 
 import {
-  assert_tx_output,
   get_txout_size,
   get_vout_type,
   get_vout_version
@@ -11,38 +12,48 @@ import type { TxOutput } from '@/types/index.js'
 
 export class TransactionOutput {
 
-  private readonly _txout : TxOutput
+  private readonly _tx    : Transaction
+  private readonly _index : number
 
-  constructor (txout : TxOutput) {
-    assert_tx_output(txout)
-    this._txout = txout
+  constructor (
+    transaction : Transaction,
+    index : number
+  ) {
+    this._tx    = transaction
+    this._index = index
   }
 
   get data () : TxOutput {
-    return this._txout
+    const txout = this._tx.data.vout.at(this.index)
+    Assert.exists(txout, 'txout not found')
+    return txout
+  }
+
+  get index () {
+    return this._index
   }
 
   get script_pk () {
     return {
-      hex : this._txout.script_pk,
-      asm : decode_script(this._txout.script_pk)
+      hex : this.data.script_pk,
+      asm : decode_script(this.data.script_pk)
     }
   }
 
   get size () {
-    return get_txout_size(this._txout)
+    return get_txout_size(this.data)
   }
 
   get type () {
-    return get_vout_type(this._txout.script_pk)
+    return get_vout_type(this.data.script_pk)
   }
 
   get value () : bigint {
-    return this._txout.value
+    return this.data.value
   }
 
   get version () {
-    return get_vout_version(this._txout.script_pk)
+    return get_vout_version(this.data.script_pk)
   }
 
   toJSON   () { return this.data }

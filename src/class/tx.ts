@@ -20,8 +20,6 @@ import type {
   TxData,
   TxTemplate,
   TxOutput,
-  TxSize,
-  TxValue,
   TxInputTemplate
 } from '@/types/index.js'
 
@@ -29,22 +27,8 @@ export class Transaction {
 
   private readonly _tx : TxData
 
-  private _size  : TxSize & { segwit : number }
-  private _hash  : string
-  private _txid  : string
-  private _value : TxValue
-  private _vin   : TransactionInput[]
-  private _vout  : TransactionOutput[]
-
   constructor (txdata : string | TxData | TxTemplate = {}) {
-    this._tx    = parse_tx(txdata)
-    this._vin   = this._tx.vin.map(txin => new TransactionInput(txin))
-    this._vout  = this._tx.vout.map(txout => new TransactionOutput(txout))
-
-    this._size  = this._get_size()
-    this._hash  = get_txhash(this._tx)
-    this._txid  = get_txid(this._tx)
-    this._value = get_tx_value(this._tx)
+    this._tx = parse_tx(txdata)
   }
 
   get data () : TxData {
@@ -52,7 +36,7 @@ export class Transaction {
   }
 
   get hash () : string {
-    return this._hash
+    return get_txhash(this._tx)
   }
 
   get locktime () {
@@ -68,21 +52,21 @@ export class Transaction {
   }
 
   get size () {
-    return this._size
+    return get_txsize(this._tx)
   }
 
-  get spends () : TransactionOutput[] {
+  get spends () : TxOutput[] {
     return this._tx.vin
       .filter(txin => txin.prevout !== null)
-      .map(txin => new TransactionOutput(txin.prevout!))
+      .map(txin => txin.prevout!)
   }
 
   get txid () : string {
-    return this._txid
+    return get_txid(this._tx)
   }
 
   get value () {
-    return this._value
+    return get_tx_value(this._tx)
   }
 
   get version () : number {
@@ -90,23 +74,21 @@ export class Transaction {
   }
 
   get vin () : TransactionInput[] {
-    return this._vin
+    return this._tx.vin.map((_, idx) => new TransactionInput(this, idx))
   }
 
   get vout () : TransactionOutput[] {
-    return this._vout
+    return this._tx.vout.map((_, idx) => new TransactionOutput(this, idx))
   }
 
   add_vin (tx_input : TxInputTemplate) {
     const txin = create_tx_input(tx_input)
     this._tx.vin.push(txin)
-    this._update_vin()
   }
 
   add_vout (tx_output : TxOutput) {
     const txout = create_tx_output(tx_output)
     this._tx.vout.push(txout)
-    this._update_vout()
   }
 
   insert_vin (index : number, tx_input : TxInputTemplate) {
@@ -117,7 +99,6 @@ export class Transaction {
     } else {
       this._tx.vin.splice(index, 0, txin)
     }
-    this._update_vin()
   }
 
   insert_vout (index : number, tx_output : TxOutput) {
@@ -128,19 +109,16 @@ export class Transaction {
     } else {
       this._tx.vout.splice(index, 0, txout)
     }
-    this._update_vout()
   }
 
   remove_vin (index : number) {
     Assert.ok(this._tx.vin.at(index) !== undefined, 'input does not exist at index')
     this._tx.vin.splice(index, 1)
-    this._update_vin()
   }
 
   remove_vout (index : number) {
     Assert.ok(this._tx.vout.at(index) !== undefined, 'output does not exist at index')
     this._tx.vout.splice(index, 1)
-    this._update_vout()
   }
 
   _get_size () {
@@ -151,23 +129,6 @@ export class Transaction {
       vout    : this.vout.reduce((acc, txout) => acc + txout.size, 0),
       witness : this.vin.reduce((acc, txin)   => acc + (txin.witness?.size.total ?? 0), 0)
     }
-  }
-
-  _update_tx () {
-    this._size  = this._get_size()
-    this._hash  = get_txhash(this._tx)
-    this._txid  = get_txid(this._tx)
-    this._value = get_tx_value(this._tx)
-  }
-
-  _update_vin () {
-    this._vin = this._tx.vin.map(txin => new TransactionInput(txin))
-    this._update_tx()
-  }
-
-  _update_vout () {
-    this._vout = this._tx.vout.map(txout => new TransactionOutput(txout))
-    this._update_tx()
   }
 
   toJSON   () { return this.data }

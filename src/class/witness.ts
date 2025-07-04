@@ -1,11 +1,10 @@
-import { Buff, Bytes }   from '@vbyte/buff'
+import { Transaction }   from './tx.js'
 import { Assert }        from '@vbyte/micro-lib'
 import { decode_script } from '@/lib/script/index.js'
 
 import {
   parse_witness,
-  get_witness_size,
-  assert_witness,
+  get_witness_size
 } from '@/lib/witness/index.js'
 
 import type {
@@ -17,81 +16,58 @@ import type {
 
 export class TransactionWitness {
 
-  private readonly _elems : Buff[]
+  private readonly _tx    : Transaction
+  private readonly _index : number
 
-  private _data : WitnessData
-  private _size : WitnessSize
-
-  constructor (witness : Bytes[]) {
-    assert_witness(witness)
-    this._elems = witness.map(e => Buff.bytes(e))
-    this._data  = parse_witness(this._elems)
-    this._size  = get_witness_size(this._elems)
+  constructor (
+    transaction : Transaction,
+    index       : number
+  ) {
+    this._tx    = transaction
+    this._index = index
   }
 
   get annex () : string | null {
-    return this._data.annex
+    return this.data.annex
   }
 
   get cblock () : string | null {
-    return this._data.cblock
+    return this.data.cblock
   }
 
   get data () : WitnessData {
-    return this._data
+    return parse_witness(this.stack)
   }
 
   get params () : string[] {
-    return this._data.params
+    return this.data.params
   }
 
   get script () : ScriptField | null {
-    if (this._data.script === null) return null
+    if (this.data.script === null) return null
     return {
-      hex : this._data.script,
-      asm : decode_script(this._data.script)
+      hex : this.data.script,
+      asm : decode_script(this.data.script)
     }
   }
 
   get size () : WitnessSize {
-    return this._size
+    return get_witness_size(this.stack)
   }
 
   get stack () : string[] {
-    return this._elems.map(e => e.hex)
+    const txin = this._tx.data.vin.at(this._index)
+    Assert.exists(txin,         'txin not found at index '    + this._index)
+    Assert.exists(txin.witness, 'witness not found at index ' + this._index)
+    return txin.witness
   }
 
   get type () : WitnessType {
-    return this._data.type
+    return this.data.type
   }
 
   get version () : number | null {
-    return this._data.version
-  }
-
-  _update () {
-    this._data = parse_witness(this._elems)
-    this._size = get_witness_size(this._elems)
-  }
-
-  add (elem : Bytes) {
-    this._elems.push(Buff.bytes(elem))
-    this._update()
-  }
-
-  insert (index : number, elem : Bytes) {
-    Assert.ok(index >= 0 && index <= this._elems.length, 'index out of bounds')
-    if (index === this._elems.length) {
-      this._elems.push(Buff.bytes(elem))
-    } else {
-      this._elems.splice(index, 0, Buff.bytes(elem))
-    }
-    this._update()
-  }
-
-  remove (index : number) {
-    this._elems.splice(index, 1)
-    this._update()
+    return this.data.version
   }
 
   toJSON   () { return this.data }
