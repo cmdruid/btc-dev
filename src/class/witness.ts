@@ -5,6 +5,7 @@ import { decode_script } from '@/lib/script/index.js'
 import {
   parse_witness,
   get_witness_size,
+  assert_witness,
 } from '@/lib/witness/index.js'
 
 import type {
@@ -22,6 +23,7 @@ export class TransactionWitness {
   private _size : WitnessSize
 
   constructor (witness : Bytes[]) {
+    assert_witness(witness)
     this._elems = witness.map(e => Buff.bytes(e))
     this._data  = parse_witness(this._elems)
     this._size  = get_witness_size(this._elems)

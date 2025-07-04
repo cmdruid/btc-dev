@@ -29,7 +29,7 @@ export function decode_tx (
   // Merge the options with the default config.
   const config = { ...DEFAULT_CONFIG, ...options }
   // Assert the txhex is a bytes object.
-  Assert.is_bytes(txbytes, 'txbytes must be hex or a unit array')
+  Assert.is_bytes(txbytes, 'transaction must be hex or a byte-array')
   // Setup a byte-stream.
   const stream = new Stream(txbytes)
   // Parse tx version.

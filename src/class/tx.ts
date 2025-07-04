@@ -5,7 +5,6 @@ import { TransactionInput }  from './txin.js'
 import { TransactionOutput } from './txout.js'
 
 import {
-  decode_tx,
   get_txid,
   is_return_script,
   parse_tx,
@@ -38,9 +37,7 @@ export class Transaction {
   private _vout  : TransactionOutput[]
 
   constructor (txdata : string | TxData | TxTemplate = {}) {
-    this._tx = (typeof txdata !== 'string')
-      ? parse_tx(txdata)
-      : decode_tx(txdata)
+    this._tx    = parse_tx(txdata)
     this._size  = this._get_size()
     this._hash  = get_txhash(this._tx)
     this._txid  = get_txid(this._tx)

@@ -1,5 +1,5 @@
 import { Buff, Bytes } from '@vbyte/buff'
-import { ECC }         from '@vbyte/micro-lib'
+import { Assert, ECC } from '@vbyte/micro-lib'
 
 import {
   sign_segwit_tx,
@@ -15,6 +15,8 @@ export class TxSigner {
   private readonly _seckey : string
 
   constructor (seckey : Bytes) {
+    Assert.ok(Buff.is_bytes(seckey), 'seckey must be a string or bytes')
+    Assert.size(seckey, 32,          'seckey must be 32 bytes')
     this._seckey = Buff.bytes(seckey).hex
   }
 

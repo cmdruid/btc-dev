@@ -1,6 +1,7 @@
 import { decode_script } from '@/lib/script/index.js'
 
 import {
+  assert_tx_output,
   get_txout_size,
   get_vout_type,
   get_vout_version
@@ -13,6 +14,7 @@ export class TransactionOutput {
   private readonly _txout : TxOutput
 
   constructor (txout : TxOutput) {
+    assert_tx_output(txout)
     this._txout = txout
   }
 

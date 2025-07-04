@@ -4,6 +4,7 @@ import { TransactionOutput }  from './txout.js'
 import { TransactionWitness } from './witness.js'
 
 import {
+  assert_tx_input,
   encode_txin_sequence,
   get_txin_size,
 } from '@/lib/tx/index.js'
@@ -15,6 +16,7 @@ export class TransactionInput {
   private readonly _txin : TxInput
 
   constructor (txin : TxInput) {
+    assert_tx_input(txin)
     this._txin = txin
   }
 
