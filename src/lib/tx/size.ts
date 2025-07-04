@@ -24,7 +24,7 @@ export function get_vsize (
 ) : number {
   const weight = Buff.bytes(bytes).length
   const remain = (weight % 4 > 0) ? 1 : 0
-  return Math.floor(weight / 4) + remain
+  return Math.ceil(weight / 4) + remain
 }
 
 export function get_txsize (
@@ -35,7 +35,7 @@ export function get_txsize (
   const total  = encode_tx(json, true).length
   const weight = base * 3 + total
   const remain = (weight % 4 > 0) ? 1 : 0
-  const vsize  = Math.floor(weight / 4) + remain
+  const vsize  = Math.ceil(weight / 4) + remain
   return { base, total, vsize, weight }
 }
 

@@ -38,12 +38,13 @@ export class Transaction {
 
   constructor (txdata : string | TxData | TxTemplate = {}) {
     this._tx    = parse_tx(txdata)
+    this._vin   = this._tx.vin.map(txin => new TransactionInput(txin))
+    this._vout  = this._tx.vout.map(txout => new TransactionOutput(txout))
+
     this._size  = this._get_size()
     this._hash  = get_txhash(this._tx)
     this._txid  = get_txid(this._tx)
     this._value = get_tx_value(this._tx)
-    this._vin   = this._tx.vin.map(txin => new TransactionInput(txin))
-    this._vout  = this._tx.vout.map(txout => new TransactionOutput(txout))
   }
 
   get data () : TxData {
