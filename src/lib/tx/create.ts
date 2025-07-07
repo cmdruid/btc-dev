@@ -1,76 +1,84 @@
-import { Assert }              from '@vbyte/micro-lib'
-import { COINBASE, DEFAULT }   from '@/const.js'
+import { Assert }            from '@vbyte/micro-lib'
+import { COINBASE, DEFAULT } from '@/const.js'
 
 import {
-  assert_tx_output,
+  normalize_prevout,
+  normalize_sequence,
+  normalize_value
+} from './util.js'
+
+import {
   assert_tx_template,
-  assert_vin_template
+  assert_vin_template,
+  assert_vout_template
 } from './validate.js'
 
 import type {
   TxData,
-  TxInputTemplate,
   TxInput,
   TxOutput,
   TxTemplate,
   TxSpendInput,
-  TxCoinbaseInput
+  TxCoinbaseInput,
+  TxOutputTemplate,
+  TxVirtualInput,
+  TxInputConfig
 } from '@/types/index.js'
 
 export function create_coinbase_input (
-  config : TxInputTemplate | TxInput
+  config : TxInputConfig
 ) : TxCoinbaseInput {
   assert_vin_template(config)
   Assert.exists(config.coinbase, 'coinbase is required')
-  const coinbase   = config.coinbase
-  const prevout    = null
-  const script_sig = null
-  const sequence   = config.sequence ?? DEFAULT.SEQUENCE
   const txid       = COINBASE.TXID
   const vout       = COINBASE.VOUT
+  const coinbase   = config.coinbase
   const witness    = config.witness  ?? []
-  return { coinbase, prevout, script_sig, sequence, witness, txid, vout }
+  const sequence   = normalize_sequence(config.sequence)
+  return { coinbase, prevout: null, script_sig: null, sequence, witness, txid, vout }
+}
+
+export function create_virtual_input (
+  config : TxInputConfig
+) : TxVirtualInput {
+  assert_vin_template(config)
+  Assert.is_empty(config.coinbase, 'coinbase is not allowed')
+  Assert.is_empty(config.prevout,  'prevout is not allowed')
+  const { txid, vout, script_sig = null, witness = [] } = config
+  const sequence = normalize_sequence(config.sequence)
+  return { txid, vout, coinbase: null, prevout: null, script_sig, sequence, witness }
 }
 
 export function create_spend_input (
-  config : TxInputTemplate | TxInput
+  config : TxInputConfig
 ) : TxSpendInput {
   assert_vin_template(config)
   Assert.exists(config.prevout, 'prevout is required')
-  const prevout    = config.prevout
-  const coinbase   = null
-  const script_sig = config.script_sig ?? null
-  const sequence   = config.sequence   ?? DEFAULT.SEQUENCE
-  const witness    = config.witness    ?? []
-  return { ...config, coinbase, prevout, script_sig, sequence, witness }
+  const { txid, vout, script_sig = null, witness = [] } = config
+  const prevout    = normalize_prevout(config.prevout)
+  const sequence   = normalize_sequence(config.sequence)
+  return { txid, vout, coinbase: null, prevout, script_sig, sequence, witness }
 }
 
 export function create_tx_input (
-  config : TxInputTemplate | TxInput
+  config : TxInputConfig
 ) : TxInput {
-  assert_vin_template(config)
-  Assert.exists(config.txid, 'txid is required')
-  Assert.exists(config.vout, 'vout is required')
-  const coinbase   = config.coinbase   ?? null
-  const prevout    = config.prevout    ?? null
-  const script_sig = config.script_sig ?? null
-  const sequence   = config.sequence   ?? DEFAULT.SEQUENCE
-  const witness    = config.witness    ?? []
-  if (coinbase !== null) return create_coinbase_input(config)
-  if (prevout  !== null) return create_spend_input(config)
-  return { ...config, coinbase, prevout, script_sig, sequence, witness }
+  if (config.coinbase) return create_coinbase_input(config)
+  if (config.prevout)  return create_spend_input(config)
+  return create_virtual_input(config)
 }
 
 export function create_tx_output (
-  config : TxOutput
+  config : TxOutputTemplate
 ) : TxOutput {
-  assert_tx_output(config)
-  const { script_pk, value } = config
-  return { script_pk, value : BigInt(value) }
+  assert_vout_template(config)
+  const script_pk = config.script_pk
+  const value     = normalize_value(config.value)
+  return { script_pk, value }
 }
 
 export function create_tx (
-  config: TxTemplate | TxData
+  config: Partial<TxTemplate> = {}
 ) : TxData {
   assert_tx_template(config)
   const { vin = [], vout = [] } = config

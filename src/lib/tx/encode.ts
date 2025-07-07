@@ -1,7 +1,7 @@
-import { Buff }          from '@vbyte/buff'
-import { Assert }        from '@vbyte/micro-lib'
-import { parse_tx }      from './parse.js'
-import { COINBASE }      from '@/const.js'
+import { Buff }           from '@vbyte/buff'
+import { Assert }         from '@vbyte/micro-lib'
+import { assert_tx_data } from './validate.js'
+import { COINBASE }       from '@/const.js'
 
 import {
   TxInput,
@@ -11,15 +11,16 @@ import {
 
 export function encode_tx (
   txdata : TxData,
-  segwit = true
+  use_segwit = true
 ) : Buff {
-  const tx = parse_tx(txdata)
+  // Assert the txdata is a valid tx data object.
+  assert_tx_data(txdata)
   // Unpack the transaction data.
-  const { version, vin, vout, locktime } = tx
+  const { version, vin, vout, locktime } = txdata
   // Create a buffer for the transaction.
   const buffer : Buff[] = [ encode_tx_version(version) ]
   // If the transaction is a segwit transaction,
-  if (segwit) {
+  if (use_segwit) {
     // Add the segwit marker to the buffer.
     buffer.push(Buff.hex('0001'))
   }
@@ -28,7 +29,7 @@ export function encode_tx (
   // Add the outputs to the buffer.
   buffer.push(encode_tx_outputs(vout))
   // If the transaction is a segwit transaction,
-  if (segwit) {
+  if (use_segwit) {
     // For each input in the transaction,
     for (const input of vin) {
       // Add the witness data to the buffer.

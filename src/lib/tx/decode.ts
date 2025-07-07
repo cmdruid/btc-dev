@@ -1,45 +1,32 @@
-import { Bytes, Stream } from '@vbyte/buff'
-import { Assert }              from '@vbyte/micro-lib'
-import { parse_error }         from '@vbyte/micro-lib/util'
-import { COINBASE }            from '@/const.js'
+import { Stream }      from '@vbyte/buff'
+import { Assert }      from '@vbyte/micro-lib/assert'
+import { parse_error } from '@vbyte/micro-lib/util'
+import { COINBASE }    from '@/const.js'
 
 import {
-  TxData,
   TxInput,
   TxOutput,
   TxCoinbaseInput,
   TxVirtualInput,
-  TxSpendInput
+  TxDecodedData
 } from '@/types/index.js'
 
-interface TxEncoderConfig {
-  prevouts : TxOutput[]
-  segwit   : boolean
-}
-
-const DEFAULT_CONFIG : TxEncoderConfig = {
-  prevouts : [],
-  segwit   : true
-}
-
 export function decode_tx (
-  txbytes : Bytes,
-  options : Partial<TxEncoderConfig> = {}
-) : TxData {
-  // Merge the options with the default config.
-  const config = { ...DEFAULT_CONFIG, ...options }
-  // Assert the txhex is a bytes object.
-  Assert.is_bytes(txbytes, 'transaction must be hex or a byte-array')
+  txdata : string | Uint8Array,
+  use_segwit = true
+) : TxDecodedData {
+  // Assert the txdata is a bytes object.
+  Assert.is_bytes(txdata, 'txdata must be hex or bytes')
   // Setup a byte-stream.
-  const stream = new Stream(txbytes)
+  const stream = new Stream(txdata)
   // Parse tx version.
   const version = read_version(stream)
   // Check and enable any flags that are set.
-  const has_witness = (config.segwit)
+  const has_witness = (use_segwit)
     ? check_witness_flag(stream)
     : false
   // Parse our inputs and outputs.
-  const vin  = read_inputs(stream, config.prevouts)
+  const vin  = read_inputs(stream)
   const vout = read_outputs(stream)
   // If witness flag is set, parse witness data.
   if (has_witness) {
@@ -70,28 +57,26 @@ function check_witness_flag (stream : Stream) : boolean {
   return false
 }
 
-function read_inputs (stream : Stream, prevouts : TxOutput[]) : TxInput[] {
+function read_inputs (stream : Stream) : TxInput[] {
   const inputs = []
   const vinCount = stream.varint()
   for (let i = 0; i < vinCount; i++) {
-    const txinput = read_vin(stream, prevouts.at(i))
+    const txinput = read_vin(stream)
     inputs.push(txinput)
   }
   return inputs
 }
 
-function read_vin (stream : Stream, prevout : TxOutput | null = null) : TxInput {
+function read_vin (stream : Stream) : TxInput {
   const txid       = stream.read(32).reverse().hex
   const vout       = stream.read(4).reverse().num
-  const script_sig = read_script(stream, true)
+  const script_sig = read_payload(stream)
   const sequence   = stream.read(4).reverse().num
   const witness : string[] = []
   if (txid === COINBASE.TXID && vout === COINBASE.VOUT) {
     return { coinbase : script_sig, prevout: null, script_sig : null, sequence, txid, vout, witness } as TxCoinbaseInput
-  } else if (prevout !== null) {
-    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as TxSpendInput
   } else {
-    return { coinbase : null, prevout, script_sig, sequence, txid, vout, witness } as TxVirtualInput
+    return { coinbase : null, prevout: null, script_sig, sequence, txid, vout, witness } as TxVirtualInput
   }
 }
 
@@ -110,7 +95,7 @@ function read_outputs (stream : Stream) : TxOutput[] {
 
 function read_vout (stream : Stream) : TxOutput {
   const value     = stream.read(8).reverse().big
-  const script_pk = read_script(stream, true)
+  const script_pk = read_payload(stream)
   Assert.exists(script_pk, 'failed to decode script_pk')
   return { value, script_pk }
 }
@@ -119,7 +104,7 @@ function read_witness (stream : Stream) : string[] {
   const stack = []
   const count = stream.varint()
   for (let i = 0; i < count; i++) {
-    const element = read_script(stream, true)
+    const element = read_payload(stream)
     if (element === null) {
       throw new Error('failed to decode witness element: ' + i)
     }
@@ -128,16 +113,9 @@ function read_witness (stream : Stream) : string[] {
   return stack
 }
 
-export function read_script (
-  stream  : Stream,
-  varint ?: boolean
-) : string | null {
-  const size = (varint === true)
-    ? stream.varint('le')
-    : stream.size
-  return size > 0
-    ? stream.read(size).hex
-    : null
+export function read_payload (stream : Stream) : string | null {
+  const size = stream.varint('le')
+  return (size > 0) ? stream.read(size).hex : null
 }
 
 function read_locktime (stream : Stream) : number {

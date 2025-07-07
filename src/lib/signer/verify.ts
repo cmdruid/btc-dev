@@ -1,12 +1,3 @@
-// import { Buff, Bytes, Stream }  from '@vbyte/buff'
-// import { safeThrow }     from '@/lib/utils.js'
-// import { checkPath }     from '@/lib/tap/key.js'
-// import { getTapLeaf }    from '@/lib/tap/tree.js'
-// import { Tx }            from '@/lib/tx/index.js'
-// import { Script }        from '@/lib/script/index.js'
-// import { HashConfig, TxData }    from '@/types/index.js'
-// import { TxTemplate }    from '@/schema/types.js'
-// import { hashTx }        from './segwit.js'
 import { Bytes } from '@vbyte/buff'
 
 import type {
@@ -14,19 +5,11 @@ import type {
   TxData
 } from '@/types/index.js'
 
-export function verify_segwit_tx (
+export function verify_tx (
   _txdata  : TxData | Bytes,
   _config  : SigHashOptions = {}
 ) : boolean {
   console.warn('verify_segwit_tx is not implemented')
-  return true
-}
-
-export function verify_taproot_tx (
-  _txdata  : TxData | Bytes,
-  _config  : SigHashOptions = {}
-) : boolean {
-  console.warn('verify_taproot_tx is not implemented')
   return true
 }
 

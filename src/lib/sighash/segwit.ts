@@ -73,14 +73,14 @@ export function hash_segwit_tx (
 
   const sighash = [
     encode_tx_version(version),
-    hash_prevouts(vin, is_anypay),
-    hash_sequence(vin, flag, is_anypay),
+    bip143_hash_prevouts(vin, is_anypay),
+    bip143_hash_sequence(vin, flag, is_anypay),
     encode_txin_txid(txid),
     encode_txin_vout(prevIdx),
     prefix_script_size(script),
     encode_vout_value(value),
     encode_txin_sequence(sequence),
-    hash_outputs(vout, flag, txindex),
+    bip143_hash_outputs(vout, flag, txindex),
     encode_tx_locktime(locktime),
     Buff.num(sigflag, 4).reverse()
   ]
@@ -88,7 +88,7 @@ export function hash_segwit_tx (
   return hash256(Buff.join(sighash))
 }
 
-function hash_prevouts (
+export function bip143_hash_prevouts (
   vin : TxInput[],
   isAnypay ?: boolean
 ) : Uint8Array {
@@ -106,7 +106,7 @@ function hash_prevouts (
   return hash256(Buff.join(stack))
 }
 
-function hash_sequence (
+export function bip143_hash_sequence (
   vin      : TxInput[],
   sigflag  : number,
   isAnyPay : boolean
@@ -123,7 +123,7 @@ function hash_sequence (
   return hash256(Buff.join(stack))
 }
 
-function hash_outputs (
+export function bip143_hash_outputs (
   vout    : TxOutput[],
   sigflag : number,
   idx    ?: number

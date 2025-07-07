@@ -1,11 +1,15 @@
 import { Buff }               from '@vbyte/buff'
 import { Assert }             from '@vbyte/micro-lib'
 import { hash340, sha256 }    from '@vbyte/micro-lib/hash'
-import { prefix_script_size } from '@/lib/script/util.js'
 import { encode_tapscript }   from '@/lib/taproot/encode.js'
 import { parse_tx }           from '@/lib/tx/parse.js'
 import * as CONST             from '@/const.js'
-import { parse_txinput }      from './util.js'
+
+import {
+  parse_txinput,
+  get_annex_data,
+  get_prevout
+} from './util.js'
 
 import {
   encode_txin_vout,
@@ -13,7 +17,8 @@ import {
   encode_txin_sequence,
   encode_txin_txid,
   encode_vout_value,
-  encode_tx_version
+  encode_tx_version,
+  encode_script_data
 } from '@/lib/tx/encode.js'
 
 import type {
@@ -27,6 +32,14 @@ export function hash_taproot_tx (
   template : TxData | string,
   config   : SigHashOptions = {}
 ) : Buff {
+  const preimage = get_taproot_tx_preimage(template, config)
+  return hash340('TapSighash', preimage)
+}
+
+export function get_taproot_tx_preimage (
+  template : TxData | string,
+  config   : SigHashOptions = {}
+) : Buff {
   // Unpack configuration.
   const {
     script,
@@ -36,6 +49,7 @@ export function hash_taproot_tx (
     key_version   = 0x00,
     separator_pos = 0xFFFFFFFF
   } = config
+
   // Normalize the txdata object.
   const tx = parse_tx(template)
   // Unpack the txdata object.
@@ -66,11 +80,9 @@ export function hash_taproot_tx (
   const annexBit  = (annex !== undefined) ? 1 : 0
   const extendBit = (extension !== undefined) ? 1 : 0
   const spendType = ((extflag + extendBit) * 2) + annexBit
-  const hashtag   = hash340('TapSighash')
 
   // Begin building our preimage.
   const preimage : (string | Uint8Array)[] = [
-    hashtag,                      // Buffer input with TapSighash.
     Buff.num(0x00, 1),            // Add zero-byte.
     Buff.num(sigflag, 1),         // Commit to signature flag.
     encode_tx_version(version),   // Commit to tx version.
@@ -82,17 +94,17 @@ export function hash_taproot_tx (
     // then commit to all inputs.
     const prevouts = input.map(e => get_prevout(e))
     preimage.push(
-      hash_outpoints(input),   // Commit to txid/vout for each input.
-      hash_amounts(prevouts),  // Commit to prevout amount for each input.
-      hash_scripts(prevouts),  // Commit to prevout script for each input.
-      hash_sequence(input)     // Commit to sequence value for each input.
+      bip341_hash_outpoints(input),   // Commit to txid/vout for each input.
+      bip341_hash_amounts(prevouts),  // Commit to prevout amount for each input.
+      bip341_hash_scripts(prevouts),  // Commit to prevout script for each input.
+      bip341_hash_sequence(input)     // Commit to sequence value for each input.
     )
   }
 
   if ((sigflag & 0x03) < 2 || (sigflag & 0x03) > 3) {
     // If neither SINGLE or NONE flags are set,
     // include a commitment to all outputs.
-    preimage.push(hash_outputs(output))
+    preimage.push(bip341_hash_outputs(output))
   }
 
   // At this step, we include the spend type.
@@ -106,7 +118,7 @@ export function hash_taproot_tx (
       encode_txin_txid(txid),                // Commit to the input txid.
       encode_txin_vout(vout),                // Commit to the input vout index.
       encode_vout_value(value),              // Commit to the input's prevout value.
-      prefix_script_size(script_pk),         // Commit to the input's prevout script.
+      encode_script_data(script_pk),         // Commit to the input's prevout script.
       encode_txin_sequence(sequence)         // Commit to the input's sequence value.
     )
   } else {
@@ -127,7 +139,7 @@ export function hash_taproot_tx (
     // commitment to the output which is adjacent
     // to the input that we are signing for.
     Assert.ok(typeof txindex === 'number')
-    preimage.push(hash_output(output[txindex]))
+    preimage.push(bip341_hash_output(output[txindex]))
   }
 
   if (extension !== undefined) {
@@ -135,19 +147,16 @@ export function hash_taproot_tx (
     // other commitments (such as a tapleaf), then we
     // will add it to the preimage here.
     preimage.push(
-      Buff.bytes(extension),      // Extention data (in bytes).
-      Buff.num(key_version),      // Key version (reserved for future upgrades).
-      Buff.num(separator_pos, 4)  // If OP_CODESEPARATOR is used, this must be set.
+      Buff.bytes(extension),           // Extention data (in bytes).
+      Buff.num(key_version),           // Key version (reserved for future upgrades).
+      Buff.num(separator_pos, 4,'le')  // If OP_CODESEPARATOR is used, this must be set.
     )
   }
 
-  // Useful for debugging the preimage stack.
-  // console.log(preimage.map(e => Buff.raw(e).hex))
-
-  return sha256(Buff.join(preimage))
+  return Buff.join(preimage)
 }
 
-export function hash_outpoints (
+export function bip341_hash_outpoints (
   vin : TxInput[]
 ) : Buff {
   const stack = []
@@ -158,79 +167,42 @@ export function hash_outpoints (
   return sha256(Buff.join(stack))
 }
 
-export function hash_sequence (
+export function bip341_hash_sequence (
   vin : TxInput[]
 ) : Buff {
-  const stack = []
-  for (const { sequence } of vin) {
-    stack.push(encode_txin_sequence(sequence))
-  }
-  return sha256(Buff.join(stack))
+  const stack = vin.map(vin => encode_txin_sequence(vin.sequence))
+  console.log('stack:', stack.map(e => Buff.bytes(e).hex))
+  return sha256(...stack)
 }
 
-export function hash_amounts (
+export function bip341_hash_amounts (
   prevouts : TxOutput[]
 ) : Buff {
-  const stack = []
-  for (const { value } of prevouts) {
-    stack.push(encode_vout_value(value))
-  }
-  return sha256(Buff.join(stack))
+  return sha256(...prevouts.map(prevout => encode_vout_value(prevout.value)))
 }
 
-export function hash_scripts (
+export function bip341_hash_scripts (
   prevouts : TxOutput[]
 ) : Buff {
-  const stack = []
-  for (const { script_pk } of prevouts) {
-    stack.push(prefix_script_size(script_pk))
-  }
-  return sha256(Buff.join(stack))
+  return sha256(...prevouts.map(prevout => encode_script_data(prevout.script_pk)))
 }
 
-export function hash_outputs (
+export function bip341_hash_outputs (
   vout : TxOutput[]
 ) : Buff {
   const stack = []
   for (const { value, script_pk } of vout) {
     stack.push(encode_vout_value(value))
-    stack.push(prefix_script_size(script_pk))
+    stack.push(encode_script_data(script_pk))
   }
-  return sha256(Buff.join(stack))
+  return sha256(...stack)
 }
 
-export function hash_output (
+export function bip341_hash_output (
   vout : TxOutput
 ) : Buff {
   return sha256(
     encode_vout_value(vout.value),
-    prefix_script_size(vout.script_pk)
+    encode_script_data(vout.script_pk)
   )
-}
-
-function get_annex_data (
-  witness ?: string[]
-) : Buff | undefined {
-  // If no witness exists, return undefined.
-  if (witness === undefined) return
-  // If there are less than two elements, return undefined.
-  if (witness.length < 2) return
-  // Define the last element as the annex.
-  const annex = witness.at(-1)
-  // If the annex is a string and starts with '50',
-  if (typeof annex === 'string' && annex.startsWith('50')) {
-    // Convert the annex to a buffer with a varint prefix.
-    const bytes = Buff.hex(annex).prefix_varint('be')
-    // Return the sha256 of the annex.
-    return sha256(bytes)
-  }
-  // Else, return undefined.
-  return undefined
-}
-
-function get_prevout (vin : TxInput) : TxOutput {
-  if (vin.prevout === null) {
-    throw new Error('Prevout data missing for input: ' + String(vin.txid))
-  }
-  return vin.prevout
 }

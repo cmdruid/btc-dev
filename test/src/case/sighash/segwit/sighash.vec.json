@@ -9,7 +9,7 @@
         "scriptSig": "220020a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54",
         "prevout" : {
           "value": 987654321,
-          "scriptPubKey": "a9149993a429037b5d912407a71c252019287b8d27a587"
+          "script_pk": "a9149993a429037b5d912407a71c252019287b8d27a587"
         },
         "sequence": "ffffffff",
         "witness": []
@@ -18,11 +18,11 @@
     "vout": [
       {
         "value": 900000000,
-        "scriptPubKey": "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
+        "script_pk": "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
       },
       {
         "value": 87000000,
-        "scriptPubKey": "76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
+        "script_pk": "76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
       }
     ],
     "locktime": 0

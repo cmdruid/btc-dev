@@ -1,9 +1,9 @@
+import { Buff }            from '@vbyte/buff'
 import { ECC }             from '@vbyte/micro-lib'
 import { parse_tx }        from '@/lib/tx/parse.js'
 import { SIGHASH_DEFAULT } from '@/const.js'
-import { hash_segwit_tx }  from '../sighash/segwit.js'
-import { hash_taproot_tx } from '../sighash/taproot.js'
-import { format_sigflag }  from '../sighash/util.js'
+import { hash_segwit_tx }  from '@/lib/sighash/segwit.js'
+import { hash_taproot_tx } from '@/lib/sighash/taproot.js'
 
 import type {
   SigHashOptions,
@@ -32,4 +32,8 @@ export function sign_taproot_tx (
   const sig  = ECC.sign_bip340(seckey, msg).hex
   const flag = format_sigflag(options.sigflag ?? 0)
   return sig + flag
+}
+
+function format_sigflag (flag : number) {
+  return (flag !== 0) ? Buff.num(flag, 1).hex : ''
 }

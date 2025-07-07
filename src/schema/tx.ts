@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-import { big, hex, hex32, uint } from '@vbyte/micro-lib/schema'
+import { hex, hex32, uint } from '@vbyte/micro-lib/schema'
 
-export const sats = big.max(2_100_000_000_000_000n)
+const sats  = z.bigint().positive().max(2_100_000_000_000_000n)
 
 export const tx_output = z.object({
   value     : sats,
@@ -26,17 +26,21 @@ export const tx_data = z.object({
   locktime : uint,
 })
 
+export const vout_template = tx_output.extend({
+  value : z.union([ uint, sats ])
+})
+
 export const vin_template = tx_input.extend({
   coinbase   : hex.nullable().optional(),
-  prevout    : tx_output.nullable().optional(),
+  prevout    : vout_template.nullable().optional(),
   script_sig : hex.nullable().optional(),
-  sequence   : uint.optional(),
+  sequence   : z.union([ hex, uint ]).optional(),
   witness    : z.array(hex).optional(),
 })
 
 export const tx_template = z.object({
-  version  : uint.optional(),
+  version  : uint.default(1),
   vin      : z.array(vin_template).default([]),
-  vout     : z.array(tx_output).default([]),
+  vout     : z.array(vout_template).default([]),
   locktime : uint.optional(),
 })
