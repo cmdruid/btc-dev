@@ -170,9 +170,7 @@ export function bip341_hash_outpoints (
 export function bip341_hash_sequence (
   vin : TxInput[]
 ) : Buff {
-  const stack = vin.map(vin => encode_txin_sequence(vin.sequence))
-  console.log('stack:', stack.map(e => Buff.bytes(e).hex))
-  return sha256(...stack)
+  return sha256(...vin.map(vin => encode_txin_sequence(vin.sequence)))
 }
 
 export function bip341_hash_amounts (

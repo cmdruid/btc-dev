@@ -1,5 +1,5 @@
 import { Test } from 'tape'
-import { P2TR } from '@/src/address'
+import { P2TR } from '@/pkg/address'
 
 const TEST_VECTOR = {
   network    : 'regtest',

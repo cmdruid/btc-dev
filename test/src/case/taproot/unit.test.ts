@@ -1,7 +1,7 @@
 import { Test } from 'tape'
-import { P2TR } from '@/src/address'
+import { P2TR } from '@/pkg/address'
 
-import { encode_script, prefix_script_size } from '@/src/script'
+import { encode_script, prefix_script_size } from '@/pkg/script'
 
 import {
   encode_taptweak,
@@ -10,7 +10,7 @@ import {
   verify_taproot,
   create_taproot,
   encode_tapscript
-} from '@/src/taproot'
+} from '@/pkg/taproot'
 
 import test_vectors from './unit.vectors.json' with { type: 'json' }
 

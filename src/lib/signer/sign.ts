@@ -17,7 +17,7 @@ export function sign_segwit_tx (
 ) {
   const tx   = parse_tx(txdata)
   const msg  = hash_segwit_tx(tx, options)
-  const sig  = ECC.sign_ecdsa(seckey, msg).hex
+  const sig  = ECC.get_ecdsa_sig(seckey, msg).hex
   const flag = format_sigflag(options.sigflag ?? SIGHASH_DEFAULT)
   return sig + flag
 }
@@ -29,7 +29,7 @@ export function sign_taproot_tx (
 ) {
   const tx   = parse_tx(txdata)
   const msg  = hash_taproot_tx(tx, options)
-  const sig  = ECC.sign_bip340(seckey, msg).hex
+  const sig  = ECC.get_bip340_sig(seckey, msg).hex
   const flag = format_sigflag(options.sigflag ?? 0)
   return sig + flag
 }

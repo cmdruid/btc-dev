@@ -7,7 +7,7 @@ import {
   create_taproot,
   encode_tapscript,
   get_merkle_root
-} from '@/src/taproot'
+} from '@/pkg/taproot'
 
 import tree_vectors from './tree.vectors.json' with { type: 'json' }
 

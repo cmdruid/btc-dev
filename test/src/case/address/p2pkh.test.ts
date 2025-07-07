@@ -1,6 +1,6 @@
 
 import { Test }  from 'tape'
-import { P2PKH } from '@/src/address'
+import { P2PKH } from '@/pkg/address'
 
 const TEST_VECTOR = {
   network    : 'testnet',

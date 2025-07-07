@@ -1,5 +1,5 @@
 import { Test }   from 'tape'
-import { P2WPKH } from '@/src/address'
+import { P2WPKH } from '@/pkg/address'
 
 const TEST_VECTOR = {
   network    : 'regtest',

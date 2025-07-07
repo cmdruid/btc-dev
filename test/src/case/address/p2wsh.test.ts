@@ -1,6 +1,6 @@
 import { Test }       from 'tape'
-import { P2WSH }      from '@/src/address'
-import { ScriptUtil } from '@/src/script'
+import { P2WSH }      from '@/pkg/address'
+import { ScriptUtil } from '@/pkg/script'
 
 const TEST_VECTOR = {
   network    : 'regtest',
