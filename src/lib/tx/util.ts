@@ -3,7 +3,6 @@ import { Test }               from '@vbyte/micro-lib'
 import { Assert }             from '@vbyte/micro-lib/assert'
 import { hash256 }            from '@vbyte/micro-lib/hash'
 import { encode_tx }          from './encode.js'
-import { parse_tx }           from './parse.js'
 import { assert_tx_template } from './validate.js'
 
 import { DEFAULT, LOCK_SCRIPT_REGEX } from '@/const.js'
@@ -50,27 +49,26 @@ export function get_vout_version (
 }
 
 export function get_txid (
-  txdata : string | TxData
+  txdata : TxData
 ) : string {
-  const json = parse_tx(txdata)
-  const data = encode_tx(json, false)
+  assert_tx_template(txdata)
+  const data = encode_tx(txdata, false)
   return hash256(data).reverse().hex
 }
 
 export function get_txhash (
-  txdata : string | TxData
+  txdata : TxData
 ) : string {
-  const json = parse_tx(txdata)
-  const data = encode_tx(json, true)
+  assert_tx_template(txdata)
+  const data = encode_tx(txdata, true)
   return hash256(data).reverse().hex
 }
 
 export function get_tx_value (
-  txdata : string | TxData
+  txdata : TxData
 ) : TxValue {
-  const tx   = parse_tx(txdata)
-  const vin  = tx.vin.reduce((acc, txin) => acc + (txin.prevout?.value ?? 0n), 0n)
-  const vout = tx.vout.reduce((acc, txout) => acc + txout.value, 0n)
+  const vin  = txdata.vin.reduce((acc, txin) => acc + (txin.prevout?.value ?? 0n), 0n)
+  const vout = txdata.vout.reduce((acc, txout) => acc + txout.value, 0n)
   const fees = (vin > vout) ? (vin - vout) : 0n
   return { fees, vin, vout }
 }

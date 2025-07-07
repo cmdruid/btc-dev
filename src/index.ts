@@ -1,5 +1,3 @@
-export * from './class/index.js'
-
 export * as ADDRESS from './lib/address/index.js'
 export * as META    from './lib/meta/index.js'
 export * as PSBT    from './lib/psbt/index.js'
