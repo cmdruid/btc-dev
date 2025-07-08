@@ -22,24 +22,24 @@ import type {
   TxCoinbaseInput,
   TxOutputTemplate,
   TxVirtualInput,
-  TxInputConfig
+  TxInputTemplate
 } from '@/types/index.js'
 
 export function create_coinbase_input (
-  config : TxInputConfig
+  config : TxInputTemplate
 ) : TxCoinbaseInput {
   assert_vin_template(config)
   Assert.exists(config.coinbase, 'coinbase is required')
   const txid       = COINBASE.TXID
   const vout       = COINBASE.VOUT
   const coinbase   = config.coinbase
-  const witness    = config.witness  ?? []
+  const witness    = config.witness ?? []
   const sequence   = normalize_sequence(config.sequence)
   return { coinbase, prevout: null, script_sig: null, sequence, witness, txid, vout }
 }
 
 export function create_virtual_input (
-  config : TxInputConfig
+  config : TxInputTemplate
 ) : TxVirtualInput {
   assert_vin_template(config)
   Assert.is_empty(config.coinbase, 'coinbase is not allowed')
@@ -50,7 +50,7 @@ export function create_virtual_input (
 }
 
 export function create_spend_input (
-  config : TxInputConfig
+  config : TxInputTemplate
 ) : TxSpendInput {
   assert_vin_template(config)
   Assert.exists(config.prevout, 'prevout is required')
@@ -61,7 +61,7 @@ export function create_spend_input (
 }
 
 export function create_tx_input (
-  config : TxInputConfig
+  config : TxInputTemplate
 ) : TxInput {
   if (config.coinbase) return create_coinbase_input(config)
   if (config.prevout)  return create_spend_input(config)
@@ -78,10 +78,10 @@ export function create_tx_output (
 }
 
 export function create_tx (
-  config: Partial<TxTemplate> = {}
+  config? : TxTemplate
 ) : TxData {
   assert_tx_template(config)
-  const { vin = [], vout = [] } = config
+  const { vin = [], vout = [] } = config ?? { vin: [], vout: [] }
   const locktime = config.locktime ?? DEFAULT.LOCKTIME
   const version  = config.version  ?? DEFAULT.VERSION
   const inputs   = vin.map(txin   => create_tx_input(txin))

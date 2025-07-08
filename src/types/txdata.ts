@@ -5,20 +5,12 @@ export interface TxOutpoint {
   vout : number
 }
 
-export interface TxInputConfig extends TxOutpoint {
+export interface TxInputTemplate extends TxOutpoint {
   coinbase?   : string   | null
   prevout?    : TxOutput | null
   script_sig? : string   | null
   sequence?   : number
   witness?    : string[]
-}
-
-export interface TxInputTemplate extends TxOutpoint {
-  coinbase   : string   | null
-  prevout    : TxOutput | null
-  script_sig : string   | null
-  sequence   : number
-  witness    : string[]
 }
 
 export interface TxCoinbaseInput extends TxOutpoint {
@@ -52,10 +44,10 @@ export interface TxOutput {
 }
 
 export interface TxTemplate {
-  locktime : number
-  vin      : TxInputTemplate[]
-  vout     : TxOutputTemplate[]
-  version  : number
+  locktime? : number
+  vin?      : TxInputTemplate[]
+  vout?     : TxOutputTemplate[]
+  version?  : number
 }
 
 export interface TxData {
