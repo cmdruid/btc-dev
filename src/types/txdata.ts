@@ -45,8 +45,8 @@ export interface TxOutput {
 
 export interface TxTemplate {
   locktime? : number
-  vin?      : TxInputTemplate[]
-  vout?     : TxOutputTemplate[]
+  vin       : TxInputTemplate[]
+  vout      : TxOutputTemplate[]
   version?  : number
 }
 

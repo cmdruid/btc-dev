@@ -78,7 +78,7 @@ export function create_tx_output (
 }
 
 export function create_tx (
-  config? : TxTemplate
+  config? : Partial<TxTemplate>
 ) : TxData {
   assert_tx_template(config)
   const { vin = [], vout = [] } = config ?? { vin: [], vout: [] }
