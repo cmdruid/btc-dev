@@ -18,6 +18,7 @@ export interface TaprootConfig {
 export interface TaprootContext {
   cblock   : string
   int_key  : string
+  path     : string[]
   parity   : number
   taproot  : string | null
   tapkey   : string
