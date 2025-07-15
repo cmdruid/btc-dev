@@ -64,6 +64,7 @@ export function create_taproot (config : TaprootConfig) : TaprootContext {
 
   return {
     int_key  : Buff.bytes(pubkey).hex,
+    path,
     parity,
     taproot  : taproot ?? null,
     cblock   : cblock.hex,

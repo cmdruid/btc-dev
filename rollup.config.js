@@ -1,4 +1,3 @@
-// rollup.config.ts
 import typescript  from '@rollup/plugin-typescript'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs    from '@rollup/plugin-commonjs'
@@ -10,23 +9,16 @@ const treeshake = {
 	tryCatchDeoptimization  : false
 }
 
-/**
- * Handler for silencing rollup warnings.
- */
-const onwarn = warning => {
-  // Silence annotation warnings.
+const onwarn = (warning) => {
   if (
     warning.code === 'INVALID_ANNOTATION' && 
     warning.message.includes('@__PURE__')
   ) {
     return
-  }
-  // Silence zod warnings.
-  if (
-    warning.code === 'MIXED_EXPORTS' &&
-    warning.message.includes('zod')
-  ) {
+  } else if (warning.code === 'CIRCULAR_DEPENDENCY') {
     return
+  } else {
+    console.error(warning)
   }
   throw new Error(warning)
 }
@@ -51,7 +43,7 @@ export default {
     {
       file: 'dist/script.js',
       format: 'iife',
-      name: 'btc_devkit',
+      name: 'btc_dev',
       plugins: [terser()],
       sourcemap: true
     }

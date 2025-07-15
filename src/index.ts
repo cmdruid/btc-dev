@@ -1,6 +1,5 @@
 export * as ADDRESS from './lib/address/index.js'
 export * as META    from './lib/meta/index.js'
-export * as PSBT    from './lib/psbt/index.js'
 export * as SCRIPT  from './lib/script/index.js'
 export * as SIGHASH from './lib/sighash/index.js'
 export * as SIGNER  from './lib/signer/index.js'
