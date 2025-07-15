@@ -10,8 +10,8 @@ const MAX_WORD_SIZE = 520
 export function encode_script (
   words : (string | number | Uint8Array)[],
   varint = false
-) : string {
-  if (words.length === 0) return '00'
+) : Buff {
+  if (words.length === 0) return Buff.num(0, 1)
 
   const bytes = []
 
@@ -23,10 +23,9 @@ export function encode_script (
   const buffer = Buff.join(bytes)
 
   return (varint)
-    ? buffer.prepend(Buff.varint(buffer.length, 'le')).hex
-    : buffer.hex
+    ? buffer.prepend(Buff.varint(buffer.length, 'le'))
+    : buffer
 }
-
 
 /** Check if the word is a valid opcode,
  *  and return its integer value.

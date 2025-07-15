@@ -1,7 +1,7 @@
-import { Buff, Stream }  from '@vbyte/buff'
-import { Assert }        from '@vbyte/micro-lib'
-import { encode_script } from '@/lib/script/encode.js'
-import { decode_script } from '@/lib/script/decode.js'
+import { Buff, Bytes, Stream } from '@vbyte/buff'
+import { Assert }              from '@vbyte/micro-lib'
+import { encode_script }       from '@/lib/script/encode.js'
+import { decode_script }       from '@/lib/script/decode.js'
 
 import type { InscriptionData } from '@/types/index.js'
 
@@ -9,23 +9,24 @@ const _0n  = BigInt(0)
 const _1n  = BigInt(1)
 const _26n = BigInt(26)
 
-export namespace ScribeEncoder {
+export namespace InscriptionUtil {
+  export type Type    = InscriptionData
   export const encode = encode_inscription
   export const decode = decode_inscription
 }
 
 export function decode_inscription (
-  script : string
+  script : Bytes
 ) : InscriptionData[] {
   const envelopes = parse_envelopes(script)
   return envelopes.map(parse_record)
 }
 
-export function encode_inscription (data : InscriptionData[]) : string {
-  return data.map(create_envelope).join('')
+export function encode_inscription (data : InscriptionData[]) : Buff {
+  return Buff.join(data.map(create_envelope))
 }
 
-function create_envelope (data : InscriptionData) : string {
+function create_envelope (data : InscriptionData) : Buff {
   let asm : string[] = [ 'OP_0', 'OP_IF', '6f7264' ]
 
   if (typeof data.delegate === 'string') {
@@ -73,7 +74,7 @@ function create_envelope (data : InscriptionData) : string {
 }
 
 function parse_envelopes (
-  script : string
+  script : Bytes
 ) : string[][] {
 
   const words     = decode_script(script)
@@ -98,7 +99,7 @@ function parse_envelopes (
   return envelopes
 }
 
-function parse_record (envelope : string[]) {
+function parse_record (envelope : Bytes[]) {
   const record : InscriptionData = {}
 
   for (let i = 0; i < envelope.length; i++) {
@@ -124,7 +125,7 @@ function parse_record (envelope : string[]) {
         i += 1
         break
       case 'OP_WITHIN':
-        record.ref = envelope[i+1]
+        record.ref = decode_bytes(envelope[i+1])
         i += 1
         break;
       case 'OP_NOP':
@@ -139,6 +140,10 @@ function parse_record (envelope : string[]) {
   return record
 }
 
+function decode_bytes (bytes : Bytes) : string {
+  return Buff.bytes(bytes).hex
+}
+
 function encode_id (
   identifier : string
 ) : string {
@@ -151,9 +156,9 @@ function encode_id (
 }
 
 function decode_id (
-  hexstr : string
+  identifier : Bytes
 ) : string {
-  const bytes = Buff.hex(hexstr)
+  const bytes = Buff.bytes(identifier)
   const idx   = bytes.at(-1) ?? 0
   const txid  = bytes.slice(0, -1).reverse().hex
   return txid + 'i' + String(idx)
@@ -166,9 +171,9 @@ function encode_pointer (
 }
 
 function decode_pointer (
-  hexstr : string
+  bytes : Bytes
 ) : number {
-  return Buff.hex(hexstr).reverse().num
+  return Buff.bytes(bytes).reverse().num
 }
 
 function encode_label (
@@ -178,9 +183,9 @@ function encode_label (
 }
 
 function decode_label (
-  hexstr : string
+  label : Bytes
 ) : string {
-  return Buff.hex(hexstr).str
+  return Buff.bytes(label).str
 }
 
 function encode_content (
@@ -204,11 +209,11 @@ function encode_content (
 }
 
 function decode_content (
-  hexstrs : string[],
-  type    : 'hex' | 'utf8' = 'hex'
+  chunks : Bytes[],
+  format : 'hex' | 'utf8' = 'hex'
 ) : string {
-  const data = Buff.join(hexstrs)
-  return (type === 'hex')
+  const data = Buff.join(chunks)
+  return (format === 'hex')
     ? data.hex
     : data.str
 }
@@ -225,9 +230,9 @@ function encode_rune_label (label : string) : string {
   return Buff.big(big).reverse().hex
 }
 
-function decode_rune_label (hex: string): string {
+function decode_rune_label (label: Bytes): string {
   // Convert hex to BigInt, with byte order reversed
-  let big = Buff.hex(hex).reverse().big
+  let big = Buff.bytes(label).reverse().big
   // Add 1 as per the encoding algorithm
   big = big + _1n
   // Initialize result string

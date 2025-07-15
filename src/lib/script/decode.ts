@@ -1,4 +1,4 @@
-import { Stream } from '@vbyte/buff'
+import { Bytes, Stream } from '@vbyte/buff'
 
 import {
   get_op_code,
@@ -10,7 +10,7 @@ import {
  * Decode a bitcoin script into asm instructions.
  */
 export function decode_script (
-  script : string | Uint8Array
+  script : Bytes
 ) : string[] {
   const stream = new Stream(script)
 
