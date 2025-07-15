@@ -1,4 +1,4 @@
-export namespace RefEncoder {
+export namespace RefPointer {
   export const outpoint = {
     encode : encode_outpoint,
     decode : decode_outpoint,
