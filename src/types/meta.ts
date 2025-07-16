@@ -3,11 +3,11 @@ import type{ WitnessType, WitnessVersion } from './witness.js'
 export type LocktimeData   = LocktimeStamp | LocktimeHeight
 export type SequenceConfig = Partial<SequenceData>
 export type SequenceData   = SequenceHeightLock | SequenceStampLock
-export type TxOutputType   = WitnessType | 'p2pkh' | 'p2sh' | 'opreturn'
+export type TxOutputType   = 'p2pkh' | 'p2sh' | 'p2w-pkh' | 'p2w-sh' | 'p2tr' | 'opreturn'
 
 export interface TxOutputInfo {
-  type    : TxOutputType
-  version : WitnessVersion
+  type    : TxOutputType   | null
+  version : WitnessVersion | null
 }
 
 export interface TxInputInfo {

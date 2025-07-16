@@ -1,4 +1,4 @@
-import { Buff }               from '@vbyte/buff'
+import { Buff, Bytes }        from '@vbyte/buff'
 import { Test }               from '@vbyte/micro-lib'
 import { Assert }             from '@vbyte/micro-lib/assert'
 import { hash256 }            from '@vbyte/micro-lib/hash'
@@ -17,34 +17,36 @@ import type {
   WitnessVersion
 } from '@/types/index.js'
 
-export function is_return_script (script : string) : boolean {
-  return script.startsWith('6a')
+export function is_return_script (script : Bytes) : boolean {
+  const bytes = Buff.bytes(script)
+  return bytes.at(0) === 0x6a
 }
 
-export function get_vout_info (txout : TxOutput) : TxOutputInfo {
+export function get_vout_script_info (script : Bytes) : TxOutputInfo {
   return {
-    type    : get_vout_type(txout.script_pk),
-    version : get_vout_version(txout.script_pk)
+    type    : get_vout_script_type(script),
+    version : get_vout_script_version(script)
   }
 }
 
-export function get_vout_type (
-  script : string
-) : TxOutputType {
+export function get_vout_script_type (
+  script : Bytes
+) : TxOutputType | null {
+  const hex = Buff.bytes(script).hex
   for (const [ type, regex ] of Object.entries(LOCK_SCRIPT_REGEX)) {
-    if (regex.test(script)) return type as TxOutputType
+    if (regex.test(hex)) return type as TxOutputType
   }
-  return 'unknown'
+  return null
 }
 
-export function get_vout_version (
-  script : string
-) : WitnessVersion {
-  const wit_ver = script.slice(0, 4)
-  switch (wit_ver) {
-    case '0014' : return 0
-    case '5120' : return 1
-    default     : return null
+export function get_vout_script_version (
+  script : Bytes
+) : WitnessVersion | null{
+  const version = Buff.bytes(script)
+  switch (version.at(0)) {
+    case 0x00 : return 0
+    case 0x51 : return 1
+    default   : return null
   }
 }
 
