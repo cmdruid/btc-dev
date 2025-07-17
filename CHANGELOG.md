@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [1.1.4]
+
+- Updates to API for Address module.
+- Updates to API for Script module.
+- Updates to API for TX module.
+
 ## [1.1.3]
 
 - Updated transaction utils to have a better input interface.
