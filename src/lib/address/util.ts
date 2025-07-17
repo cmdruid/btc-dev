@@ -5,10 +5,9 @@ import { get_address_script } from './script.js'
 import type {
   AddressConfig,
   AddressConfigEntry,
-  AddressType,
+  AddressInfo,
   ChainNetwork,
-  AddressContext,
-  AddressData
+  LockScriptType,
 } from '@/types/index.js'
 
 const CONFIG_TABLE : AddressConfigEntry[] = [
@@ -20,12 +19,12 @@ const CONFIG_TABLE : AddressConfigEntry[] = [
   [ 'm',      'p2pkh',   'regtest', 20, 'base58',  0x6F ],
   [ 'n',      'p2pkh',   'regtest', 20, 'base58',  0x6F ],
   [ '2',      'p2sh',    'regtest', 20, 'base58',  0xC4 ],
-  [ 'bc',     'p2w-pkh', 'main',    20, 'bech32',  0    ],
-  [ 'tb',     'p2w-pkh', 'testnet', 20, 'bech32',  0    ],
-  [ 'bcrt',   'p2w-pkh', 'regtest', 20, 'bech32',  0    ],
-  [ 'bc',     'p2w-sh',  'main',    32, 'bech32',  0    ],
-  [ 'tb',     'p2w-sh',  'testnet', 32, 'bech32',  0    ],
-  [ 'bcrt',   'p2w-sh',  'regtest', 32, 'bech32',  0    ],
+  [ 'bc',     'p2wpkh', 'main',    20, 'bech32',  0    ],
+  [ 'tb',     'p2wpkh', 'testnet', 20, 'bech32',  0    ],
+  [ 'bcrt',   'p2wpkh', 'regtest', 20, 'bech32',  0    ],
+  [ 'bc',     'p2wsh',  'main',    32, 'bech32',  0    ],
+  [ 'tb',     'p2wsh',  'testnet', 32, 'bech32',  0    ],
+  [ 'bcrt',   'p2wsh',  'regtest', 32, 'bech32',  0    ],
   [ 'bc',     'p2tr',    'main',    32, 'bech32m', 1    ],
   [ 'tb',     'p2tr',    'testnet', 32, 'bech32m', 1    ],
   [ 'bcrt',   'p2tr',    'regtest', 32, 'bech32m', 1    ]
@@ -40,7 +39,7 @@ const CONFIG_TABLE : AddressConfigEntry[] = [
  */
 export function get_address_config (
   address_network : ChainNetwork,
-  address_type    : AddressType
+  address_type    : LockScriptType
 ) : AddressConfig | null {
   // For each configuration in the table,
   for (const [ prefix, type, network, size, format, version ] of CONFIG_TABLE) {
@@ -55,12 +54,12 @@ export function get_address_config (
 }
 
 /**
- * Get the address context.
+ * Parse an address into its data and script.
  * 
- * @param address - The address to get the context for.
- * @returns The address context.
+ * @param address - The address to parse.
+ * @returns The address data and script.
  */
-export function get_address_ctx (address : string) : AddressContext {
+export function get_address_info (address : string) : AddressInfo {
   // Decode the address.
   const dec = decode_address(address)
   // For each configuration in the table,
@@ -78,25 +77,11 @@ export function get_address_ctx (address : string) : AddressContext {
     }
 
     // Convert the decoded data into a hex string.
-    const hex = Buff.uint(dec.data).hex
+    const data   = Buff.uint(dec.data).hex
+    const script = get_address_script(data, type)
     // Return the address configuration and data.
-    return { data: dec.data, hex, type, prefix, network, size, format, version }
+    return { data, script,type, prefix, network, size, format, version }
   }
   // Otherwise, throw an error
   throw new Error('address configuration is invalid')
-}
-
-/**
- * Parse an address into its data and script.
- * 
- * @param address - The address to parse.
- * @returns The address data and script.
- */
-export function parse_address (address : string) : AddressData {
-  // Get the address context.
-  const ctx    = get_address_ctx(address)
-  // Get the address script.
-  const script = get_address_script(ctx.hex, ctx.type)
-  // Return the address data.
-  return { ...ctx, ...script }
 }

@@ -3,7 +3,8 @@ import { encode_script } from './encode.js'
 
 import {
   decode_script,
-  is_valid_script
+  is_valid_script,
+  parse_script
 } from './decode.js'
 
 import {
@@ -18,6 +19,7 @@ export * from './words.js'
 
 export namespace ScriptUtil {
   export const prefix_size = prefix_script_size
+  export const parse       = parse_script
   export const decode      = decode_script
   export const encode      = encode_script
   export const is_valid    = is_valid_script

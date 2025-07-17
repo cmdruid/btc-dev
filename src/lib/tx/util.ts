@@ -1,4 +1,4 @@
-import { Buff, Bytes }        from '@vbyte/buff'
+import { Buff }               from '@vbyte/buff'
 import { Test }               from '@vbyte/micro-lib'
 import { Assert }             from '@vbyte/micro-lib/assert'
 import { hash256 }            from '@vbyte/micro-lib/hash'
@@ -6,52 +6,14 @@ import { encode_tx }          from './encode.js'
 import { parse_tx }           from './parse.js'
 import { assert_tx_template } from './validate.js'
 
-import { DEFAULT, LOCK_SCRIPT_REGEX } from '@/const.js'
+import { DEFAULT } from '@/const.js'
 
 import type {
   TxData,
   TxOutput,
-  TxOutputInfo,
   TxOutputTemplate,
-  TxOutputType,
-  TxValue,
-  WitnessVersion
+  TxValue
 } from '@/types/index.js'
-
-export function is_return_script (script : Bytes) : boolean {
-  const bytes = Buff.bytes(script)
-  return bytes.at(0) === 0x6a
-}
-
-export function get_vout_script_info (script : Bytes) : TxOutputInfo {
-  return {
-    type    : get_vout_script_type(script),
-    version : get_vout_script_version(script)
-  }
-}
-
-export function get_vout_script_type (script : Bytes) : TxOutputType | null {
-  // Get the hex string of the script.
-  const hex = Buff.bytes(script).hex
-  // Iterate over the lock script regexes.
-  for (const [ type, regex ] of Object.entries(LOCK_SCRIPT_REGEX)) {
-    // If the script matches the regex, return the type.
-    if (regex.test(hex)) return type as TxOutputType
-  }
-  // If the script does not match any regex, return null.
-  return null
-}
-
-export function get_vout_script_version (script : Bytes) : WitnessVersion | null {
-  // Get the version of the script.
-  const version = Buff.bytes(script)
-  // Return the version of the script.
-  switch (version.at(0)) {
-    case 0x00 : return 0
-    case 0x51 : return 1
-    default   : return null
-  }
-}
 
 export function get_txid (txdata : string | Uint8Array | TxData) : string {
   // If the transaction data is an object,

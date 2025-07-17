@@ -20,14 +20,32 @@ export const TAPLEAF_VERSIONS = [
 
 export const TAPLEAF_DEFAULT_VERSION = 0xc0
 
+export const LOCK_SCRIPT_TYPE = {
+  P2PKH    : 'p2pkh',
+  P2SH     : 'p2sh',
+  P2WPKH   : 'p2wpkh',
+  P2WSH    : 'p2wsh',
+  P2TR     : 'p2tr',
+  OPRETURN : 'opreturn',
+} as const
+
+export const SPEND_SCRIPT_TYPE = {
+  P2PKH    : 'p2pkh',
+  P2SH     : 'p2sh',
+  P2WPKH   : 'p2wpkh',
+  P2WSH    : 'p2wsh',
+  P2TR     : 'p2tr',
+  P2TS     : 'p2ts',
+} as const
+
 export const LOCK_SCRIPT_REGEX : Record<string, RegExp> = {
-  'p2pkh'    : /^76a914[0-9a-f]{40}88ac$/i,
-  'p2sh'     : /^a914[0-9a-f]{40}87$/i,
-  'p2wpkh'   : /^0014[0-9a-f]{40}$/i,
-  'p2wsh'    : /^0020[0-9a-f]{64}$/i,
-  'p2tr'     : /^5120[0-9a-f]{64}$/i,
-  'opreturn' : /^6a[0-9a-f]{2,}$/i,
-}
+  [LOCK_SCRIPT_TYPE.P2PKH]    : /^76a914[0-9a-f]{40}88ac$/i,
+  [LOCK_SCRIPT_TYPE.P2SH]     : /^a914[0-9a-f]{40}87$/i,
+  [LOCK_SCRIPT_TYPE.P2WPKH]   : /^0014[0-9a-f]{40}$/i,
+  [LOCK_SCRIPT_TYPE.P2WSH]    : /^0020[0-9a-f]{64}$/i,
+  [LOCK_SCRIPT_TYPE.P2TR]     : /^5120[0-9a-f]{64}$/i,
+  [LOCK_SCRIPT_TYPE.OPRETURN] : /^6a[0-9a-f]{2,}$/i,
+} as const
 
 export const SCRIPT_INT_KEY = ''
 

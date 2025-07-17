@@ -55,10 +55,10 @@ export default function (t : Test) {
     const vectors = test_vectors.ctrlblock
     t.plan(vectors.length)
     for (const { address, scripts, index, cblock } of vectors) {
-      const decoded = P2TR.decode(address)
+      const decoded = P2TR.decode_address(address)
       const script  = encode_script(scripts[index])
       const target  = encode_tapscript(script).hex
-      const isValid = verify_taproot(decoded.hex, target, cblock)
+      const isValid = verify_taproot(decoded.data, target, cblock)
       t.true(isValid, 'Control block should be valid.')
     }
   })

@@ -1,7 +1,8 @@
+import type { ScriptInfo } from './script.js'
+
 export type AddressFormat = 'base58' | 'bech32'  | 'bech32m'
-export type AddressType   = 'p2pkh'  | 'p2sh'    | 'p2w-pkh' | 'p2w-sh' | 'p2tr'
+export type AddressType   = 'p2pkh'  | 'p2sh'    | 'p2wpkh' | 'p2wsh' | 'p2tr'
 export type ChainNetwork  = 'main'   | 'testnet' | 'regtest' | string
-export type AddressData   = AddressContext & ScriptData
 
 export type AddressConfigEntry = [
   prefix  : string,
@@ -12,7 +13,7 @@ export type AddressConfigEntry = [
   version : number
 ]
 
-export interface DecodedAddress {
+export interface EncoderConfig {
   format   : AddressFormat
   data     : Uint8Array
   prefix?  : string
@@ -28,12 +29,7 @@ export interface AddressConfig {
   version : number
 }
 
-export interface AddressContext extends AddressConfig {
-  data : Uint8Array
-  hex  : string
-}
-
-export interface ScriptData {
-  script_asm : string[]
-  script_hex : string
+export interface AddressInfo extends AddressConfig {
+  data   : string
+  script : ScriptInfo
 }

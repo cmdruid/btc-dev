@@ -4,7 +4,7 @@ import { Assert, B58chk, Bech32, Bech32m } from '@vbyte/micro-lib'
 
 import type {
   AddressFormat,
-  DecodedAddress,
+  EncoderConfig,
 } from '@/types/address.js'
 
 const ENCODING_REGEX = {
@@ -24,7 +24,7 @@ const VERSION = {
  * @param address - The address to decode.
  * @returns The decoded address.
  */
-export function decode_address (address : string) : DecodedAddress {
+export function decode_address (address : string) : EncoderConfig {
   // Get the address format.
   const format = get_address_format(address)
   // If the format is not found, throw an error.
@@ -45,7 +45,7 @@ export function decode_address (address : string) : DecodedAddress {
  *          recognized.
  */
 export function encode_address (
-  config : DecodedAddress
+  config : EncoderConfig
 ) : string {
   // Encode the address based on the format.
   if (config.format === 'base58')  return base58_encode(config)
@@ -78,7 +78,7 @@ function get_address_format (address : string) : AddressFormat | null {
  * @param config - The encoder configuration.
  * @returns The encoded base58 string.
  */
-function base58_encode (config : DecodedAddress) : string {
+function base58_encode (config : EncoderConfig) : string {
   // Assert the format is correct.
   Assert.ok(config.format === 'base58', 'encoding mismatch')
   // Assert the version is specified.
@@ -95,7 +95,7 @@ function base58_encode (config : DecodedAddress) : string {
  * @param encoded - The base58 string to decode.
  * @returns The decoded data.
  */
-function base58_decode (encoded : string) : DecodedAddress {
+function base58_decode (encoded : string) : EncoderConfig {
   // Decode the encoded data.
   const bytes = B58chk.decode(encoded)
   // Get the data from the decoded bytes.
@@ -112,7 +112,7 @@ function base58_decode (encoded : string) : DecodedAddress {
  * @param config - The encoder configuration.
  * @returns The encoded bech32 string.
  */
-function bech32_encode (config : DecodedAddress) : string {
+function bech32_encode (config : EncoderConfig) : string {
   // Assert the format is correct.
   Assert.ok(config.format === 'bech32', 'encoding mismatch')
   // Assert the prefix is specified.
@@ -131,7 +131,7 @@ function bech32_encode (config : DecodedAddress) : string {
  * @param encoded - The bech32 string to decode.
  * @returns The decoded data.
  */
-function bech32_decode (encoded : string) : DecodedAddress {
+function bech32_decode (encoded : string) : EncoderConfig {
   // Decode the encoded data.
   const { prefix, words } = Bech32.decode(encoded)
   // Get the version and rest of the words.
@@ -150,7 +150,7 @@ function bech32_decode (encoded : string) : DecodedAddress {
  * @param config - The encoder configuration.
  * @returns The encoded bech32 string.
  */
-function bech32m_encode (config : DecodedAddress) : string {
+function bech32m_encode (config : EncoderConfig) : string {
   // Assert the format is correct.
   Assert.ok(config.format === 'bech32m', 'encoding mismatch')
   // Assert the prefix is specified.
@@ -169,7 +169,7 @@ function bech32m_encode (config : DecodedAddress) : string {
  * @param encoded - The bech32 string to decode.
  * @returns The decoded data.
  */
-function bech32m_decode (encoded : string) : DecodedAddress {
+function bech32m_decode (encoded : string) : EncoderConfig {
   // Decode the encoded data.
   const { prefix, words }    = Bech32m.decode(encoded)
   // Get the version and rest of the words.

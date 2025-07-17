@@ -1,4 +1,4 @@
-import type { AddressType } from '@/types/index.js'
+import type { AddressType, ScriptInfo } from '@/types/index.js'
 
 /**
  * Get the address script.
@@ -10,15 +10,15 @@ import type { AddressType } from '@/types/index.js'
 export function get_address_script (
   script_key  : string,
   script_type : AddressType
-) {
+) : ScriptInfo {
   switch (script_type) {
     case 'p2pkh':
       return get_p2pkh_script(script_key)
     case 'p2sh':
       return get_p2sh_script(script_key)
-    case 'p2w-pkh':
+    case 'p2wpkh':
       return get_p2w_pkh_script(script_key)
-    case 'p2w-sh':
+    case 'p2wsh':
       return get_p2w_sh_script(script_key)
     case 'p2tr':
       return get_p2tr_script(script_key)
@@ -29,35 +29,35 @@ export function get_address_script (
 
 function get_p2pkh_script (script_key : string) {
   return {
-    script_hex : '76a914' + script_key + '88ac',
-    script_asm : [ 'OP_DUP', 'OP_HASH160', script_key, 'OP_EQUALVERIFY', 'OP_CHECKSIG' ]
+    hex : '76a914' + script_key + '88ac',
+    asm : [ 'OP_DUP', 'OP_HASH160', script_key, 'OP_EQUALVERIFY', 'OP_CHECKSIG' ]
   }
 }
 
 function get_p2sh_script (script_key : string) {
   return {
-    script_hex : 'a914' + script_key + '87',
-    script_asm : [ 'OP_HASH160', script_key, 'OP_EQUAL' ]
+    hex : 'a914' + script_key + '87',
+    asm : [ 'OP_HASH160', script_key, 'OP_EQUAL' ]
   }
 }
 
 function get_p2w_pkh_script (script_key : string) {
   return {
-    script_hex : '0014' + script_key,
-    script_asm : [ 'OP_0', script_key ]
+    hex : '0014' + script_key,
+    asm : [ 'OP_0', script_key ]
   }
 }
 
 function get_p2w_sh_script (script_key : string) {
   return {
-    script_hex : '0020' + script_key,
-    script_asm : [ 'OP_0', script_key ]
+    hex : '0020' + script_key,
+    asm : [ 'OP_0', script_key ]
   }
 }
 
 function get_p2tr_script (script_key : string) {
   return {
-    script_hex : '5120' + script_key,
-    script_asm : [ 'OP_1', script_key ]
+    hex : '5120' + script_key,
+    asm : [ 'OP_1', script_key ]
   }
 }

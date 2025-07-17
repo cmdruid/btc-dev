@@ -1,6 +1,6 @@
+import type { SpendScriptType, WitnessVersion } from './script.js'
+
 export type WitnessContext = WitnessData | TaprootScript | SegwitScript | TaprootSpend | SegwitSpend
-export type WitnessVersion = number | null
-export type WitnessType    = 'p2w-pkh' | 'p2w-sh' | 'p2tr-pk' | 'p2tr-ts' | 'unknown'
 
 export interface WitnessSize {
   total : number
@@ -13,30 +13,30 @@ export interface WitnessData {
   params  : string[]
   script  : string | null
   stack   : string[]
-  type    : WitnessType
+  type    : SpendScriptType
   version : WitnessVersion
 }
 
 export interface TaprootScript extends WitnessData {
   cblock  : string
   script  : string
-  type    : 'p2tr-ts'
+  type    : 'p2ts'
   version : 1
 }
 
 export interface SegwitScript extends WitnessData {
   script  : string
-  type    : 'p2w-sh'
+  type    : 'p2wsh'
   version : 0
 }
 
 export interface TaprootSpend extends WitnessData {
-  type    : 'p2tr-pk'
+  type    : 'p2tr'
   version : 1
 }
 
 export interface SegwitSpend extends WitnessData {
-  type    : 'p2w-pkh'
+  type    : 'p2wpkh'
   version : 0
 }
 

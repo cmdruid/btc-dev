@@ -1,10 +1,20 @@
-import { Bytes, Stream } from '@vbyte/buff'
+import { Buff, Bytes, Stream } from '@vbyte/buff'
 
 import {
   get_op_code,
   get_op_type,
   is_valid_op
 } from './words.js'
+
+import type { ScriptInfo } from '@/types/script.js'
+
+export function parse_script (script: Bytes): ScriptInfo {
+  const bytes = Buff.bytes(script)
+  return {
+    asm: decode_script(bytes),
+    hex: bytes.hex
+  }
+}
 
 /**
  * Decode a bitcoin script into asm instructions.
