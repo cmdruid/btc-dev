@@ -13,8 +13,8 @@ export interface WitnessData {
   params  : string[]
   script  : string | null
   stack   : string[]
-  type    : SpendScriptType
-  version : WitnessVersion
+  type    : SpendScriptType | null
+  version : WitnessVersion  | null
 }
 
 export interface TaprootScript extends WitnessData {

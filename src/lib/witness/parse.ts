@@ -4,7 +4,8 @@ import { TAPLEAF_VERSIONS } from '@/const.js'
 
 import type {
   WitnessData,
-  WitnessType
+  SpendScriptType,
+  WitnessVersion
 } from '@/types/index.js'
 
 export function parse_witness (
@@ -64,13 +65,13 @@ function parse_cblock_data (
 
 function parse_witness_script (
   elems : Uint8Array[],
-  type  : WitnessType
+  type  : SpendScriptType | null
 ) {
   let script : Uint8Array | undefined
   switch (type) {
-    case 'p2tr-ts':
+    case 'p2ts':
       script = elems.at(-1)
-    case 'p2w-sh':
+    case 'p2wsh':
       script = elems.at(-1)
   }
   return (script !== undefined) ? new Buff(script).hex : null
@@ -79,14 +80,14 @@ function parse_witness_script (
 function parse_witness_type (
   elems  : Uint8Array[],
   cblock : string | null
-) : WitnessType {
+) : SpendScriptType | null{
   // Get the important elements of the witness.
   let param_0 = elems.at(0),
       param_1 = elems.at(1),
       param_x = elems.at(-1)
   // If the cblock is present and the last element exists:
   if (cblock !== null && param_x !== undefined) {
-    return 'p2tr-ts'
+    return 'p2ts'
   // If the witness elements match the profile of a p2w-pkh:
   } else if (
     elems.length === 2    &&
@@ -95,29 +96,32 @@ function parse_witness_type (
     param_0.length >=  64 &&
     param_1.length === 33
   ) {
-    return 'p2w-pkh'
+    return 'p2wpkh'
   // If the witness elements match the profile of a p2tr-pk:
   } else if (
     elems.length === 1    &&
     param_0 !== undefined &&
     param_0.length === 64
   ) {
-    return 'p2tr-pk'
+    return 'p2tr'
   // If there is at least two witness elements:
   } else if (
     elems.length > 1      && 
     param_x !== undefined &&
     is_valid_script(param_x)
   ) {
-    return 'p2w-sh'
+    return 'p2wsh'
   // If the witness elements don't match any known profile:
   } else {
-    return 'unknown'
+    return null
   }
 }
 
-function parse_witness_version (type : WitnessType) : number | null {
-  if (type.startsWith('p2tr')) return 1
-  if (type.startsWith('p2w'))  return 0
+function parse_witness_version (
+  type : SpendScriptType | null
+) : WitnessVersion | null {
+  if (type === null) return null
+  if (type.startsWith('p2w')) return 0
+  if (type.startsWith('p2t')) return 1
   return null
 }
