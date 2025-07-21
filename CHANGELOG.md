@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.1.6]
+
+- Changed `create_address` to `get_address`, fixed issues with interface.
+
 ## [1.1.5]
 
 - Updated exports for Script module.
