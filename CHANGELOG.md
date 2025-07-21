@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.1.5]
+
+- Updated exports for Script module.
+
 ## [1.1.4]
 
 - Updates to API for Address module.
