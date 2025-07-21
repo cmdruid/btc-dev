@@ -12,36 +12,36 @@ import { P2WSH }  from './p2wsh.js'
 import type { AddressInfo, ChainNetwork } from '@/types/index.js'
 
 /**
- * Parse an address into its data and script.
+ * Get the address for a given locking script.
  * 
- * @param address - The address to parse.
- * @returns The address data and script.
+ * @param script - The locking script.
+ * @param network - The network to use.
+ * @returns The address.
  */
-export function create_address (
+export function get_address (
   script  : Bytes,
   network : ChainNetwork = 'main'
 ) : string {
   // Convert the script into bytes.
   const bytes = Buff.bytes(script)
   // Get the address configuration.
-  const type = get_lock_script_type(bytes)
+  const type  = get_lock_script_type(bytes)
   // If the script type is not recognized, throw an error.
-  if (type === null) throw new Error('unrecognized script type: ' + bytes.hex)
+  if (type === null) throw new Error('unknown locking script: ' + bytes.hex)
   // Create the address based on the script type.
   switch (type) {
     case LOCK_SCRIPT_TYPE.P2PKH:
-      return P2PKH.create_address(script, network)
+      return P2PKH.encode_address(script, network)
     case LOCK_SCRIPT_TYPE.P2SH:
-      return P2SH.create_address(script, network)
+      return P2SH.encode_address(script, network)
     case LOCK_SCRIPT_TYPE.P2WPKH:
-      return P2WPKH.create_address(script, network)
+      return P2WPKH.encode_address(script, network)
     case LOCK_SCRIPT_TYPE.P2WSH:
-      return P2WSH.create_address(script, network)
+      return P2WSH.encode_address(script, network)
     case LOCK_SCRIPT_TYPE.P2TR:
-      return P2TR.create_address(script, network)
+      return P2TR.encode_address(script, network)
     default:
-      // If the script type is not recognized, throw an error.
-      throw new Error('unrecognized script type: ' + type)
+      throw new Error('unknown script type: ' + type)
   }
 }
 
