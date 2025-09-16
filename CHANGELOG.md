@@ -2,6 +2,7 @@
 
 ## [1.1.7]
 
+- Removed schema dependency.
 - Fixed an issue with the transaction encoder.
 
 ## [1.1.6]
