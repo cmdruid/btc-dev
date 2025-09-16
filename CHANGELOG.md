@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.1.7]
+
+- Fixed an issue with the transaction encoder.
+
 ## [1.1.6]
 
 - Changed `create_address` to `get_address`, fixed issues with interface.
