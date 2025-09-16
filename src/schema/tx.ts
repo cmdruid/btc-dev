@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { hex, hex32, uint } from '@vbyte/micro-lib/schema'
+import { hex, hex32, uint } from './base.js'
 
 import type { TxOutput, TxOutputTemplate } from '@/types/index.js'
 

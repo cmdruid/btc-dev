@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { byte32, uint } from '@vbyte/micro-lib/schema'
+import { byte32, uint } from './base.js'
 
 export const taptree = z.union([ z.array(byte32), byte32 ])
 
