@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.1.8]
+
+- Removed excess logging.
+
 ## [1.1.7]
 
 - Removed schema dependency.
