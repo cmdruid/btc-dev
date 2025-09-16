@@ -2,6 +2,7 @@ import { Buff }               from '@vbyte/buff'
 import { Test }               from '@vbyte/micro-lib'
 import { Assert }             from '@vbyte/micro-lib/assert'
 import { hash256 }            from '@vbyte/micro-lib/hash'
+import { decode_tx }          from './decode.js'
 import { encode_tx }          from './encode.js'
 import { parse_tx }           from './parse.js'
 import { assert_tx_template } from './validate.js'
@@ -15,12 +16,24 @@ import type {
   TxValue
 } from '@/types/index.js'
 
+export function transcode_tx (
+  txdata : string | Uint8Array,
+  use_segwit = true
+) : Buff {
+  console.log('txdata:', txdata)
+  // Decode the transaction data.
+  const decoded = decode_tx(txdata)
+  console.log('decoded:', decoded)
+  // Re-encode and return the encoded transaction data.
+  return encode_tx(decoded, use_segwit)
+}
+
 export function get_txid (txdata : string | Uint8Array | TxData) : string {
   let buffer : Uint8Array
 
   if (txdata instanceof Uint8Array) {
     // Set the buffer to the transaction data.
-    buffer = txdata
+    buffer = transcode_tx(txdata, false)
   } else if (typeof txdata === 'object') {
     // Assert the structure of the transaction data is valid.
     assert_tx_template(txdata)
@@ -30,7 +43,7 @@ export function get_txid (txdata : string | Uint8Array | TxData) : string {
     // Assert the transaction data is a hex string.
     Assert.is_hex(txdata)
     // Convert the hex string to a Uint8Array.
-    buffer = Buff.hex(txdata)
+    buffer = transcode_tx(txdata, false)
   } else {
     throw new TypeError('invalid txdata type: ' + typeof txdata)
   }

@@ -22,9 +22,9 @@ export function decode_tx (
   // Parse tx version.
   const version = read_version(stream)
   // Check and enable any flags that are set.
-  const has_witness = (use_segwit)
-    ? check_witness_flag(stream)
-    : false
+  let has_witness = check_witness_flag(stream)
+  // If use_segwit is false, set has_witness to false.
+  has_witness = (use_segwit) ? has_witness : false
   // Parse our inputs and outputs.
   const vin  = read_inputs(stream)
   const vout = read_outputs(stream)
