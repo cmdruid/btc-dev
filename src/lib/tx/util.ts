@@ -20,10 +20,8 @@ export function transcode_tx (
   txdata : string | Uint8Array,
   use_segwit = true
 ) : Buff {
-  console.log('txdata:', txdata)
   // Decode the transaction data.
   const decoded = decode_tx(txdata)
-  console.log('decoded:', decoded)
   // Re-encode and return the encoded transaction data.
   return encode_tx(decoded, use_segwit)
 }
