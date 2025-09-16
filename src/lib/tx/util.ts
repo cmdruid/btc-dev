@@ -16,15 +16,26 @@ import type {
 } from '@/types/index.js'
 
 export function get_txid (txdata : string | Uint8Array | TxData) : string {
-  // If the transaction data is an object,
-  if (typeof txdata === 'object') {
+  let buffer : Uint8Array
+
+  if (txdata instanceof Uint8Array) {
+    // Set the buffer to the transaction data.
+    buffer = txdata
+  } else if (typeof txdata === 'object') {
     // Assert the structure of the transaction data is valid.
     assert_tx_template(txdata)
     // Encode the transaction data.
-    txdata = encode_tx(txdata, false)
+    buffer = encode_tx(txdata, false)
+  } else if (typeof txdata === 'string') {
+    // Assert the transaction data is a hex string.
+    Assert.is_hex(txdata)
+    // Convert the hex string to a Uint8Array.
+    buffer = Buff.hex(txdata)
+  } else {
+    throw new TypeError('invalid txdata type: ' + typeof txdata)
   }
   // Return the txid of the transaction data.
-  return hash256(txdata).reverse().hex
+  return hash256(buffer).reverse().hex
 }
 
 export function get_txhash (txdata : string | Uint8Array | TxData) : string {
