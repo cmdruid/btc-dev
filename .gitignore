@@ -43,4 +43,6 @@ test/data
 NOTES.md
 TODO.md
 .agent
+.claude
+.context
 .local

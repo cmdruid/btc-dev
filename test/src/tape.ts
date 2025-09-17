@@ -15,7 +15,15 @@ import taproot_sign_test    from './case/sighash/taproot/sign.test.js'
 import tree_tests from './case/taproot/tree.test.js'
 import unit_tests from './case/taproot/unit.test.js'
 
+// New essential tests
+import signer_essential_test from './case/signer/schnorr-essential.test.js'
+import signer_scenarios_test from './case/signer/transaction-scenarios.test.js'
+import script_basic_test from './case/script/basic-patterns.test.js'
+import script_opcode_test from './case/script/opcode-essentials.test.js'
+import tx_essential_test from './case/tx/essential-operations.test.js'
+
 tape('Tapscript Test Suite', async t => {
+  // Existing tests
   p2pkh_test(t)
   p2sh_test(t)
   p2wpkh_test(t)
@@ -27,4 +35,11 @@ tape('Tapscript Test Suite', async t => {
   taproot_sign_test(t)
   tree_tests(t)
   unit_tests(t)
+
+  // New essential tests for critical modules
+  signer_essential_test(t)
+  signer_scenarios_test(t)
+  script_basic_test(t)
+  script_opcode_test(t)
+  tx_essential_test(t)
 })
