@@ -43,7 +43,7 @@ export default function (t :Test) {
         t.equal(nobleVerify, true, 'Signature should be valid using Noble.')
         txcopy.vin[txindex].witness = [ sig, pubkey, redeemScript ]
         const signerVerify = verify_tx(txcopy, config)
-        t.equal(signerVerify, true, 'Signature should be valid using Signer.')
+        t.equal(signerVerify.valid, true, 'Signature should be valid using Signer.')
       } catch (err : any) {
         t.fail(err.message)
       }

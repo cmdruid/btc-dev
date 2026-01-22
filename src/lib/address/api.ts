@@ -27,7 +27,7 @@ export function get_address (
   // Get the address configuration.
   const type  = get_lock_script_type(bytes)
   // If the script type is not recognized, throw an error.
-  if (type === null) throw new Error('unknown locking script: ' + bytes.hex)
+  if (type === null) throw new Error('Unknown or unsupported locking script type')
   // Create the address based on the script type.
   switch (type) {
     case LOCK_SCRIPT_TYPE.P2PKH:

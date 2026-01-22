@@ -1,7 +1,6 @@
-import { Stream }      from '@vbyte/buff'
-import { Assert }      from '@vbyte/micro-lib/assert'
-import { parse_error } from '@vbyte/micro-lib/util'
-import { COINBASE }    from '@/const.js'
+import { Stream }   from '@vbyte/buff'
+import { Assert }   from '@vbyte/micro-lib/assert'
+import { COINBASE } from '@/const.js'
 
 import {
   TxInput,
@@ -11,12 +10,28 @@ import {
   TxDecodedData
 } from '@/types/index.js'
 
+/** Maximum transaction size in bytes (4MB, Bitcoin consensus limit) */
+const MAX_TX_SIZE = 4_000_000
+
+/** Maximum varint size to prevent memory exhaustion attacks */
+const MAX_VARINT_SIZE = 10_000_000
+
+/** Maximum number of inputs/outputs per transaction */
+const MAX_TX_ELEMENTS = 100_000
+
 export function decode_tx (
   txdata : string | Uint8Array,
   use_segwit = true
 ) : TxDecodedData {
   // Assert the txdata is a bytes object.
   Assert.is_bytes(txdata, 'txdata must be hex or bytes')
+
+  // Check transaction size limit
+  const txSize = typeof txdata === 'string' ? txdata.length / 2 : txdata.length
+  if (txSize > MAX_TX_SIZE) {
+    throw new Error(`Transaction size ${txSize} exceeds maximum ${MAX_TX_SIZE} bytes`)
+  }
+
   // Setup a byte-stream.
   const stream = new Stream(txdata)
   // Parse tx version.
@@ -60,6 +75,9 @@ function check_witness_flag (stream : Stream) : boolean {
 function read_inputs (stream : Stream) : TxInput[] {
   const inputs = []
   const vinCount = stream.varint()
+  if (vinCount > MAX_TX_ELEMENTS) {
+    throw new Error(`Input count ${vinCount} exceeds maximum ${MAX_TX_ELEMENTS}`)
+  }
   for (let i = 0; i < vinCount; i++) {
     const txinput = read_vin(stream)
     inputs.push(txinput)
@@ -83,11 +101,14 @@ function read_vin (stream : Stream) : TxInput {
 function read_outputs (stream : Stream) : TxOutput[] {
   const outputs = []
   const vcount  = stream.varint()
+  if (vcount > MAX_TX_ELEMENTS) {
+    throw new Error(`Output count ${vcount} exceeds maximum ${MAX_TX_ELEMENTS}`)
+  }
   for (let i = 0; i < vcount; i++) {
     try {
       outputs.push(read_vout(stream))
     } catch (error) {
-      throw new Error(`failed to decode output: ${i}: ${parse_error(error)}`)
+      throw new Error(`failed to decode output at index ${i}`)
     }
   }
   return outputs
@@ -103,10 +124,13 @@ function read_vout (stream : Stream) : TxOutput {
 function read_witness (stream : Stream) : string[] {
   const stack = []
   const count = stream.varint()
+  if (count > MAX_TX_ELEMENTS) {
+    throw new Error(`Witness element count ${count} exceeds maximum ${MAX_TX_ELEMENTS}`)
+  }
   for (let i = 0; i < count; i++) {
     const element = read_payload(stream)
     if (element === null) {
-      throw new Error('failed to decode witness element: ' + i)
+      throw new Error(`failed to decode witness element at index ${i}`)
     }
     stack.push(element)
   }
@@ -115,6 +139,9 @@ function read_witness (stream : Stream) : string[] {
 
 export function read_payload (stream : Stream) : string | null {
   const size = stream.varint('le')
+  if (size > MAX_VARINT_SIZE) {
+    throw new Error(`Payload size ${size} exceeds maximum ${MAX_VARINT_SIZE}`)
+  }
   return (size > 0) ? stream.read(size).hex : null
 }
 

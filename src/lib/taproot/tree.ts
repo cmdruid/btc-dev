@@ -3,6 +3,9 @@ import { encode_tapbranch } from './encode.js'
 
 import type { TapTree, MerkleProof } from '@/types/index.js'
 
+/** Maximum taproot tree depth (BIP-341 limit) */
+const MAX_TAPROOT_DEPTH = 128
+
 /**
  * Get the root of a taproot tree.
  * @param leaves - The leaves of the tree.
@@ -18,13 +21,21 @@ export function get_merkle_root (leaves : TapTree) {
  * @param taptree - The leaves of the tree.
  * @param target  - The target leaf of the tree.
  * @param path    - The recursive path of the tree.
+ * @param depth   - Current recursion depth (for limit checking).
  * @returns The root of the tree.
+ * @throws Error if tree depth exceeds MAX_TAPROOT_DEPTH (128).
  */
 export function merkleize (
   taptree : TapTree,
   target ?: string,
-  path    : string[] = []
+  path    : string[] = [],
+  depth   : number   = 0
 ) : MerkleProof {
+  // Check depth limit to prevent stack overflow attacks
+  if (depth > MAX_TAPROOT_DEPTH) {
+    throw new Error(`Taproot tree depth ${depth} exceeds maximum ${MAX_TAPROOT_DEPTH}`)
+  }
+
   // Initialize the leaves and tree arrays.
   const leaves : string[] = []
   const tree   : string[] = []
@@ -38,8 +49,8 @@ export function merkleize (
     const bytes = taptree[i]
     // If the leaf is an array,
     if (Array.isArray(bytes)) {
-      // Recursively process the nested tree.
-      let [ tapleaf, new_target, branches ] = merkleize(bytes, target)
+      // Recursively process the nested tree (with incremented depth).
+      let [ tapleaf, new_target, branches ] = merkleize(bytes, target, [], depth + 1)
       // Update the target leaf.
       target = new_target
       // Add the nested tapleaf to the leaves array.
@@ -89,6 +100,6 @@ export function merkleize (
       }
     }
   }
-  // Recursively process the tree.
-  return merkleize(tree, target, path)
+  // Recursively process the tree (with incremented depth).
+  return merkleize(tree, target, path, depth + 1)
 }

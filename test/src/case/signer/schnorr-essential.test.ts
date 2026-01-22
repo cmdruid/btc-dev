@@ -24,9 +24,9 @@ export default function (t: Test): void {
   // })
 
   t.test('Transaction verification tests', t => {
-    t.plan(3)
+    t.plan(5)
 
-    // Test basic verification (currently returns true with warning)
+    // Test basic verification with empty transaction
     const mockTxData = {
       version: 2,
       vin: [],
@@ -34,18 +34,20 @@ export default function (t: Test): void {
       locktime: 0
     }
 
-    // Test that verify_tx function works
+    // Test that verify_tx function returns VerifyResult object
     const result1 = verify_tx(mockTxData)
-    t.equal(typeof result1, 'boolean', 'verify_tx should return boolean')
+    t.equal(typeof result1, 'object', 'verify_tx should return VerifyResult object')
+    t.equal(typeof result1.valid, 'boolean', 'verify_tx result should have valid property')
+    t.equal(result1.valid, true, 'Empty transaction should be valid (no inputs to verify)')
 
     // Test with empty config
     const result2 = verify_tx(mockTxData, {})
-    t.equal(typeof result2, 'boolean', 'verify_tx should work with empty config')
+    t.equal(result2.valid, true, 'verify_tx should work with empty config')
 
     // Test error handling for invalid input
     try {
       const result3 = verify_tx(null as any)
-      t.equal(typeof result3, 'boolean', 'verify_tx should handle null input gracefully')
+      t.fail('verify_tx should throw on null input')
     } catch (err) {
       t.pass('verify_tx correctly throws on null input')
     }

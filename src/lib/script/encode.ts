@@ -5,7 +5,20 @@ import { get_asm_code, } from './words.js'
 const MAX_WORD_SIZE = 520
 
 /**
- * Encode script asm instructions into a hex string.
+ * Encode script asm instructions into a byte buffer.
+ *
+ * @param words - Array of script words (opcodes, hex data, strings, numbers, or bytes)
+ * @param varint - If true, prefix the script with its length as a varint
+ * @returns Encoded script as a Buff
+ *
+ * @example
+ * ```typescript
+ * // Encode a P2PKH script
+ * const script = encode_script(['OP_DUP', 'OP_HASH160', pubkeyHash, 'OP_EQUALVERIFY', 'OP_CHECKSIG'])
+ *
+ * // Encode with varint prefix
+ * const scriptWithLen = encode_script(['OP_1', pubkey, 'OP_1', 'OP_CHECKMULTISIG'], true)
+ * ```
  */
 export function encode_script (
   words : (string | number | Uint8Array)[],

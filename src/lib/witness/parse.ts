@@ -71,8 +71,10 @@ function parse_witness_script (
   switch (type) {
     case 'p2ts':
       script = elems.at(-1)
+      break
     case 'p2wsh':
       script = elems.at(-1)
+      break
   }
   return (script !== undefined) ? new Buff(script).hex : null
 }

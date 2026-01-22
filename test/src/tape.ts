@@ -22,6 +22,17 @@ import script_basic_test from './case/script/basic-patterns.test.js'
 import script_opcode_test from './case/script/opcode-essentials.test.js'
 import tx_essential_test from './case/tx/essential-operations.test.js'
 
+// Phase 2 module tests
+import witness_parse_test from './case/witness/parse.test.js'
+import script_lock_test from './case/script/lock.test.js'
+import meta_locktime_test from './case/meta/locktime.test.js'
+import meta_sequence_test from './case/meta/sequence.test.js'
+import meta_ref_test from './case/meta/ref.test.js'
+import tx_size_test from './case/tx/size.test.js'
+
+// Integration tests
+import integration_e2e_test from './case/integration/e2e.test.js'
+
 tape('Tapscript Test Suite', async t => {
   // Existing tests
   p2pkh_test(t)
@@ -42,4 +53,15 @@ tape('Tapscript Test Suite', async t => {
   script_basic_test(t)
   script_opcode_test(t)
   tx_essential_test(t)
+
+  // Phase 2 module tests
+  witness_parse_test(t)
+  script_lock_test(t)
+  meta_locktime_test(t)
+  meta_sequence_test(t)
+  meta_ref_test(t)
+  tx_size_test(t)
+
+  // Integration tests
+  integration_e2e_test(t)
 })
