@@ -2,7 +2,7 @@ import { Test }              from 'tape'
 import { Buff }              from '@vbyte/buff'
 import { parse_tx }          from '@/lib/tx/parse.js'
 import { hash_segwit_tx }    from '@/lib/sighash/segwit.js'
-import { secp256k1 as secp } from '@noble/curves/secp256k1'
+import { secp256k1 as secp } from '@noble/curves/secp256k1.js'
 
 import {
   sign_segwit_tx,
@@ -39,7 +39,10 @@ export default function (t :Test) {
         const txcopy = { ...tx } as TxData
         const sig = sign_segwit_tx(seckey, txcopy, config)
         t.equal(sig, signature, 'Signatures should be equal.')
-        const nobleVerify = secp.verify(sig.slice(0, -2), sigHash, pubkey)
+        // Parse DER signature (without sighash flag) into a Signature object for verification
+        // Use prehash: false since sigHash is already a hash
+        const derSig = secp.Signature.fromHex(sig.slice(0, -2), 'der')
+        const nobleVerify = secp.verify(derSig.toBytes('compact'), Buff.hex(sigHash), Buff.hex(pubkey), { prehash: false })
         t.equal(nobleVerify, true, 'Signature should be valid using Noble.')
         txcopy.vin[txindex].witness = [ sig, pubkey, redeemScript ]
         const signerVerify = verify_tx(txcopy, config)

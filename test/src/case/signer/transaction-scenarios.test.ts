@@ -33,7 +33,8 @@ export default function (t: Test): void {
 
       // TODO: Add actual mainnet transaction hex data and test parsing
     } catch (err) {
-      t.fail(`Real transaction test failed: ${err.message}`)
+      const message = err instanceof Error ? err.message : String(err)
+      t.fail(`Real transaction test failed: ${message}`)
     }
   })
 

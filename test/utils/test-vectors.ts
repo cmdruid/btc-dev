@@ -40,7 +40,8 @@ export function runTestVectors<T>(
     try {
       testFn(vector)
     } catch (err) {
-      throw new Error(`${description} ${index} failed: ${err.message}`)
+      const message = err instanceof Error ? err.message : String(err)
+      throw new Error(`${description} ${index} failed: ${message}`)
     }
   }
 }

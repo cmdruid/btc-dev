@@ -64,7 +64,7 @@ export function encode_txin_sequence (sequence : number) : Buff {
 
 export function encode_tx_inputs (vin : TxInput[]) : Buff {
   // Create a buffer for the inputs, starting with the array length.
-  const raw : Buff[] = [ Buff.varint(vin.length, 'le') ]
+  const raw : Buff[] = [ Buff.create_varint(vin.length, 'le') ]
   // For each input in the array,
   for (const input of vin) {
     // Encode the input, and add it to the buffer.
@@ -102,7 +102,7 @@ export function encode_vout_value (value : bigint) : Buff {
 
 export function encode_tx_outputs (vout : TxOutput[]) : Buff {
   // Create a buffer for the outputs, starting with the array length.
-  const buffer : Buff[] = [ Buff.varint(vout.length, 'le') ]
+  const buffer : Buff[] = [ Buff.create_varint(vout.length, 'le') ]
   // For each output in the array,
   for (const output of vout) {
     // Encode the output, and add it to the buffer.
@@ -124,7 +124,7 @@ export function encode_tx_vout (txout : TxOutput) : Buff {
 
 export function encode_vin_witness (data : string[]) : Buff {
   // Create a buffer for the witness data, starting with the array length.
-  const buffer : Buff[] = [ Buff.varint(data.length) ]
+  const buffer : Buff[] = [ Buff.create_varint(data.length) ]
   // For each parameter in the witness array,
   for (const param of data) {
     // Encode the parameter, and add it to the buffer.

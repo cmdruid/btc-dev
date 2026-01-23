@@ -1,7 +1,7 @@
 import { Test }              from 'tape'
 import { Buff }              from '@vbyte/buff'
 import { parse_error }       from '@vbyte/micro-lib/util'
-import { schnorr }           from '@noble/curves/secp256k1'
+import { schnorr }           from '@noble/curves/secp256k1.js'
 import { parse_tx }          from '@/lib/tx/parse.js'
 import { create_tx_output }  from '@/lib/tx/create.js'
 import * as ECC              from '@vbyte/micro-lib/ecc'
@@ -61,14 +61,14 @@ export default function (t : Test) {
 
         // Test our ability to sign the transaction.
         const pubkey        = ECC.get_pubkey(tweakedPrivkey, 'bip340')
-        const tweakedpub    = Buff.uint(schnorr.getPublicKey(tweakedPrivkey))
+        const tweakedpub    = Buff.bytes(schnorr.getPublicKey(Buff.hex(tweakedPrivkey)))
         t.equal(pubkey.hex, tweakedpub.hex, 'The tweaked pubkeys should be equal.')
 
         const signature     = ECC.sign_bip340(tweakedPrivkey, sigHash).hex
         const isVerify      = ECC.verify_bip340(signature, sigHash, tweakedpub)
         t.true(isVerify,    'Signature made with sign should be valid using verify.')
 
-        const schnorrVerify = schnorr.verify(signature, sigHash, tweakedpub)
+        const schnorrVerify = schnorr.verify(Buff.hex(signature), Buff.hex(sigHash), tweakedpub)
         t.true(schnorrVerify, 'The signTx signature should be valid using schnorr.')
 
         const sigVerify     = ECC.verify_bip340(signature, actual_hash, tweakedpub)
@@ -77,10 +77,10 @@ export default function (t : Test) {
         const vectVerify    = ECC.verify_bip340(witsig, sigHash, tweakedpub)
         t.true(vectVerify,  'The vector signature should be valid using verify.')
 
-        const checkVerify   = schnorr.verify(witsig, sigHash, tweakedpub)
+        const checkVerify   = schnorr.verify(Buff.hex(witsig), Buff.hex(sigHash), tweakedpub)
         t.true(checkVerify, 'The vector signature should be valid using schnorr.')
 
-        const schnorrSig    = schnorr.sign(actual_hash, tweakedPrivkey)
+        const schnorrSig    = schnorr.sign(actual_hash, Buff.hex(tweakedPrivkey))
         const testVerify    = ECC.verify_bip340(schnorrSig, actual_hash, tweakedpub)
         t.true(testVerify,  'The schnorr signature should be valid using verify.')
 

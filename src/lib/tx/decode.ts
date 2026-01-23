@@ -74,7 +74,7 @@ function check_witness_flag (stream : Stream) : boolean {
 
 function read_inputs (stream : Stream) : TxInput[] {
   const inputs = []
-  const vinCount = stream.varint()
+  const vinCount = stream.read_varint()
   if (vinCount > MAX_TX_ELEMENTS) {
     throw new Error(`Input count ${vinCount} exceeds maximum ${MAX_TX_ELEMENTS}`)
   }
@@ -100,7 +100,7 @@ function read_vin (stream : Stream) : TxInput {
 
 function read_outputs (stream : Stream) : TxOutput[] {
   const outputs = []
-  const vcount  = stream.varint()
+  const vcount  = stream.read_varint()
   if (vcount > MAX_TX_ELEMENTS) {
     throw new Error(`Output count ${vcount} exceeds maximum ${MAX_TX_ELEMENTS}`)
   }
@@ -123,7 +123,7 @@ function read_vout (stream : Stream) : TxOutput {
 
 function read_witness (stream : Stream) : string[] {
   const stack = []
-  const count = stream.varint()
+  const count = stream.read_varint()
   if (count > MAX_TX_ELEMENTS) {
     throw new Error(`Witness element count ${count} exceeds maximum ${MAX_TX_ELEMENTS}`)
   }
@@ -138,7 +138,7 @@ function read_witness (stream : Stream) : string[] {
 }
 
 export function read_payload (stream : Stream) : string | null {
-  const size = stream.varint('le')
+  const size = stream.read_varint('le')
   if (size > MAX_VARINT_SIZE) {
     throw new Error(`Payload size ${size} exceeds maximum ${MAX_VARINT_SIZE}`)
   }

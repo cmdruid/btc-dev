@@ -9,7 +9,7 @@ import {
   get_segwit_size
 } from '@/lib/tx/size.js'
 
-import type { TxInput, TxOutput, TxVirtualInput } from '@/types/index.js'
+import type { TxOutput, TxVirtualInput } from '@/types/index.js'
 
 export default function (t: Test): void {
   t.test('TX size calculation module', t => {

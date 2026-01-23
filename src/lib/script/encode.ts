@@ -36,7 +36,7 @@ export function encode_script (
   const buffer = Buff.join(bytes)
 
   return (varint)
-    ? buffer.prepend(Buff.varint(buffer.length, 'le'))
+    ? buffer.prepend(Buff.create_varint(buffer.length, 'le'))
     : buffer
 }
 

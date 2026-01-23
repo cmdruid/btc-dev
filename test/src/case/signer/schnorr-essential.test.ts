@@ -1,5 +1,4 @@
 import { Test } from 'tape'
-import { getEssentialBIP340Vectors } from '../../../utils/test-vectors.js'
 
 // Import actual available signer functions
 import {
@@ -46,9 +45,9 @@ export default function (t: Test): void {
 
     // Test error handling for invalid input
     try {
-      const result3 = verify_tx(null as any)
+      verify_tx(null as any)
       t.fail('verify_tx should throw on null input')
-    } catch (err) {
+    } catch {
       t.pass('verify_tx correctly throws on null input')
     }
   })

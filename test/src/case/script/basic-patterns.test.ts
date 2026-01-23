@@ -38,7 +38,8 @@ export default function (t: Test): void {
         }
       } catch (err) {
         if (valid) {
-          t.fail(`${description} - should not throw for valid script: ${err.message}`)
+          const message = err instanceof Error ? err.message : String(err)
+          t.fail(`${description} - should not throw for valid script: ${message}`)
         } else {
           t.pass(`${description} - correctly throws for invalid script`)
         }
@@ -61,14 +62,15 @@ export default function (t: Test): void {
 
     for (const script of basicScripts) {
       try {
-        const encoded = encode_script(script)
+        const encoded = encode_script([script])
         t.ok(encoded, `${script} should encode successfully`)
 
         // If decode is implemented, test round-trip
         // const decoded = decode_script(encoded)
         // t.equal(decoded, script, `${script} should round-trip correctly`)
       } catch (err) {
-        t.fail(`${script} encoding failed: ${err.message}`)
+        const message = err instanceof Error ? err.message : String(err)
+        t.fail(`${script} encoding failed: ${message}`)
       }
     }
   })
@@ -101,7 +103,8 @@ export default function (t: Test): void {
         const result = parse_script(testCase.input)
         t.ok(result, `${testCase.description} should parse successfully`)
       } catch (err) {
-        t.fail(`${testCase.description} parsing failed: ${err.message}`)
+        const message = err instanceof Error ? err.message : String(err)
+        t.fail(`${testCase.description} parsing failed: ${message}`)
       }
     }
   })

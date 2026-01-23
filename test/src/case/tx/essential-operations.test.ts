@@ -97,7 +97,7 @@ export default function (t: Test): void {
       assert_tx_data(SAMPLE_TX_DATA)
       t.pass('Basic transaction data validation passed')
     } catch (err) {
-      t.fail(`Basic transaction validation failed: ${err.message}`)
+      t.fail(`Basic transaction validation failed: ${err instanceof Error ? err.message : String(err)}`)
     }
 
     // Test segwit transaction validation
@@ -105,7 +105,7 @@ export default function (t: Test): void {
       assert_tx_data(SEGWIT_TX_DATA)
       t.pass('Segwit transaction data validation passed')
     } catch (err) {
-      t.fail(`Segwit transaction validation failed: ${err.message}`)
+      t.fail(`Segwit transaction validation failed: ${err instanceof Error ? err.message : String(err)}`)
     }
 
     // Test taproot transaction validation
@@ -113,7 +113,7 @@ export default function (t: Test): void {
       assert_tx_data(TAPROOT_TX_DATA)
       t.pass('Taproot transaction data validation passed')
     } catch (err) {
-      t.fail(`Taproot transaction validation failed: ${err.message}`)
+      t.fail(`Taproot transaction validation failed: ${err instanceof Error ? err.message : String(err)}`)
     }
   })
 
@@ -142,7 +142,8 @@ export default function (t: Test): void {
       } catch (err) {
         // For mock transaction data, encoding failures are acceptable
         // as long as validation passes (which it does)
-        t.pass(`${testTx.name} validation passed (encoding failed with mock data: ${err.message})`)
+        const message = err instanceof Error ? err.message : String(err)
+        t.pass(`${testTx.name} validation passed (encoding failed with mock data: ${message})`)
       }
     }
   })
@@ -162,7 +163,7 @@ export default function (t: Test): void {
         assert_tx_data(validTx.data)
         t.pass(`${validTx.name} validation passed`)
       } catch (err) {
-        t.fail(`${validTx.name} validation failed: ${err.message}`)
+        t.fail(`${validTx.name} validation failed: ${err instanceof Error ? err.message : String(err)}`)
       }
     }
 
@@ -210,7 +211,7 @@ export default function (t: Test): void {
         // TODO: Add fee calculation tests with fee rates
 
       } catch (err) {
-        t.fail(`Transaction validation failed: ${err.message}`)
+        t.fail(`Transaction validation failed: ${err instanceof Error ? err.message : String(err)}`)
       }
     }
   })
@@ -268,7 +269,7 @@ export default function (t: Test): void {
         if (testCase.shouldFail) {
           t.pass(`${testCase.description} correctly failed`)
         } else {
-          t.fail(`${testCase.description} should not have failed: ${err.message}`)
+          t.fail(`${testCase.description} should not have failed: ${err instanceof Error ? err.message : String(err)}`)
         }
       }
     }
@@ -292,7 +293,7 @@ export default function (t: Test): void {
         t.pass(`${txType.name} structure validation passed`)
 
       } catch (err) {
-        t.fail(`${txType.name} validation failed: ${err.message}`)
+        t.fail(`${txType.name} validation failed: ${err instanceof Error ? err.message : String(err)}`)
       }
     }
   })
@@ -339,7 +340,7 @@ export default function (t: Test): void {
       t.ok(encoded, 'Multi-output transaction should encode successfully')
 
     } catch (err) {
-      t.fail(`Multi-output transaction failed: ${err.message}`)
+      t.fail(`Multi-output transaction failed: ${err instanceof Error ? err.message : String(err)}`)
       t.fail('Multi-output encoding also failed') // Account for plan
     }
   })

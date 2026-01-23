@@ -1,7 +1,7 @@
 import { Test }    from 'tape'
 import { Buff }    from '@vbyte/buff'
 
-import { create_spend_input, decode_tx, encode_tx } from '@/src/tx'
+import { create_spend_input, decode_tx, encode_tx } from '@/lib/tx/index.js'
 
 import test_data from './valid.vectors.json' with { type: 'json' }
 

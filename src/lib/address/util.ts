@@ -77,7 +77,7 @@ export function get_address_info (address : string) : AddressInfo {
     }
 
     // Convert the decoded data into a hex string.
-    const data   = Buff.uint(dec.data).hex
+    const data   = Buff.bytes(dec.data).hex
     const script = get_address_script(data, type)
     // Return the address configuration and data.
     return { data, script,type, prefix, network, size, format, version }
