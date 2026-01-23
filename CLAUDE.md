@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Quick Reference
 
-**Detailed documentation**: See `.context/` directory (QUICKSTART.md, STRUCTURE.md, CONVENTIONS.md, WORKFLOWS.md, GOTCHAS.md)
+**Detailed documentation**: See `docs/` directory ([GUIDE.md](docs/GUIDE.md) for tutorials, [API.md](docs/API.md) for reference)
 
 ## Commands
 
@@ -48,6 +48,16 @@ import { encode_script } from '@/lib/script/encode.js'      // Internal (note .j
 ```
 
 **Module dependencies**: TX depends on SCRIPT, ADDRESS, SIGHASH, WITNESS. SIGNER depends on SIGHASH. TAPROOT depends on SCRIPT. ADDRESS depends on SCRIPT.
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [GUIDE.md](docs/GUIDE.md) | Complete tutorial: addresses, transactions, signing, taproot |
+| [API.md](docs/API.md) | Complete API reference for all 8 modules |
+| [SECURITY.md](docs/SECURITY.md) | Security best practices |
+| [CONVENTIONS.md](docs/CONVENTIONS.md) | Coding conventions |
+| [FAQ.md](docs/FAQ.md) | Common questions and troubleshooting |
 
 ## Test Coverage Status
 
