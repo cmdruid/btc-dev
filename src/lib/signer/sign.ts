@@ -1,30 +1,32 @@
-import { Buff }            from '@vbyte/buff'
-import { ECC }             from '@vbyte/micro-lib'
-import { parse_tx }        from '@/lib/tx/parse.js'
-import { SIGHASH_DEFAULT, SIGHASH_SEGWIT, SIGHASH_TAPROOT } from '@/const.js'
-import { hash_segwit_tx }  from '@/lib/sighash/segwit.js'
-import { hash_taproot_tx } from '@/lib/sighash/taproot.js'
+import { Buff } from "@vbyte/buff";
+import { ECC } from "@vbyte/micro-lib";
+import { SIGHASH_DEFAULT, SIGHASH_SEGWIT, SIGHASH_TAPROOT } from "@/const.js";
+import { hash_segwit_tx } from "@/lib/sighash/segwit.js";
+import { hash_taproot_tx } from "@/lib/sighash/taproot.js";
+import { parse_tx } from "@/lib/tx/parse.js";
 
-import type {
-  SigHashOptions,
-  TxData
-} from '@/types/index.js'
+import type { SigHashOptions, TxData } from "@/types/index.js";
 
-/** Regex pattern for valid 32-byte hex string (64 hex characters) */
-const SECKEY_REGEX = /^[0-9a-fA-F]{64}$/
+/**
+ * Regex pattern for valid 32-byte hex string (64 hex characters).
+ * Used for secret key validation.
+ */
+const SECKEY_REGEX = /^[0-9a-fA-F]{64}$/;
 
 /**
  * Validate a secret key format.
  * @param seckey - The secret key to validate
  * @throws Error if the secret key is invalid
  */
-function validate_seckey (seckey : string) : void {
-  if (typeof seckey !== 'string') {
-    throw new Error('Secret key must be a string')
-  }
-  if (!SECKEY_REGEX.test(seckey)) {
-    throw new Error('Invalid secret key format: expected 32-byte hex string (64 characters)')
-  }
+function validate_seckey(seckey: string): void {
+	if (typeof seckey !== "string") {
+		throw new Error("Secret key must be a string");
+	}
+	if (!SECKEY_REGEX.test(seckey)) {
+		throw new Error(
+			"Invalid secret key format: expected 32-byte hex string (64 characters)",
+		);
+	}
 }
 
 /**
@@ -33,28 +35,38 @@ function validate_seckey (seckey : string) : void {
  * @param validFlags - Array of valid sighash flags
  * @throws Error if options are invalid
  */
-function validate_sighash_options (options : SigHashOptions, validFlags : number[]) : void {
-  const { sigflag, txindex } = options
+function validate_sighash_options(
+	options: SigHashOptions,
+	validFlags: number[],
+): void {
+	const { sigflag, txindex } = options;
 
-  if (sigflag !== undefined) {
-    if (typeof sigflag !== 'number' || !Number.isInteger(sigflag)) {
-      throw new Error('sigflag must be an integer')
-    }
-    // Normalize sigflag for validation (remove ANYONECANPAY bit)
-    const normalizedFlag = sigflag & 0x7f
-    const isAnypay = (sigflag & 0x80) === 0x80
-    const baseFlag = isAnypay ? normalizedFlag | 0x80 : normalizedFlag
+	if (sigflag !== undefined) {
+		if (typeof sigflag !== "number" || !Number.isInteger(sigflag)) {
+			throw new Error("sigflag must be an integer");
+		}
+		// Normalize sigflag for validation (remove ANYONECANPAY bit)
+		const normalizedFlag = sigflag & 0x7f;
+		const isAnypay = (sigflag & 0x80) === 0x80;
+		const baseFlag = isAnypay ? normalizedFlag | 0x80 : normalizedFlag;
 
-    if (!validFlags.includes(baseFlag) && !validFlags.includes(normalizedFlag)) {
-      throw new Error(`Invalid sigflag: ${sigflag}`)
-    }
-  }
+		if (
+			!validFlags.includes(baseFlag) &&
+			!validFlags.includes(normalizedFlag)
+		) {
+			throw new Error(`Invalid sigflag: ${sigflag}`);
+		}
+	}
 
-  if (txindex !== undefined) {
-    if (typeof txindex !== 'number' || !Number.isInteger(txindex) || txindex < 0) {
-      throw new Error('txindex must be a non-negative integer')
-    }
-  }
+	if (txindex !== undefined) {
+		if (
+			typeof txindex !== "number" ||
+			!Number.isInteger(txindex) ||
+			txindex < 0
+		) {
+			throw new Error("txindex must be a non-negative integer");
+		}
+	}
 }
 
 /**
@@ -65,19 +77,19 @@ function validate_sighash_options (options : SigHashOptions, validFlags : number
  * @returns ECDSA signature with sighash flag appended
  * @throws Error if secret key format is invalid
  */
-export function sign_segwit_tx (
-  seckey  : string,
-  txdata  : TxData,
-  options : SigHashOptions,
+export function sign_segwit_tx(
+	seckey: string,
+	txdata: TxData,
+	options: SigHashOptions,
 ) {
-  validate_seckey(seckey)
-  validate_sighash_options(options, SIGHASH_SEGWIT)
+	validate_seckey(seckey);
+	validate_sighash_options(options, SIGHASH_SEGWIT);
 
-  const tx   = parse_tx(txdata)
-  const msg  = hash_segwit_tx(tx, options)
-  const sig  = ECC.sign_ecdsa(seckey, msg).hex
-  const flag = format_sigflag(options.sigflag ?? SIGHASH_DEFAULT)
-  return sig + flag
+	const tx = parse_tx(txdata);
+	const msg = hash_segwit_tx(tx, options);
+	const sig = ECC.sign_ecdsa(seckey, msg).hex;
+	const flag = format_sigflag(options.sigflag ?? SIGHASH_DEFAULT);
+	return sig + flag;
 }
 
 /**
@@ -88,21 +100,21 @@ export function sign_segwit_tx (
  * @returns Schnorr signature with optional sighash flag appended
  * @throws Error if secret key format is invalid
  */
-export function sign_taproot_tx (
-  seckey  : string,
-  txdata  : TxData,
-  options : SigHashOptions,
+export function sign_taproot_tx(
+	seckey: string,
+	txdata: TxData,
+	options: SigHashOptions,
 ) {
-  validate_seckey(seckey)
-  validate_sighash_options(options, SIGHASH_TAPROOT)
+	validate_seckey(seckey);
+	validate_sighash_options(options, SIGHASH_TAPROOT);
 
-  const tx   = parse_tx(txdata)
-  const msg  = hash_taproot_tx(tx, options)
-  const sig  = ECC.sign_bip340(seckey, msg).hex
-  const flag = format_sigflag(options.sigflag ?? 0)
-  return sig + flag
+	const tx = parse_tx(txdata);
+	const msg = hash_taproot_tx(tx, options);
+	const sig = ECC.sign_bip340(seckey, msg).hex;
+	const flag = format_sigflag(options.sigflag ?? 0);
+	return sig + flag;
 }
 
-function format_sigflag (flag : number) {
-  return (flag !== 0) ? Buff.num(flag, 1).hex : ''
+function format_sigflag(flag: number) {
+	return flag !== 0 ? Buff.num(flag, 1).hex : "";
 }

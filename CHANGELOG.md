@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [2.0.0] - 2026-01-21
+## [2.0.0] - 2026-01-23
 
 ### Security Fixes
 
@@ -10,20 +10,34 @@
 - **Added transaction size limits**: Maximum transaction size (4MB), varint size (10MB), and element count (100k) limits in decoder to prevent memory exhaustion attacks.
 - **Added taproot tree depth limits**: Maximum depth of 128 levels in merkle tree construction to prevent stack overflow from deeply nested trees.
 - **Sanitized error messages**: Removed sensitive data from error messages in address and transaction modules.
+- **Fixed taproot verification null check**: Added proper null check for `prevout` in taproot input verification to prevent runtime errors.
 
 ### New Features
 
 - **Full signature verification**: `verify_tx()` now returns detailed verification results including per-input status and error messages.
 - **Enhanced witness parsing**: Improved annex detection and control block parsing for taproot witnesses.
 
+### Code Quality
+
+- **Biome linting compliance**: Applied comprehensive linting fixes across all 59 source files in `src/`
+  - Converted string concatenation to template literals
+  - Added explicit radix parameter to all `parseInt()` calls
+  - Converted `import` statements to `import type` where appropriate
+  - Replaced `isNaN()` with `Number.isNaN()` for type safety
+  - Simplified computed property access to literal keys
+  - Standardized code formatting (quotes, semicolons, indentation)
+- **Improved control block construction**: Replaced `forEach` with spread operator in taproot control block building
+
 ### Testing
 
-- Added 355+ new tests (total: 575 tests passing)
-- **SIGNER module tests**: Essential signing function tests and transaction scenarios
-- **WITNESS module tests**: Full witness parsing coverage (p2wpkh, p2wsh, p2tr, p2ts, annex)
-- **SCRIPT module tests**: Lock script detection for all standard types (p2pkh, p2sh, p2wpkh, p2wsh, p2tr, opreturn)
+- Added 843+ new tests (total: 1063 tests passing)
+- **SIGNER module tests**: Essential signing function tests, transaction scenarios, and sighash coverage
+- **WITNESS module tests**: Full witness parsing coverage (p2wpkh, p2wsh, p2tr, p2ts, annex) plus edge cases
+- **SCRIPT module tests**: Lock script detection, decode/encode roundtrips, malformed script handling, size limits
+- **SIGHASH module tests**: Bounds checking and edge cases
 - **META module tests**: BIP-65 locktime, BIP-68 sequence, and reference pointer encoding/decoding
-- **TX module tests**: Size calculation, essential operations
+- **TX module tests**: Size calculation, essential operations, create functions, encoding functions, error handling
+- **TAPROOT module tests**: Parse operations coverage
 - **Integration tests**: End-to-end workflows for address creation, transaction building, and signing
 
 ### Documentation
@@ -31,6 +45,7 @@
 - **README.md**: Expanded with installation instructions, quick start guide, module overview, and API examples
 - **SECURITY.md**: New security guidelines document covering private key handling, input validation, and best practices
 - **EXAMPLES.md**: New examples document with practical code for common Bitcoin development tasks
+- **CONVENTIONS.md**: Added project coding conventions documentation
 - **JSDoc**: Added comprehensive documentation to exported functions with @param, @returns, @throws, and @example
 - **Type definitions**: Documented all interfaces in `src/types/`
 - **Schemas**: Added inline documentation for validation schemas

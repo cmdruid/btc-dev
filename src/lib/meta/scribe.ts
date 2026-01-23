@@ -1,256 +1,234 @@
-import { Buff, Bytes, Stream } from '@vbyte/buff'
-import { Assert }              from '@vbyte/micro-lib'
-import { encode_script }       from '@/lib/script/encode.js'
-import { decode_script }       from '@/lib/script/decode.js'
+import { Buff, type Bytes, Stream } from "@vbyte/buff";
+import { Assert } from "@vbyte/micro-lib";
+import { decode_script } from "@/lib/script/decode.js";
+import { encode_script } from "@/lib/script/encode.js";
 
-import type { InscriptionData } from '@/types/index.js'
+import type { InscriptionData } from "@/types/index.js";
 
-const _0n  = BigInt(0)
-const _1n  = BigInt(1)
-const _26n = BigInt(26)
+const _0n = BigInt(0);
+const _1n = BigInt(1);
+const _26n = BigInt(26);
 
 export namespace InscriptionUtil {
-  export type Type    = InscriptionData
-  export const encode = encode_inscription
-  export const decode = decode_inscription
+	export type Type = InscriptionData;
+	export const encode = encode_inscription;
+	export const decode = decode_inscription;
 }
 
-export function decode_inscription (
-  script : Bytes
-) : InscriptionData[] {
-  const envelopes = parse_envelopes(script)
-  return envelopes.map(parse_record)
+export function decode_inscription(script: Bytes): InscriptionData[] {
+	const envelopes = parse_envelopes(script);
+	return envelopes.map(parse_record);
 }
 
-export function encode_inscription (data : InscriptionData[]) : Buff {
-  return Buff.join(data.map(create_envelope))
+export function encode_inscription(data: InscriptionData[]): Buff {
+	return Buff.join(data.map(create_envelope));
 }
 
-function create_envelope (data : InscriptionData) : Buff {
-  let asm : string[] = [ 'OP_0', 'OP_IF', '6f7264' ]
+function create_envelope(data: InscriptionData): Buff {
+	const asm: string[] = ["OP_0", "OP_IF", "6f7264"];
 
-  if (typeof data.delegate === 'string') {
-    const id = encode_id(data.delegate)
-    asm.push('OP_11', id)
-  }
+	if (typeof data.delegate === "string") {
+		const id = encode_id(data.delegate);
+		asm.push("OP_11", id);
+	}
 
-  if (typeof data.ref === 'string') {
-    asm.push('OP_WITHIN', data.ref)
-  }
+	if (typeof data.ref === "string") {
+		asm.push("OP_WITHIN", data.ref);
+	}
 
-  if (typeof data.parent === 'string') {
-    const id = encode_id(data.parent)
-    asm.push('OP_3', id)
-  }
+	if (typeof data.parent === "string") {
+		const id = encode_id(data.parent);
+		asm.push("OP_3", id);
+	}
 
-  if (typeof data.opcode === 'number') {
-    const code = encode_pointer(data.opcode)
-    asm.push('OP_NOP', code)
-  }
+	if (typeof data.opcode === "number") {
+		const code = encode_pointer(data.opcode);
+		asm.push("OP_NOP", code);
+	}
 
-  if (typeof data.pointer === 'number') {
-    const ptr = encode_pointer(data.pointer)
-    asm.push('OP_2', ptr)
-  }
+	if (typeof data.pointer === "number") {
+		const ptr = encode_pointer(data.pointer);
+		asm.push("OP_2", ptr);
+	}
 
-  if (typeof data.rune === 'string') {
-    const label = encode_rune_label(data.rune)
-    asm.push('OP_13', label)
-  }
+	if (typeof data.rune === "string") {
+		const label = encode_rune_label(data.rune);
+		asm.push("OP_13", label);
+	}
 
-  if (typeof data.mimetype === 'string') {
-    const label = encode_label(data.mimetype)
-    asm.push('OP_1', label)
-  }
+	if (typeof data.mimetype === "string") {
+		const label = encode_label(data.mimetype);
+		asm.push("OP_1", label);
+	}
 
-  if (typeof data.content === 'string') {
-    const chunks = encode_content(data.content)
-    asm.push('OP_0', ...chunks)
-  }
+	if (typeof data.content === "string") {
+		const chunks = encode_content(data.content);
+		asm.push("OP_0", ...chunks);
+	}
 
-  asm.push('OP_ENDIF')
+	asm.push("OP_ENDIF");
 
-  return encode_script(asm)
+	return encode_script(asm);
 }
 
-function parse_envelopes (
-  script : Bytes
-) : string[][] {
+function parse_envelopes(script: Bytes): string[][] {
+	const words = decode_script(script);
+	const start_idx = words.indexOf("OP_0");
 
-  const words     = decode_script(script)
-  const start_idx = words.findIndex(e => e === 'OP_0')
+	Assert.ok(start_idx !== -1, "inscription envelope not found");
 
-  Assert.ok(start_idx !== -1, 'inscription envelope not found')
+	const envelopes = [];
 
-  const envelopes = []
+	for (let idx = start_idx; idx < words.length; idx++) {
+		Assert.ok(words[idx + 1] === "OP_IF", "OP_IF missing from envelope");
+		Assert.ok(words[idx + 2] === "6f7264", "magic bytes missing from envelope");
 
-  for (let idx = start_idx; idx < words.length; idx++) {
-    Assert.ok(words[idx + 1] === 'OP_IF',  'OP_IF missing from envelope')
-    Assert.ok(words[idx + 2] === '6f7264', 'magic bytes missing from envelope')
+		const stop_idx = words.indexOf("OP_ENDIF");
+		Assert.ok(stop_idx !== -1, "inscription envelope missing END_IF statement");
 
-    const stop_idx = words.findIndex(e => e === 'OP_ENDIF')
-    Assert.ok(stop_idx !== -1, 'inscription envelope missing END_IF statement')
+		const env = words.slice(idx + 3, stop_idx);
+		envelopes.push(env);
+		idx += stop_idx;
+	}
 
-    const env = words.slice(idx + 3, stop_idx)
-    envelopes.push(env)
-    idx += stop_idx
-  }
-
-  return envelopes
+	return envelopes;
 }
 
-function parse_record (envelope : Bytes[]) {
-  const record : InscriptionData = {}
+function parse_record(envelope: Bytes[]) {
+	const record: InscriptionData = {};
 
-  for (let i = 0; i < envelope.length; i++) {
-    switch (envelope[i]) {
-      case 'OP_1':
-        record.mimetype = decode_label(envelope[i+1])
-        i += 1
-        break
-      case 'OP_2':
-        record.pointer = decode_pointer(envelope[i+1])
-        i += 1
-        break
-      case 'OP_3':
-        record.parent = decode_id(envelope[i+1])
-        i += 1
-        break
-      case 'OP_11':
-        record.delegate = decode_id(envelope[i+1])
-        i += 1
-        break
-      case 'OP_13':
-        record.rune = decode_rune_label(envelope[i+1])
-        i += 1
-        break
-      case 'OP_WITHIN':
-        record.ref = decode_bytes(envelope[i+1])
-        i += 1
-        break;
-      case 'OP_NOP':
-        record.opcode = decode_pointer(envelope[i+1])
-        i += 1
-        break;
-      case 'OP_0':
-        record.content = decode_content(envelope.slice(i+1))
-        return record
-    }
-  }
-  return record
+	for (let i = 0; i < envelope.length; i++) {
+		switch (envelope[i]) {
+			case "OP_1":
+				record.mimetype = decode_label(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_2":
+				record.pointer = decode_pointer(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_3":
+				record.parent = decode_id(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_11":
+				record.delegate = decode_id(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_13":
+				record.rune = decode_rune_label(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_WITHIN":
+				record.ref = decode_bytes(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_NOP":
+				record.opcode = decode_pointer(envelope[i + 1]);
+				i += 1;
+				break;
+			case "OP_0":
+				record.content = decode_content(envelope.slice(i + 1));
+				return record;
+		}
+	}
+	return record;
 }
 
-function decode_bytes (bytes : Bytes) : string {
-  return Buff.bytes(bytes).hex
+function decode_bytes(bytes: Bytes): string {
+	return Buff.bytes(bytes).hex;
 }
 
-function encode_id (
-  identifier : string
-) : string {
-  Assert.ok(identifier.includes('i'), 'identifier must include an index')
-  const parts = identifier.split('i')
-  const bytes = Buff.hex(parts[0])
-  const idx   = Number(parts[1])
-  const txid  = bytes.reverse().hex
-  return (idx !== 0) ? txid + Buff.num(idx).hex : txid
+function encode_id(identifier: string): string {
+	Assert.ok(identifier.includes("i"), "identifier must include an index");
+	const parts = identifier.split("i");
+	const bytes = Buff.hex(parts[0]);
+	const idx = Number(parts[1]);
+	const txid = bytes.reverse().hex;
+	return idx !== 0 ? txid + Buff.num(idx).hex : txid;
 }
 
-function decode_id (
-  identifier : Bytes
-) : string {
-  const bytes = Buff.bytes(identifier)
-  const idx   = bytes.at(-1) ?? 0
-  const txid  = bytes.slice(0, -1).reverse().hex
-  return txid + 'i' + String(idx)
+function decode_id(identifier: Bytes): string {
+	const bytes = Buff.bytes(identifier);
+	const idx = bytes.at(-1) ?? 0;
+	const txid = bytes.slice(0, -1).reverse().hex;
+	return `${txid}i${String(idx)}`;
 }
 
-function encode_pointer (
-  pointer : number
-) : string {
-  return Buff.num(pointer).reverse().hex
+function encode_pointer(pointer: number): string {
+	return Buff.num(pointer).reverse().hex;
 }
 
-function decode_pointer (
-  bytes : Bytes
-) : number {
-  return Buff.bytes(bytes).reverse().num
+function decode_pointer(bytes: Bytes): number {
+	return Buff.bytes(bytes).reverse().num;
 }
 
-function encode_label (
-  label : string
-) : string {
-  return Buff.str(label).hex
+function encode_label(label: string): string {
+	return Buff.str(label).hex;
 }
 
-function decode_label (
-  label : Bytes
-) : string {
-  return Buff.bytes(label).str
+function decode_label(label: Bytes): string {
+	return Buff.bytes(label).str;
 }
 
-function encode_content (
-  content : string
-) : string[] {
-  const bytes = Buff.is_hex(content)
-    ? Buff.hex(content)
-    : Buff.str(content)
-  const stream = new Stream(bytes)
-  const chunks : string[]= []
-  while (stream.size > 0) {
-    if (stream.size > 520) {
-      const chunk = stream.read(520)
-      chunks.push(chunk.hex)
-    } else {
-      const chunk = stream.read(stream.size)
-      chunks.push(chunk.hex)
-    }
-  }
-  return chunks
+function encode_content(content: string): string[] {
+	const bytes = Buff.is_hex(content) ? Buff.hex(content) : Buff.str(content);
+	const stream = new Stream(bytes);
+	const chunks: string[] = [];
+	while (stream.size > 0) {
+		if (stream.size > 520) {
+			const chunk = stream.read(520);
+			chunks.push(chunk.hex);
+		} else {
+			const chunk = stream.read(stream.size);
+			chunks.push(chunk.hex);
+		}
+	}
+	return chunks;
 }
 
-function decode_content (
-  chunks : Bytes[],
-  format : 'hex' | 'utf8' = 'hex'
-) : string {
-  const data = Buff.join(chunks)
-  return (format === 'hex')
-    ? data.hex
-    : data.str
+function decode_content(
+	chunks: Bytes[],
+	format: "hex" | "utf8" = "hex",
+): string {
+	const data = Buff.join(chunks);
+	return format === "hex" ? data.hex : data.str;
 }
 
-function encode_rune_label (label : string) : string {
-  const str = label.toUpperCase()
-  let big = _0n
-  for (const char of str) {
-    if (char >= 'A' && char <= 'Z') {
-        big = big * _26n + BigInt(char.charCodeAt(0) - ('A'.charCodeAt(0) - 1))
-    } else { continue }
-  }
-  big = big - _1n
-  return Buff.big(big).reverse().hex
+function encode_rune_label(label: string): string {
+	const str = label.toUpperCase();
+	let big = _0n;
+	for (const char of str) {
+		if (char >= "A" && char <= "Z") {
+			big = big * _26n + BigInt(char.charCodeAt(0) - ("A".charCodeAt(0) - 1));
+		} else {
+		}
+	}
+	big = big - _1n;
+	return Buff.big(big).reverse().hex;
 }
 
-function decode_rune_label (label: Bytes): string {
-  // Convert hex to BigInt, with byte order reversed
-  let big = Buff.bytes(label).reverse().big
-  // Add 1 as per the encoding algorithm
-  big = big + _1n
-  // Initialize result string
-  let result = ''
-  // Convert the BigInt back to a string of alphabet characters
-  while (big > _0n) {
-    // Get remainder after division by 26
-    const mod = big % _26n
-    // Convert remainder to character (0 maps to 'Z', 1 to 'A', 2 to 'B', etc.)
-    if (mod === _0n) {
-      result = 'Z' + result
-      big = big / _26n - _1n // Adjust for special case of 'Z'
-    } else {
-      // Map 1 to 'A', 2 to 'B', etc.
-      const charCode = Number(mod) + 'A'.charCodeAt(0) - 1
-      result = String.fromCharCode(charCode) + result
-      big = big / _26n
-    }
-  }
-  return result
+function decode_rune_label(label: Bytes): string {
+	// Convert hex to BigInt, with byte order reversed
+	let big = Buff.bytes(label).reverse().big;
+	// Add 1 as per the encoding algorithm
+	big = big + _1n;
+	// Initialize result string
+	let result = "";
+	// Convert the BigInt back to a string of alphabet characters
+	while (big > _0n) {
+		// Get remainder after division by 26
+		const mod = big % _26n;
+		// Convert remainder to character (0 maps to 'Z', 1 to 'A', 2 to 'B', etc.)
+		if (mod === _0n) {
+			result = `Z${result}`;
+			big = big / _26n - _1n; // Adjust for special case of 'Z'
+		} else {
+			// Map 1 to 'A', 2 to 'B', etc.
+			const charCode = Number(mod) + "A".charCodeAt(0) - 1;
+			result = String.fromCharCode(charCode) + result;
+			big = big / _26n;
+		}
+	}
+	return result;
 }

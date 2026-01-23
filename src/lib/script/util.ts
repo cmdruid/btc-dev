@@ -1,24 +1,25 @@
-import { Buff } from '@vbyte/buff'
+import { Buff } from "@vbyte/buff";
 
-export function prefix_script_size (script: string | Uint8Array): string {
-  return Buff.bytes(script).prefix_varint('le').hex
+export function prefix_script_size(script: string | Uint8Array): string {
+	return Buff.bytes(script).prefix_varint("le").hex;
 }
 
-export function parse_script_pubkeys (script: string | Uint8Array): string[] {
-  // Convert the script to a string if it's a Uint8Array
-  const scriptHex = typeof script === 'string' ? script : Buff.bytes(script).hex
-  
-  // Define the regex pattern to match the specified pattern
-  // 20 = pushdata byte for 32 bytes (0x20)
-  // [0-9a-f]{64} = 32-byte hex string (64 hex characters)
-  // (ac|ad|ba) = OP_CHECKSIG (0xac), OP_CHECKSIGVERIFY (0xad), or OP_CHECKSIGADD (0xba)
-  const pubkeyPattern = /20([0-9a-f]{64})(ac|ad|ba)/gi
-  
-  // Find all matches in the script
-  const matches = [...scriptHex.matchAll(pubkeyPattern)]
-  
-  // Extract the public keys from the matches
-  return matches.map(match => match[1])
+export function parse_script_pubkeys(script: string | Uint8Array): string[] {
+	// Convert the script to a string if it's a Uint8Array
+	const scriptHex =
+		typeof script === "string" ? script : Buff.bytes(script).hex;
+
+	// Define the regex pattern to match the specified pattern
+	// 20 = pushdata byte for 32 bytes (0x20)
+	// [0-9a-f]{64} = 32-byte hex string (64 hex characters)
+	// (ac|ad|ba) = OP_CHECKSIG (0xac), OP_CHECKSIGVERIFY (0xad), or OP_CHECKSIGADD (0xba)
+	const pubkeyPattern = /20([0-9a-f]{64})(ac|ad|ba)/gi;
+
+	// Find all matches in the script
+	const matches = [...scriptHex.matchAll(pubkeyPattern)];
+
+	// Extract the public keys from the matches
+	return matches.map((match) => match[1]);
 }
 
 // export function parse_witness_pubkeys (

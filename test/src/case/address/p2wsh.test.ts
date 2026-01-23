@@ -1,14 +1,14 @@
-import { Test }       from 'tape'
-import { P2WSH }      from '@/pkg/address'
-import { ScriptUtil } from '@/pkg/script'
-import { CONST } from '@/pkg'
+import { Test }         from 'tape'
+import { P2WSH }        from '@/pkg/address'
+import { encode_script } from '@/pkg/script'
+import { CONST }        from '@/pkg'
 
 const SCRIPT_TYPE = CONST.LOCK_SCRIPT_TYPE
 
 const TEST_VECTOR = {
   network    : 'regtest',
   format     : 'bech32',
-  script     : ScriptUtil.encode([ 1, 2, 'OP_ADD', 3, 'OP_EQUAL' ]),
+  script     : encode_script([ 1, 2, 'OP_ADD', 3, 'OP_EQUAL' ]),
   address    : 'bcrt1qetz4my584ckcqd0acdm7h788lkmslz44q5wc0rd3eknmmzc85sjq9sle8n',
   data       : 'cac55d9287ae2d8035fdc377ebf8e7fdb70f8ab5051d878db1cda7bd8b07a424',
   script_asm : [ 'OP_0', 'cac55d9287ae2d8035fdc377ebf8e7fdb70f8ab5051d878db1cda7bd8b07a424' ],

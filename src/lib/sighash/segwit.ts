@@ -1,152 +1,151 @@
-import { Buff }             from '@vbyte/buff'
-import { hash160, hash256 } from '@vbyte/micro-lib/hash'
-import { Assert }           from '@vbyte/micro-lib'
-import { parse_txinput }    from './util.js'
+import { Buff } from "@vbyte/buff";
+import { Assert } from "@vbyte/micro-lib";
+import { hash160, hash256 } from "@vbyte/micro-lib/hash";
+import * as CONST from "@/const.js";
+
+import { decode_script, prefix_script_size } from "@/lib/script/index.js";
 
 import {
-  prefix_script_size,
-  decode_script
-} from '@/lib/script/index.js'
+	encode_tx_locktime,
+	encode_tx_version,
+	encode_txin_sequence,
+	encode_txin_txid,
+	encode_txin_vout,
+	encode_vout_value,
+	parse_tx,
+} from "@/lib/tx/index.js";
 
-import {
-  encode_txin_vout,
-  encode_tx_locktime,
-  encode_txin_sequence,
-  encode_txin_txid,
-  encode_vout_value,
-  encode_tx_version,
-  parse_tx
-} from '@/lib/tx/index.js'
+import type {
+	SigHashOptions,
+	TxData,
+	TxInput,
+	TxOutput,
+} from "@/types/index.js";
+import { parse_txinput } from "./util.js";
 
-import {
-  SigHashOptions,
-  TxData,
-  TxInput,
-  TxOutput
-} from '@/types/index.js'
+export function hash_segwit_tx(
+	txdata: TxData,
+	options: SigHashOptions = {},
+): Buff {
+	// Unpack the sigflag from our config object.
+	const { sigflag = 0x01, txindex } = options;
+	// Normalize the tx into JSON format.
+	const tx = parse_tx(txdata);
+	// Check if the ANYONECANPAY flag is set.
+	const is_anypay = (sigflag & 0x80) === 0x80;
+	// Save a normalized version of the sigflag.
+	const flag = sigflag % 0x80;
+	// Check if the sigflag exists as a valid type.
+	if (!CONST.SIGHASH_SEGWIT.includes(flag)) {
+		throw new Error(`Invalid hash type: ${String(sigflag)}`);
+	}
+	// Unpack the tx object.
+	const { version, vin, vout, locktime } = tx;
+	// Parse the input we are signing from the config.
+	const txinput = parse_txinput(tx, options);
+	// Unpack the chosen input for signing.
+	const { txid, vout: prevIdx, prevout, sequence } = txinput;
+	// Unpack the prevout for the chosen input.
+	const { value } = prevout ?? {};
+	// Check if a prevout value is provided.
+	if (value === undefined) {
+		throw new Error("Prevout value is empty!");
+	}
+	// Initialize our script variable from the config.
+	let { pubkey, script } = options;
+	// Check if a pubkey is provided (instead of a script).
+	if (script === undefined && pubkey !== undefined) {
+		const pkhash = hash160(pubkey).hex;
+		script = `76a914${String(pkhash)}88ac`;
+	}
+	// Make sure that some form of script has been provided.
+	if (script === undefined) {
+		throw new Error("No pubkey / script has been set!");
+	}
+	// Throw if OP_CODESEPARATOR is used in a script.
+	if (decode_script(script).includes("OP_CODESEPARATOR")) {
+		throw new Error(
+			"This library does not currently support the use of OP_CODESEPARATOR in segwit scripts.",
+		);
+	}
 
-import * as CONST from '@/const.js'
+	const sighash = [
+		encode_tx_version(version),
+		bip143_hash_prevouts(vin, is_anypay),
+		bip143_hash_sequence(vin, flag, is_anypay),
+		encode_txin_txid(txid),
+		encode_txin_vout(prevIdx),
+		prefix_script_size(script),
+		encode_vout_value(value),
+		encode_txin_sequence(sequence),
+		bip143_hash_outputs(vout, flag, txindex),
+		encode_tx_locktime(locktime),
+		Buff.num(sigflag, 4).reverse(),
+	];
 
-export function hash_segwit_tx (
-  txdata  : TxData,
-  options : SigHashOptions = {}
-) : Buff {
-  // Unpack the sigflag from our config object.
-  const { sigflag = 0x01, txindex } = options
-  // Normalize the tx into JSON format.
-  const tx = parse_tx(txdata)
-  // Check if the ANYONECANPAY flag is set.
-  const is_anypay = (sigflag & 0x80) === 0x80
-  // Save a normalized version of the sigflag.
-  const flag = sigflag % 0x80
-  // Check if the sigflag exists as a valid type.
-  if (!CONST.SIGHASH_SEGWIT.includes(flag)) {
-    throw new Error('Invalid hash type: ' + String(sigflag))
-  }
-  // Unpack the tx object.
-  const { version, vin, vout, locktime } = tx
-  // Parse the input we are signing from the config.
-  const txinput = parse_txinput(tx, options)
-  // Unpack the chosen input for signing.
-  const { txid, vout: prevIdx, prevout, sequence } = txinput
-  // Unpack the prevout for the chosen input.
-  const { value } = prevout ?? {}
-  // Check if a prevout value is provided.
-  if (value === undefined) {
-    throw new Error('Prevout value is empty!')
-  }
-  // Initialize our script variable from the config.
-  let { pubkey, script } = options
-  // Check if a pubkey is provided (instead of a script).
-  if (script === undefined && pubkey !== undefined) {
-    const pkhash = hash160(pubkey).hex
-    script = `76a914${String(pkhash)}88ac`
-  }
-  // Make sure that some form of script has been provided.
-  if (script === undefined) {
-    throw new Error('No pubkey / script has been set!')
-  }
-  // Throw if OP_CODESEPARATOR is used in a script.
-  if (decode_script(script).includes('OP_CODESEPARATOR')) {
-    throw new Error('This library does not currently support the use of OP_CODESEPARATOR in segwit scripts.')
-  }
-
-  const sighash = [
-    encode_tx_version(version),
-    bip143_hash_prevouts(vin, is_anypay),
-    bip143_hash_sequence(vin, flag, is_anypay),
-    encode_txin_txid(txid),
-    encode_txin_vout(prevIdx),
-    prefix_script_size(script),
-    encode_vout_value(value),
-    encode_txin_sequence(sequence),
-    bip143_hash_outputs(vout, flag, txindex),
-    encode_tx_locktime(locktime),
-    Buff.num(sigflag, 4).reverse()
-  ]
-
-  return hash256(Buff.join(sighash))
+	return hash256(Buff.join(sighash));
 }
 
-export function bip143_hash_prevouts (
-  vin : TxInput[],
-  isAnypay ?: boolean
-) : Uint8Array {
-  if (isAnypay === true) {
-    return Buff.num(0, 32)
-  }
+export function bip143_hash_prevouts(
+	vin: TxInput[],
+	isAnypay?: boolean,
+): Uint8Array {
+	if (isAnypay === true) {
+		return Buff.num(0, 32);
+	}
 
-  const stack = []
+	const stack = [];
 
-  for (const { txid, vout } of vin) {
-    stack.push(encode_txin_txid(txid))
-    stack.push(encode_txin_vout(vout))
-  }
+	for (const { txid, vout } of vin) {
+		stack.push(encode_txin_txid(txid));
+		stack.push(encode_txin_vout(vout));
+	}
 
-  return hash256(Buff.join(stack))
+	return hash256(Buff.join(stack));
 }
 
-export function bip143_hash_sequence (
-  vin      : TxInput[],
-  sigflag  : number,
-  isAnyPay : boolean
-) : Uint8Array {
-  if (isAnyPay || sigflag !== 0x01) {
-    return Buff.num(0, 32)
-  }
+export function bip143_hash_sequence(
+	vin: TxInput[],
+	sigflag: number,
+	isAnyPay: boolean,
+): Uint8Array {
+	if (isAnyPay || sigflag !== 0x01) {
+		return Buff.num(0, 32);
+	}
 
-  const stack = []
+	const stack = [];
 
-  for (const { sequence } of vin) {
-    stack.push(encode_txin_sequence(sequence))
-  }
-  return hash256(Buff.join(stack))
+	for (const { sequence } of vin) {
+		stack.push(encode_txin_sequence(sequence));
+	}
+	return hash256(Buff.join(stack));
 }
 
-export function bip143_hash_outputs (
-  vout    : TxOutput[],
-  sigflag : number,
-  idx    ?: number
-) : Uint8Array {
-  const stack = []
+export function bip143_hash_outputs(
+	vout: TxOutput[],
+	sigflag: number,
+	idx?: number,
+): Uint8Array {
+	const stack = [];
 
-  if (sigflag === 0x01) {
-    for (const { value, script_pk } of vout) {
-      stack.push(encode_vout_value(value))
-      stack.push(prefix_script_size(script_pk))
-    }
-    return hash256(Buff.join(stack))
-  }
+	if (sigflag === 0x01) {
+		for (const { value, script_pk } of vout) {
+			stack.push(encode_vout_value(value));
+			stack.push(prefix_script_size(script_pk));
+		}
+		return hash256(Buff.join(stack));
+	}
 
-  if (sigflag === 0x03) {
-    Assert.ok(idx !== undefined)
-    if (idx < vout.length) {
-      const { value, script_pk } = vout[idx]
-      stack.push(encode_vout_value(value))
-      stack.push(prefix_script_size(script_pk))
-      return hash256(Buff.join(stack))
-    }
-  }
+	if (sigflag === 0x03) {
+		Assert.ok(idx !== undefined, "txindex required for SIGHASH_SINGLE");
+		Assert.ok(idx >= 0, "txindex must be non-negative");
+		if (idx < vout.length) {
+			const { value, script_pk } = vout[idx];
+			stack.push(encode_vout_value(value));
+			stack.push(prefix_script_size(script_pk));
+			return hash256(Buff.join(stack));
+		}
+	}
 
-  return Buff.num(0, 32)
+	return Buff.num(0, 32);
 }

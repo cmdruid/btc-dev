@@ -42,7 +42,7 @@ const SEGWIT_TX_DATA = {
     vout: 1,
     sequence: 0xffffffff,
     coinbase: null,
-    script_sig: '',
+    script_sig: null,
     witness: [],
     prevout: {
       value: BigInt(150000),
@@ -63,7 +63,7 @@ const TAPROOT_TX_DATA = {
     vout: 0,
     sequence: 0xffffffff,
     coinbase: null,
-    script_sig: '',
+    script_sig: null,
     witness: [],
     prevout: {
       value: BigInt(250000),
