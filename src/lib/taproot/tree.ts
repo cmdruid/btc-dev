@@ -1,4 +1,5 @@
 import { Buff } from "@vbyte/buff";
+import { ValidationError } from "@/error.js";
 import type { MerkleProof, TapTree } from "@/types/index.js";
 import { encode_tapbranch } from "./encode.js";
 
@@ -32,8 +33,9 @@ export function merkleize(
 ): MerkleProof {
 	// Check depth limit to prevent stack overflow attacks
 	if (depth > MAX_TAPROOT_DEPTH) {
-		throw new Error(
+		throw new ValidationError(
 			`Taproot tree depth ${depth} exceeds maximum ${MAX_TAPROOT_DEPTH}`,
+			"depth",
 		);
 	}
 
@@ -42,7 +44,7 @@ export function merkleize(
 	const tree: string[] = [];
 	// If there are no leaves, throw an error.
 	if (taptree.length < 1) {
-		throw new Error("Tree is empty!");
+		throw new ValidationError("Taproot tree cannot be empty", "taptree");
 	}
 	// Crawl through the tree, and find each leaf.
 	for (let i = 0; i < taptree.length; i++) {

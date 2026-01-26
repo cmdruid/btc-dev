@@ -12,7 +12,7 @@
     "taproot"
   ],
   "author": "Christopher Scott",
-  "license": "CC-BY-1.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/cmdruid/btc-dev.git"
@@ -25,7 +25,8 @@
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
-    "dist"
+    "dist",
+    "docs"
   ],
   "main": "./dist/main.cjs",
   "module": "./dist/index.js",
@@ -74,7 +75,7 @@
     "build": "./scripts/build.sh",
     "check": "npx tsc --project tsconfig.json --noEmit",
     "lint": "biome check src/",
-    "package": "npm test | faucet && npm run build",
+    "package": "npm test && npm run build",
     "release": "./scripts/release.sh",
     "scratch": "npm run script test/scratch.ts",
     "script": "tsx --tsconfig ./test/tsconfig.json",

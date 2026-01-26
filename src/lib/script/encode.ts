@@ -38,7 +38,7 @@ export function encode_script(
 
 	// Validate script size against Bitcoin consensus limit
 	if (buffer.length > MAX_SCRIPT_SIZE) {
-		throw new Error(
+		throw new ValidationError(
 			`script size ${buffer.length} exceeds consensus limit of ${MAX_SCRIPT_SIZE} bytes`,
 		);
 	}

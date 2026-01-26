@@ -578,8 +578,9 @@ const tx = TX.create({
   }]
 })
 
-// Tweak the secret key for signing
-const tweakedSeckey = TAPROOT.tweak_seckey(internalSeckey, taptweak)
+// Tweak the secret key for signing (use @vbyte/crypto)
+import { tweak_seckey } from '@vbyte/crypto/ecc'
+const tweakedSeckey = tweak_seckey(internalSeckey, taptweak, true)
 
 // Sign
 const signature = SIGNER.sign_taproot_tx(tweakedSeckey, tx, {
@@ -967,8 +968,135 @@ import type {
 
 ---
 
+## Security Best Practices
+
+### Private Key Handling
+
+**Never expose secret keys:**
+
+```typescript
+// WRONG - Never log secret keys
+console.log('Secret key:', secretKey)
+
+// WRONG - Never include in error messages
+throw new Error(`Failed to sign with key: ${secretKey}`)
+
+// CORRECT - Use secure handling
+const signature = SIGNER.sign_segwit_tx(secretKey, txdata, options)
+// Clear from memory when possible
+secretKey = null
+```
+
+**Secure key generation:**
+
+- Always use cryptographically secure random number generators
+- Never use predictable seeds or weak entropy sources
+- Consider using hardware security modules (HSMs) for production systems
+
+```typescript
+// Use @noble/curves for key generation
+import { secp256k1 } from '@noble/curves/secp256k1'
+import { randomBytes } from '@noble/hashes/utils'
+
+const secretKey = randomBytes(32)
+const publicKey = secp256k1.getPublicKey(secretKey)
+```
+
+**Memory handling:**
+
+- Clear sensitive data from memory after use
+- Be aware that JavaScript garbage collection may not immediately clear values
+- For high-security applications, consider using typed arrays that can be zeroed
+
+### Input Validation
+
+**Always validate transaction data before signing:**
+
+```typescript
+// The library performs validation
+TX.assert_tx_data(txdata)  // Throws on invalid
+TX.assert_tx_template(template)  // Throws on invalid
+
+// Validate at boundaries
+if (!tx.vin.every(vin => vin.prevout !== null)) {
+  throw new Error('Missing prevout data for input')
+}
+```
+
+**Validate scripts:**
+
+```typescript
+// Check script type
+const type = SCRIPT.get_lock_script_type(script)
+if (type === null) {
+  throw new Error('Unknown or invalid script type')
+}
+
+// Validate script structure
+if (!SCRIPT.is_valid_script(script)) {
+  throw new Error('Invalid script')
+}
+```
+
+### Sighash Flag Security
+
+Understanding sighash flags is critical for security:
+
+| Flag | Value | Security Implications |
+|------|-------|----------------------|
+| SIGHASH_ALL | 0x01 | **Safest** - Signs all inputs and outputs |
+| SIGHASH_NONE | 0x02 | **Dangerous** - Outputs can be modified by anyone |
+| SIGHASH_SINGLE | 0x03 | Signs only the output at the same index |
+| ANYONECANPAY | 0x80 | Only signs own input, others can be added |
+
+```typescript
+// SAFE: SIGHASH_ALL - signs all inputs and outputs
+const safeSig = SIGNER.sign_segwit_tx(key, txdata, {
+  txindex: 0,
+  sigflag: 0x01  // SIGHASH_ALL
+})
+
+// DANGEROUS: SIGHASH_NONE - outputs can be changed
+// Only use if you understand the implications
+const dangerousSig = SIGNER.sign_segwit_tx(key, txdata, {
+  txindex: 0,
+  sigflag: 0x02  // SIGHASH_NONE - anyone can redirect funds!
+})
+```
+
+### Signature Verification
+
+Always verify signatures after signing:
+
+```typescript
+// Sign the transaction
+const signature = SIGNER.sign_segwit_tx(secretKey, txdata, options)
+
+// Verify the signature is valid
+txdata.vin[0].witness = [signature, pubkey]
+const result = SIGNER.verify_tx(txdata)
+
+if (!result.valid) {
+  throw new Error('Signature verification failed: ' + result.error)
+}
+```
+
+### Security Checklist
+
+Before deploying to production:
+
+- [ ] All secret keys are securely generated
+- [ ] No secret keys are logged or exposed
+- [ ] Transaction data is validated before signing
+- [ ] Signature verification is performed after signing
+- [ ] Correct sighash flags are used for the use case
+- [ ] Network is explicitly specified
+- [ ] Dependencies are up to date
+- [ ] Error messages don't leak sensitive data
+
+---
+
 ## Next Steps
 
 - [API Reference](API.md) - Complete function documentation
-- [Security Guide](SECURITY.md) - Best practices for production
 - [FAQ](FAQ.md) - Common questions and troubleshooting

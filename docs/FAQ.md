@@ -194,8 +194,9 @@ for (let i = 0; i < tx.vin.length; i++) {
 For key-path spending, yes:
 
 ```typescript
+import { tweak_seckey } from '@vbyte/crypto/ecc'
 const taptweak = TAPROOT.encode_taptweak(internalPubkey, merkleRoot)
-const tweakedSeckey = TAPROOT.tweak_seckey(internalSeckey, taptweak)
+const tweakedSeckey = tweak_seckey(internalSeckey, taptweak, true)
 ```
 
 For script-path, use the original key for the script, not the tweaked key.
@@ -314,16 +315,46 @@ The cryptographic operations use audited libraries (`@noble/curves`, `@noble/has
 
 ### How do I securely handle private keys?
 
-See [SECURITY.md](SECURITY.md) for detailed guidelines. Key points:
+Key points:
 - Never log or expose secret keys
 - Clear from memory when possible
 - Use cryptographically secure random number generation
 
+See the [Security Best Practices section in the Guide](GUIDE.md#security-best-practices) for detailed examples.
+
 ### What transaction size limits are enforced?
 
-- Maximum transaction size: 4MB
-- Maximum inputs/outputs: 100,000
-- Maximum taproot tree depth: 128
+The library enforces limits to prevent denial-of-service attacks:
+
+- **Maximum transaction size**: 4MB (Bitcoin consensus limit)
+- **Maximum varint size**: 10MB (prevents memory exhaustion)
+- **Maximum inputs/outputs**: 100,000 per transaction
+- **Maximum taproot tree depth**: 128 levels
+
+These limits are enforced automatically during decoding.
+
+### What are the known limitations?
+
+1. **OP_CODESEPARATOR**: Not fully supported in segwit scripts. The library will throw if encountered.
+
+2. **P2SH-wrapped scripts**: Legacy P2SH spending is not fully implemented. Use native segwit (P2WPKH/P2WSH) instead.
+
+3. **Multi-signature**: Complex multi-sig scripts require manual construction and may need custom handling.
+
+### What cryptographic dependencies does this library use?
+
+This library depends on well-maintained, audited cryptographic libraries:
+
+- `@noble/curves` - Audited cryptographic library for elliptic curves
+- `@noble/hashes` - Audited hash functions
+- `@scure/btc-signer` - Bitcoin signing utilities from the same author
+
+Keep dependencies updated:
+
+```bash
+npm audit
+npm update
+```
 
 ## Debugging
 

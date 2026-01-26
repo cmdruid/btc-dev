@@ -53,11 +53,11 @@ import { encode_script } from '@/lib/script/encode.js'      // Internal (note .j
 
 | Document | Purpose |
 |----------|---------|
-| [GUIDE.md](docs/GUIDE.md) | Complete tutorial: addresses, transactions, signing, taproot |
+| [GUIDE.md](docs/GUIDE.md) | Complete tutorial: addresses, transactions, signing, taproot, security best practices |
 | [API.md](docs/API.md) | Complete API reference for all 8 modules |
-| [SECURITY.md](docs/SECURITY.md) | Security best practices |
 | [CONVENTIONS.md](docs/CONVENTIONS.md) | Coding conventions |
 | [FAQ.md](docs/FAQ.md) | Common questions and troubleshooting |
+| [SECURITY.md](SECURITY.md) | Security vulnerability reporting policy |
 
 ## Test Coverage Status
 

@@ -3,6 +3,7 @@ import { Buff } from "@vbyte/buff";
 import { Assert } from "@vbyte/util";
 import { B58chk, Bech32, Bech32m } from "@vbyte/crypto";
 
+import { ValidationError } from "@/error.js";
 import type { AddressFormat, EncoderConfig } from "@/types/address.js";
 
 const ENCODING_REGEX = {
@@ -27,13 +28,13 @@ export function decode_address(address: string): EncoderConfig {
 	const format = get_address_format(address);
 	// If the format is not found, throw an error.
 	if (format === null)
-		throw new Error(`unrecognized address format: ${address}`);
+		throw new ValidationError(`unrecognized address format: ${address}`, "address");
 	// Decode the address based on the format.
 	if (format === "base58") return base58_decode(address);
 	if (format === "bech32") return bech32_decode(address);
 	if (format === "bech32m") return bech32m_decode(address);
 	// If we didn't find a matching decoder, throw.
-	throw new Error("unable to find a matching address configuration");
+	throw new ValidationError("unable to find a matching address configuration", "address");
 }
 
 /**
@@ -49,7 +50,7 @@ export function encode_address(config: EncoderConfig): string {
 	if (config.format === "bech32") return bech32_encode(config);
 	if (config.format === "bech32m") return bech32m_encode(config);
 	// If the format is not recognized, throw an error.
-	throw new Error(`unrecognized encoding format: ${config.format}`);
+	throw new ValidationError(`unrecognized encoding format: ${config.format}`, "format");
 }
 
 /**

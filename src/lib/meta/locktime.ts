@@ -15,6 +15,7 @@
 
 import { Assert } from "@vbyte/util";
 
+import { ConfigError } from "@/error.js";
 import type { LocktimeData } from "@/types/index.js";
 
 /** The threshold between block height and timestamp (500,000,000). */
@@ -57,7 +58,7 @@ export function encode_locktime(locktime: LocktimeData): number {
 			Assert.ok(locktime.height < LOCKTIME_THRESHOLD, "invalid block height");
 			return locktime.height;
 		default:
-			throw new Error("Invalid locktime type");
+			throw new ConfigError(`Invalid locktime type: expected 'timelock' or 'heightlock'`);
 	}
 }
 

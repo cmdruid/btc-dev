@@ -1,5 +1,6 @@
 import { Buff, type Bytes } from "@vbyte/buff";
 import { LOCK_SCRIPT_TYPE } from "@/const.js";
+import { ConfigError } from "@/error.js";
 import { get_lock_script_type } from "@/lib/script/lock.js";
 import type { AddressInfo, ChainNetwork } from "@/types/index.js";
 
@@ -27,7 +28,7 @@ export function get_address(
 	const type = get_lock_script_type(bytes);
 	// If the script type is not recognized, throw an error.
 	if (type === null)
-		throw new Error("Unknown or unsupported locking script type");
+		throw new ConfigError("Unknown or unsupported locking script type");
 	// Create the address based on the script type.
 	switch (type) {
 		case LOCK_SCRIPT_TYPE.P2PKH:
@@ -41,7 +42,7 @@ export function get_address(
 		case LOCK_SCRIPT_TYPE.P2TR:
 			return P2TR.encode_address(script, network);
 		default:
-			throw new Error(`unknown script type: ${type}`);
+			throw new ConfigError(`unknown script type: ${type}`);
 	}
 }
 

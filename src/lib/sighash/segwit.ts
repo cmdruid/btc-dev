@@ -96,7 +96,7 @@ export function hash_segwit_tx(
 	const { value } = prevout ?? {};
 	// Check if a prevout value is provided.
 	if (value === undefined) {
-		throw new Error("Prevout value is empty!");
+		throw new ValidationError("Prevout value is required for segwit sighash calculation", "prevout.value");
 	}
 	// Initialize our script variable from the config.
 	let { pubkey, script } = options;
@@ -107,12 +107,13 @@ export function hash_segwit_tx(
 	}
 	// Make sure that some form of script has been provided.
 	if (script === undefined) {
-		throw new Error("No pubkey / script has been set!");
+		throw new ValidationError("Either pubkey or script must be provided for segwit sighash", "pubkey/script");
 	}
 	// Throw if OP_CODESEPARATOR is used in a script.
 	if (decode_script(script).includes("OP_CODESEPARATOR")) {
-		throw new Error(
-			"This library does not currently support the use of OP_CODESEPARATOR in segwit scripts.",
+		throw new ValidationError(
+			"OP_CODESEPARATOR is not supported in segwit scripts",
+			"script",
 		);
 	}
 

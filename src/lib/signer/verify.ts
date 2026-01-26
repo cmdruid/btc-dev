@@ -1,6 +1,7 @@
 import { Buff, type Bytes } from "@vbyte/buff";
 import { ECC } from "@vbyte/crypto";
 import { hash160 } from "@vbyte/crypto/hash";
+import { ValidationError } from "@/error.js";
 import { hash_segwit_tx } from "@/lib/sighash/segwit.js";
 import { hash_taproot_tx } from "@/lib/sighash/taproot.js";
 import { verify_taproot } from "@/lib/taproot/cblock.js";
@@ -71,7 +72,7 @@ export function verify_tx(
 		if (!result.valid) {
 			allValid = false;
 			if (throws) {
-				throw new Error(`Input ${i} verification failed: ${result.error}`);
+				throw new ValidationError(`Input ${i} verification failed: ${result.error}`, `vin[${i}]`);
 			}
 		}
 	}
@@ -366,11 +367,11 @@ function parse_schnorr_signature(sigHex: string): {
 		// Sighash byte appended
 		const sigflag = sigBytes.at(-1) ?? 0x00;
 		if (sigflag === 0x00) {
-			throw new Error("0x00 is not a valid appended sigflag");
+			throw new ValidationError("0x00 is not a valid appended sigflag (use 64-byte signature for SIGHASH_DEFAULT)", "sigflag");
 		}
 		const signature = sigBytes.slice(0, 64).hex;
 		return { signature, sigflag };
 	}
 
-	throw new Error(`Invalid Schnorr signature length: ${sigBytes.length}`);
+	throw new ValidationError(`Invalid Schnorr signature length: ${sigBytes.length} (expected 64 or 65 bytes)`, "signature");
 }

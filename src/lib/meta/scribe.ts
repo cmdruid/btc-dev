@@ -10,6 +10,7 @@
 
 import { Buff, type Bytes, Stream } from "@vbyte/buff";
 import { Assert } from "@vbyte/util";
+import { ValidationError } from "@/error.js";
 import { decode_script } from "@/lib/script/decode.js";
 import { encode_script } from "@/lib/script/encode.js";
 
@@ -277,7 +278,7 @@ function encode_rune_label(label: string): string {
 		if (char >= "A" && char <= "Z") {
 			big = big * _26n + BigInt(char.charCodeAt(0) - ("A".charCodeAt(0) - 1));
 		} else {
-			throw new Error(`invalid character in rune label: '${char}' (only A-Z allowed)`);
+			throw new ValidationError(`invalid character in rune label: '${char}' (only A-Z allowed)`, "label");
 		}
 	}
 	big = big - _1n;
