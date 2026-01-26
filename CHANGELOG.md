@@ -1,5 +1,38 @@
 # CHANGELOG
 
+## [2.1.0] - 2026-01-26
+
+### License
+
+- **Changed license to MIT**: Updated from CC-BY-1.0/CC0 to MIT license for broader compatibility.
+
+### New Features
+
+- **Custom error classes**: Added `ValidationError`, `DecodingError`, and `ConfigError` for better error handling.
+  - `ValidationError`: Invalid input format, out of range values, type mismatches
+  - `DecodingError`: Malformed data during decode/parse operations
+  - `ConfigError`: Invalid configuration (unknown network, invalid sighash, etc.)
+- **Standardized error types**: All modules now throw appropriate custom error classes instead of generic `Error`.
+
+### Documentation
+
+- **Restructured security documentation**: Moved security best practices into GUIDE.md, expanded FAQ.md security section.
+- **New SECURITY.md**: Added vulnerability reporting policy at project root.
+- **Fixed documentation errors**: Corrected `tweak_seckey` references in GUIDE.md and FAQ.md to use `@vbyte/crypto/ecc`.
+
+### Packaging
+
+- **Docs included in package**: Added `docs/` to package files for npm distribution.
+- **Fixed package script**: Changed from pipe to `&&` so test failures prevent builds.
+
+### Testing
+
+- Added 190 new tests (total: 1253 tests passing)
+- **Custom error tests**: Full coverage for ValidationError, DecodingError, and ConfigError
+- **Scribe tests**: Inscription encoding/decoding, rune labels
+- **Verify-tx tests**: Multi-input transaction verification scenarios
+- **Taproot tests**: Control block creation/verification, tree depth limits
+
 ## [2.0.0] - 2026-01-23
 
 ### Security Fixes
