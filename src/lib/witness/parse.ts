@@ -1,3 +1,12 @@
+/**
+ * Witness data parsing utilities.
+ *
+ * Functions for analyzing and parsing SegWit witness data to determine
+ * spend type (P2WPKH, P2WSH, P2TR, P2TS) and extract relevant components.
+ *
+ * @module
+ */
+
 import { Buff, type Bytes } from "@vbyte/buff";
 import { TAPLEAF_VERSIONS } from "@/const.js";
 import { is_valid_script } from "@/lib/script/decode.js";
@@ -8,6 +17,27 @@ import type {
 	WitnessVersion,
 } from "@/types/index.js";
 
+/**
+ * Parse witness data to determine spend type and extract components.
+ *
+ * Analyzes witness stack to identify:
+ * - P2WPKH: 2 elements (signature + pubkey)
+ * - P2WSH: Multiple elements with witness script
+ * - P2TR: Single Schnorr signature (key-path spend)
+ * - P2TS: Taproot script-path spend (with control block)
+ *
+ * Also extracts annex data (BIP-341) and control block if present.
+ *
+ * @param witness - Array of witness elements as bytes
+ * @returns Parsed witness data with type, version, params, script, etc.
+ *
+ * @example
+ * ```typescript
+ * const witnessData = parse_witness([signature, pubkey])
+ * console.log(witnessData.type) // 'p2wpkh'
+ * console.log(witnessData.version) // 0
+ * ```
+ */
 export function parse_witness(witness: Bytes[]): WitnessData {
 	// Parse the witness data.
 	const elems = witness.map((e) => Buff.bytes(e));

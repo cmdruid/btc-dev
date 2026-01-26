@@ -1,6 +1,7 @@
 import { Buff } from "@vbyte/buff";
-import { ECC } from "@vbyte/micro-lib";
+import { ECC } from "@vbyte/crypto";
 import { SIGHASH_DEFAULT, SIGHASH_SEGWIT, SIGHASH_TAPROOT } from "@/const.js";
+import { ConfigError, ValidationError } from "@/error.js";
 import { hash_segwit_tx } from "@/lib/sighash/segwit.js";
 import { hash_taproot_tx } from "@/lib/sighash/taproot.js";
 import { parse_tx } from "@/lib/tx/parse.js";
@@ -16,15 +17,16 @@ const SECKEY_REGEX = /^[0-9a-fA-F]{64}$/;
 /**
  * Validate a secret key format.
  * @param seckey - The secret key to validate
- * @throws Error if the secret key is invalid
+ * @throws {ValidationError} If the secret key is invalid
  */
 function validate_seckey(seckey: string): void {
 	if (typeof seckey !== "string") {
-		throw new Error("Secret key must be a string");
+		throw new ValidationError("Secret key must be a string", "seckey");
 	}
 	if (!SECKEY_REGEX.test(seckey)) {
-		throw new Error(
+		throw new ValidationError(
 			"Invalid secret key format: expected 32-byte hex string (64 characters)",
+			"seckey",
 		);
 	}
 }
@@ -33,7 +35,8 @@ function validate_seckey(seckey: string): void {
  * Validate sighash options.
  * @param options - The sighash options to validate
  * @param validFlags - Array of valid sighash flags
- * @throws Error if options are invalid
+ * @throws {ValidationError} If txindex is invalid
+ * @throws {ConfigError} If sigflag is invalid
  */
 function validate_sighash_options(
 	options: SigHashOptions,
@@ -43,7 +46,7 @@ function validate_sighash_options(
 
 	if (sigflag !== undefined) {
 		if (typeof sigflag !== "number" || !Number.isInteger(sigflag)) {
-			throw new Error("sigflag must be an integer");
+			throw new ConfigError("sigflag must be an integer");
 		}
 		// Normalize sigflag for validation (remove ANYONECANPAY bit)
 		const normalizedFlag = sigflag & 0x7f;
@@ -54,7 +57,7 @@ function validate_sighash_options(
 			!validFlags.includes(baseFlag) &&
 			!validFlags.includes(normalizedFlag)
 		) {
-			throw new Error(`Invalid sigflag: ${sigflag}`);
+			throw new ConfigError(`Invalid sigflag: ${sigflag}`);
 		}
 	}
 
@@ -64,7 +67,10 @@ function validate_sighash_options(
 			!Number.isInteger(txindex) ||
 			txindex < 0
 		) {
-			throw new Error("txindex must be a non-negative integer");
+			throw new ValidationError(
+				"txindex must be a non-negative integer",
+				"txindex",
+			);
 		}
 	}
 }
@@ -75,7 +81,8 @@ function validate_sighash_options(
  * @param txdata  - Transaction data
  * @param options - Sighash options including txindex, sigflag, pubkey/script
  * @returns ECDSA signature with sighash flag appended
- * @throws Error if secret key format is invalid
+ * @throws {ValidationError} If secret key format is invalid
+ * @throws {ConfigError} If sigflag is invalid
  */
 export function sign_segwit_tx(
 	seckey: string,
@@ -98,7 +105,8 @@ export function sign_segwit_tx(
  * @param txdata  - Transaction data
  * @param options - Sighash options including txindex, sigflag, extension
  * @returns Schnorr signature with optional sighash flag appended
- * @throws Error if secret key format is invalid
+ * @throws {ValidationError} If secret key format is invalid
+ * @throws {ConfigError} If sigflag is invalid
  */
 export function sign_taproot_tx(
 	seckey: string,

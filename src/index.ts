@@ -9,4 +9,6 @@ export * as TX from "./lib/tx/index.js";
 export * as WITNESS from "./lib/witness/index.js";
 export * as SCHEMA from "./schema/index.js";
 
+export { ValidationError, DecodingError, ConfigError } from "./error.js";
+
 export type * from "./types/index.js";

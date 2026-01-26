@@ -1,5 +1,6 @@
 import { Buff, Stream } from "@vbyte/buff";
 import { MAX_SCRIPT_SIZE, OP_1_OFFSET } from "@/const.js";
+import { ValidationError } from "@/error.js";
 import { get_asm_code } from "./words.js";
 
 // The maximum size of a word in bytes.
@@ -81,7 +82,9 @@ export function encode_script_word(
 		buff = new Buff(word);
 	} else {
 		// If word is not a string, number, or Uint8Array, throw an error.
-		throw new Error(`invalid word type:${typeof word}`);
+		throw new ValidationError(
+			`invalid script word type: ${typeof word}. Expected string, number, or Uint8Array`
+		);
 	}
 
 	// Format and return the word based on its size.
@@ -107,6 +110,8 @@ export function encode_script_word(
 
 /**
  * Split a word into smaller chunks.
+ *
+ * @internal
  */
 export function split_script_word(word: Uint8Array): Buff[] {
 	const words = [];
@@ -122,6 +127,8 @@ export function split_script_word(word: Uint8Array): Buff[] {
 
 /**
  * Prefix a word with its size, encoded as a varint.
+ *
+ * @internal
  */
 export function prefix_word_size(word: Uint8Array): Buff {
 	const varint = get_size_varint(word.length);
@@ -130,6 +137,8 @@ export function prefix_word_size(word: Uint8Array): Buff {
 
 /**
  * Return a varint that encodes a size value.
+ *
+ * @internal
  */
 export function get_size_varint(size: number): Buff {
 	const OP_PUSHDATA1 = Buff.num(0x4c, 1);
@@ -142,6 +151,8 @@ export function get_size_varint(size: number): Buff {
 		case size >= 0x100 && size <= MAX_WORD_SIZE:
 			return Buff.join([OP_PUSHDATA2, Buff.num(size, 2, "le")]);
 		default:
-			throw new Error(`Invalid word size:${size.toString()}`);
+			throw new ValidationError(
+				`invalid script word size: ${size}. Maximum allowed is ${MAX_WORD_SIZE} bytes`
+			);
 	}
 }

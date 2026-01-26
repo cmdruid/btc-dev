@@ -1,6 +1,15 @@
+/**
+ * P2WPKH (Pay-to-Witness-Public-Key-Hash) address utilities.
+ *
+ * P2WPKH is the native SegWit v0 address format (addresses starting with "bc1q").
+ * More efficient than P2PKH with lower transaction fees.
+ *
+ * @module
+ */
+
 import { Buff, type Bytes } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
-import { hash160 } from "@vbyte/micro-lib/hash";
+import { Assert } from "@vbyte/util";
+import { hash160 } from "@vbyte/crypto/hash";
 import { LOCK_SCRIPT_TYPE } from "@/const.js";
 import { is_p2wpkh_script } from "@/lib/script/lock.js";
 import type { AddressInfo, ChainNetwork } from "@/types/index.js";
@@ -9,6 +18,19 @@ import { get_address_config, get_address_info } from "./util.js";
 
 const ADDRESS_TYPE = LOCK_SCRIPT_TYPE.P2WPKH;
 
+/**
+ * P2WPKH address namespace.
+ *
+ * @example
+ * ```typescript
+ * // Create address from public key
+ * const address = P2WPKH.create_address(pubkey, 'main')
+ * // Returns: bc1q...
+ *
+ * // Decode address to get script info
+ * const info = P2WPKH.decode_address('bc1q...')
+ * ```
+ */
 export namespace P2WPKH {
 	export const create_address = create_p2wpkh_address;
 	export const create_script = create_p2wpkh_script;
@@ -32,7 +54,7 @@ function create_p2wpkh_script(pubkey: Bytes): Buff {
 	// Convert the public key into bytes.
 	const bytes = Buff.bytes(pubkey);
 	// Assert the public key is 33 bytes.
-	Assert.size(bytes, 33, "invalid pubkey size");
+	Assert.ok(bytes.length === 33, "invalid pubkey size");
 	// Convert the bytes into a hash.
 	const hash = hash160(bytes);
 	// Return the script.
@@ -57,9 +79,8 @@ function encode_p2wpkh_address(
 		`unrecognized address config: ${ADDRESS_TYPE} on ${network}`,
 	);
 	// Assert the payload size is correct.
-	Assert.size(
-		pk_hash,
-		config.size,
+	Assert.ok(
+		pk_hash.length === config.size,
 		`invalid payload size: ${pk_hash.length} !== ${config.size}`,
 	);
 	// Encode the address.

@@ -1,6 +1,6 @@
-import type { Buff } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
-import { hash340 } from "@vbyte/micro-lib/hash";
+import { Buff } from "@vbyte/buff";
+import { Assert } from "@vbyte/util";
+import { hash340 } from "@vbyte/crypto/hash";
 import { TAPLEAF_DEFAULT_VERSION } from "@/const.js";
 import { prefix_script_size } from "@/lib/script/index.js";
 
@@ -94,6 +94,6 @@ export function encode_taptweak(
 	pubkey: string | Uint8Array,
 	data: string | Uint8Array = new Uint8Array(),
 ): Buff {
-	Assert.size(pubkey, 32);
+	Assert.ok(Buff.bytes(pubkey).length === 32, "pubkey must be 32 bytes");
 	return hash340("TapTweak", pubkey, data);
 }

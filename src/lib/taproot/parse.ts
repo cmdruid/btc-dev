@@ -1,5 +1,7 @@
 import { Buff, Stream } from "@vbyte/buff";
-import { Assert, ECC } from "@vbyte/micro-lib";
+import { Assert } from "@vbyte/util";
+import { ECC } from "@vbyte/crypto";
+import { DecodingError, ValidationError } from "@/error.js";
 import { parse_witness } from "@/lib/witness/parse.js";
 import type { ControlBlock } from "@/types/index.js";
 import {
@@ -40,9 +42,9 @@ export function parse_taproot_witness(witness: string[]) {
 	const tweak = encode_taptweak(cblk.int_key, branch);
 	const tapkey = ECC.tweak_pubkey(cblk.int_key, tweak, "bip340");
 
-	params.map((e) => Buff.bytes(e).hex);
+	const hexParams = params.map((e) => Buff.bytes(e).hex);
 
-	return { cblock: cblk, params, script, tapkey: tapkey.hex, tweak: tweak.hex };
+	return { cblock: cblk, params: hexParams, script, tapkey: tapkey.hex, tweak: tweak.hex };
 }
 
 /**
@@ -69,7 +71,9 @@ export function parse_cblock(cblock: string | Uint8Array): ControlBlock {
 		path.push(buffer.read(32).hex);
 	}
 	if (buffer.size !== 0) {
-		throw new Error(`Non-empty buffer on control block: ${String(buffer)}`);
+		throw new DecodingError(
+			`control block has ${buffer.size} extra bytes. Expected: 33 + (32 * path_length) bytes`
+		);
 	}
 	return { int_key, path, parity, version };
 }
@@ -88,7 +92,7 @@ export function parse_cblock(cblock: string | Uint8Array): ControlBlock {
  * ```
  */
 export function parse_cblock_parity(cbits: number) {
-	return cbits % 2 === 0 ? [cbits - 0, 0x02] : [cbits - 1, 0x03];
+	return cbits % 2 === 0 ? [cbits, 0x02] : [cbits - 1, 0x03];
 }
 
 /**
@@ -106,9 +110,11 @@ export function parse_cblock_parity(cbits: number) {
  * ```
  */
 export function parse_pubkey_parity(pubkey: string | Uint8Array): number {
-	Assert.size(pubkey, 33, "invalid pubkey size");
+	Assert.ok(Buff.bytes(pubkey).length === 33, "invalid pubkey size");
 	const [parity] = Buff.bytes(pubkey);
 	if (parity === 0x02) return 0;
 	if (parity === 0x03) return 1;
-	throw new Error(`Invalid parity bit: ${String(parity)}`);
+	throw new ValidationError(
+		`invalid pubkey parity prefix: 0x${parity.toString(16)}. Expected 0x02 (even) or 0x03 (odd)`
+	);
 }

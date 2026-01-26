@@ -1,7 +1,6 @@
 import { Buff } from "@vbyte/buff";
-import { Test } from "@vbyte/micro-lib";
-import { Assert } from "@vbyte/micro-lib/assert";
-import { hash256 } from "@vbyte/micro-lib/hash";
+import { Assert, Test } from "@vbyte/util";
+import { hash256 } from "@vbyte/crypto/hash";
 import { DEFAULT } from "@/const.js";
 import type {
 	TxData,

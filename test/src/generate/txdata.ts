@@ -1,5 +1,5 @@
 import { Buff }                   from '@vbyte/buff'
-import { get_pubkey, get_seckey } from '@vbyte/micro-lib/ecc'
+import { get_pubkey, get_seckey } from '@vbyte/crypto/ecc'
 
 import * as Tx from '@/pkg/tx'
 

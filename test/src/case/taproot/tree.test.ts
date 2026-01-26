@@ -1,6 +1,6 @@
 import { Test } from 'tape'
 import { Buff } from '@vbyte/buff'
-import { ECC }  from '@vbyte/micro-lib'
+import { ECC }  from '@vbyte/crypto'
 
 import {
   encode_taptweak,

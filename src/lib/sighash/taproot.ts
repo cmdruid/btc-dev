@@ -1,7 +1,18 @@
+/**
+ * BIP-341 Taproot signature hash calculation.
+ *
+ * Implements the taproot sighash algorithm as specified in BIP-341.
+ * Used for signing taproot (SegWit v1) transaction inputs.
+ *
+ * @see https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki
+ * @module
+ */
+
 import { Buff } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
-import { hash340, sha256 } from "@vbyte/micro-lib/hash";
+import { Assert } from "@vbyte/util";
+import { hash340, sha256 } from "@vbyte/crypto/hash";
 import * as CONST from "@/const.js";
+import { ValidationError } from "@/error.js";
 import { encode_tapscript } from "@/lib/taproot/encode.js";
 import {
 	encode_script_data,
@@ -21,6 +32,26 @@ import type {
 } from "@/types/index.js";
 import { get_annex_data, get_prevout, parse_txinput } from "./util.js";
 
+/**
+ * Compute the taproot signature hash for a transaction input.
+ *
+ * This function computes the BIP-341 signature hash used for signing
+ * taproot inputs. The hash is computed using the tagged hash function
+ * with tag "TapSighash".
+ *
+ * @param template - Transaction data (hex string or TxData object)
+ * @param config - Sighash options including txindex, sigflag, extension
+ * @returns 32-byte signature hash as Buff
+ * @throws {Error} If sigflag is invalid or extflag is out of range
+ *
+ * @example
+ * ```typescript
+ * const hash = hash_taproot_tx(tx, {
+ *   txindex: 0,
+ *   sigflag: 0x00, // SIGHASH_DEFAULT
+ * })
+ * ```
+ */
 export function hash_taproot_tx(
 	template: TxData | string,
 	config: SigHashOptions = {},
@@ -29,6 +60,17 @@ export function hash_taproot_tx(
 	return hash340("TapSighash", preimage);
 }
 
+/**
+ * Build the taproot signature preimage for a transaction input.
+ *
+ * Constructs the preimage that will be hashed to produce the signature hash.
+ * This is the internal serialization format specified in BIP-341.
+ *
+ * @param template - Transaction data (hex string or TxData object)
+ * @param config - Sighash options
+ * @returns Serialized preimage as Buff
+ * @throws {Error} If sigflag is invalid or extflag is out of range
+ */
 export function get_taproot_tx_preimage(
 	template: TxData | string,
 	config: SigHashOptions = {},
@@ -54,11 +96,17 @@ export function get_taproot_tx_preimage(
 	// Check if we are using a valid hash type.
 	if (!CONST.SIGHASH_TAPROOT.includes(sigflag)) {
 		// If the sigflag is an invalid type, throw error.
-		throw new Error(`Invalid hash type: ${String(sigflag)}`);
+		throw new ValidationError(
+			`invalid taproot sighash type: 0x${sigflag.toString(16)}. ` +
+			`Valid values: SIGHASH_DEFAULT (0x00), SIGHASH_ALL (0x01), SIGHASH_NONE (0x02), SIGHASH_SINGLE (0x03), ` +
+			`or combined with ANYONECANPAY (0x81, 0x82, 0x83)`
+		);
 	}
 	if (extflag < 0 || extflag > 127) {
 		// If the extflag is out of range, throw error.
-		throw new Error(`Extention flag out of range: ${String(extflag)}`);
+		throw new ValidationError(
+			`extension flag out of range: ${extflag}. Valid range is 0-127`
+		);
 	}
 
 	let { extension } = config;
@@ -156,6 +204,15 @@ export function get_taproot_tx_preimage(
 	return Buff.join(preimage);
 }
 
+/**
+ * Compute SHA256 hash of all input outpoints (txid:vout pairs).
+ *
+ * Used when ANYONECANPAY flag is NOT set to commit to all inputs.
+ *
+ * @internal
+ * @param vin - Array of transaction inputs
+ * @returns SHA256 hash of concatenated outpoints
+ */
 export function bip341_hash_outpoints(vin: TxInput[]): Buff {
 	const stack = [];
 	for (const { txid, vout } of vin) {
@@ -165,20 +222,56 @@ export function bip341_hash_outpoints(vin: TxInput[]): Buff {
 	return sha256(Buff.join(stack));
 }
 
+/**
+ * Compute SHA256 hash of all input sequence numbers.
+ *
+ * Used when ANYONECANPAY flag is NOT set to commit to all sequences.
+ *
+ * @internal
+ * @param vin - Array of transaction inputs
+ * @returns SHA256 hash of concatenated sequence values
+ */
 export function bip341_hash_sequence(vin: TxInput[]): Buff {
 	return sha256(...vin.map((vin) => encode_txin_sequence(vin.sequence)));
 }
 
+/**
+ * Compute SHA256 hash of all prevout amounts.
+ *
+ * Used when ANYONECANPAY flag is NOT set to commit to all input values.
+ *
+ * @internal
+ * @param prevouts - Array of prevout data (value and scriptPubKey)
+ * @returns SHA256 hash of concatenated amounts
+ */
 export function bip341_hash_amounts(prevouts: TxOutput[]): Buff {
 	return sha256(...prevouts.map((prevout) => encode_vout_value(prevout.value)));
 }
 
+/**
+ * Compute SHA256 hash of all prevout scriptPubKeys.
+ *
+ * Used when ANYONECANPAY flag is NOT set to commit to all input scripts.
+ *
+ * @internal
+ * @param prevouts - Array of prevout data (value and scriptPubKey)
+ * @returns SHA256 hash of concatenated scripts (with length prefixes)
+ */
 export function bip341_hash_scripts(prevouts: TxOutput[]): Buff {
 	return sha256(
 		...prevouts.map((prevout) => encode_script_data(prevout.script_pk)),
 	);
 }
 
+/**
+ * Compute SHA256 hash of all transaction outputs.
+ *
+ * Used when SIGHASH_SINGLE and SIGHASH_NONE flags are NOT set.
+ *
+ * @internal
+ * @param vout - Array of transaction outputs
+ * @returns SHA256 hash of serialized outputs (value + scriptPubKey)
+ */
 export function bip341_hash_outputs(vout: TxOutput[]): Buff {
 	const stack = [];
 	for (const { value, script_pk } of vout) {
@@ -188,6 +281,15 @@ export function bip341_hash_outputs(vout: TxOutput[]): Buff {
 	return sha256(...stack);
 }
 
+/**
+ * Compute SHA256 hash of a single transaction output.
+ *
+ * Used with SIGHASH_SINGLE to commit only to the corresponding output.
+ *
+ * @internal
+ * @param vout - Single transaction output
+ * @returns SHA256 hash of serialized output (value + scriptPubKey)
+ */
 export function bip341_hash_output(vout: TxOutput): Buff {
 	return sha256(
 		encode_vout_value(vout.value),

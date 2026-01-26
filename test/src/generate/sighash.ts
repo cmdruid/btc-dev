@@ -11,7 +11,7 @@ import type {
   SighashVector,
   TaprootSighashMidstate,
 } from '@/test/types.js'
-import { sha256 } from '@vbyte/micro-lib/hash'
+import { sha256 } from '@vbyte/crypto'
 import { assert_tx_spend_data } from '@/pkg/tx'
 
 /**

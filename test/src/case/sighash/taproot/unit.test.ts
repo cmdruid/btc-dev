@@ -1,5 +1,5 @@
 import { Test }             from 'tape'
-import { parse_error }      from '@vbyte/micro-lib/util'
+import { parse_error }      from '@vbyte/util/helpers'
 import { parse_tx }         from '@/lib/tx/parse.js'
 import { create_tx_output } from '@/lib/tx/create.js'
 import * as SIGHASH         from '@/lib/sighash/taproot.js'

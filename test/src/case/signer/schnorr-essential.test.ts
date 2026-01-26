@@ -1,5 +1,5 @@
 import { Test } from 'tape'
-import { ECC } from '@vbyte/micro-lib'
+import { ECC } from '@vbyte/crypto'
 import { Buff } from '@vbyte/buff'
 import { getEssentialBIP340Vectors, BIP340TestVector } from '../../../utils/test-vectors.js'
 
@@ -29,7 +29,7 @@ export default function (t: Test): void {
       const { secretKey, publicKey, message, comment } = vector
 
       // Verify public key derivation - get_pubkey returns Buff, slice(2) to remove prefix
-      const fullPubkey = ECC.get_pubkey(secretKey!, true)
+      const fullPubkey = ECC.get_pubkey(secretKey!, 'ecdsa')
       const derivedPubkey = fullPubkey.hex.slice(2) // Remove 02/03 prefix hex, use x-only
       t.equal(
         derivedPubkey.toLowerCase(),

@@ -1,10 +1,10 @@
 import { Test }              from 'tape'
 import { Buff }              from '@vbyte/buff'
-import { parse_error }       from '@vbyte/micro-lib/util'
+import { parse_error }       from '@vbyte/util/helpers'
 import { schnorr }           from '@noble/curves/secp256k1.js'
 import { parse_tx }          from '@/lib/tx/parse.js'
 import { create_tx_output }  from '@/lib/tx/create.js'
-import * as ECC              from '@vbyte/micro-lib/ecc'
+import * as ECC              from '@vbyte/crypto/ecc'
 import { encode_taptweak }   from '@/lib/taproot/encode.js'
 
 import {

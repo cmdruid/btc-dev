@@ -128,7 +128,8 @@ Three groups in order, with aligned `from` keywords:
 ```typescript
 // 1. External dependencies
 import { Buff }            from '@vbyte/buff'
-import { Assert, ECC }     from '@vbyte/micro-lib'
+import { Assert }          from '@vbyte/util'
+import { ECC }             from '@vbyte/crypto'
 import { schnorr }         from '@noble/curves/secp256k1'
 
 // 2. Internal imports (path alias)
@@ -177,10 +178,10 @@ export type * from './types/index.js'
 
 ### Assertions
 
-Use `Assert` from `@vbyte/micro-lib`:
+Use `Assert` from `@vbyte/util`:
 
 ```typescript
-import { Assert } from '@vbyte/micro-lib'
+import { Assert } from '@vbyte/util'
 
 Assert.exists(config.prevout, 'prevout is required')
 Assert.is_empty(config.coinbase, 'coinbase is not allowed')

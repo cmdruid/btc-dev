@@ -1,4 +1,5 @@
 import { Buff } from "@vbyte/buff";
+import { ConfigError } from "@/error.js";
 import type {
 	AddressConfig,
 	AddressConfigEntry,
@@ -80,6 +81,9 @@ export function get_address_info(address: string): AddressInfo {
 		// Return the address configuration and data.
 		return { data, script, type, prefix, network, size, format, version };
 	}
-	// Otherwise, throw an error
-	throw new Error("address configuration is invalid");
+	// Otherwise, throw an error with context about what was decoded
+	throw new ConfigError(
+		`unrecognized address configuration: format=${dec.format}, size=${dec.data.length}, version=${dec.version}. ` +
+		`Supported formats: base58 (p2pkh, p2sh), bech32 (p2wpkh, p2wsh), bech32m (p2tr)`
+	);
 }

@@ -1,5 +1,15 @@
+/**
+ * Bitcoin inscription (Ordinals) encoding and decoding utilities.
+ *
+ * Implements the Ordinals inscription envelope format for embedding
+ * arbitrary data in Bitcoin transactions.
+ *
+ * @see https://docs.ordinals.com/inscriptions.html
+ * @module
+ */
+
 import { Buff, type Bytes, Stream } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
+import { Assert } from "@vbyte/util";
 import { decode_script } from "@/lib/script/decode.js";
 import { encode_script } from "@/lib/script/encode.js";
 
@@ -9,17 +19,59 @@ const _0n = BigInt(0);
 const _1n = BigInt(1);
 const _26n = BigInt(26);
 
+/**
+ * Inscription utility namespace.
+ *
+ * @example
+ * ```typescript
+ * // Decode inscriptions from witness script
+ * const inscriptions = InscriptionUtil.decode(witnessScript)
+ *
+ * // Encode inscription data to script
+ * const script = InscriptionUtil.encode([{
+ *   mimetype: 'text/plain',
+ *   content: 'Hello, Bitcoin!'
+ * }])
+ * ```
+ */
 export namespace InscriptionUtil {
 	export type Type = InscriptionData;
 	export const encode = encode_inscription;
 	export const decode = decode_inscription;
 }
 
+/**
+ * Decode inscription envelopes from a script.
+ *
+ * Parses the Ordinals envelope format (OP_0 OP_IF ... OP_ENDIF)
+ * and extracts inscription data including mimetype, content, parent, etc.
+ *
+ * @param script - Script bytes containing inscription envelopes
+ * @returns Array of decoded inscription data objects
+ * @throws {Error} If envelope format is invalid
+ */
 export function decode_inscription(script: Bytes): InscriptionData[] {
 	const envelopes = parse_envelopes(script);
 	return envelopes.map(parse_record);
 }
 
+/**
+ * Encode inscription data into a script.
+ *
+ * Creates Ordinals envelope format scripts that can be embedded
+ * in taproot witness data.
+ *
+ * @param data - Array of inscription data objects to encode
+ * @returns Encoded script as Buff
+ *
+ * @example
+ * ```typescript
+ * const script = encode_inscription([{
+ *   mimetype: 'image/png',
+ *   content: pngHexData
+ * }])
+ * ```
+ */
 export function encode_inscription(data: InscriptionData[]): Buff {
 	return Buff.join(data.map(create_envelope));
 }
@@ -80,15 +132,16 @@ function parse_envelopes(script: Bytes): string[][] {
 	const envelopes = [];
 
 	for (let idx = start_idx; idx < words.length; idx++) {
+		Assert.ok(idx + 2 < words.length, "incomplete envelope: missing OP_IF or magic bytes");
 		Assert.ok(words[idx + 1] === "OP_IF", "OP_IF missing from envelope");
 		Assert.ok(words[idx + 2] === "6f7264", "magic bytes missing from envelope");
 
-		const stop_idx = words.indexOf("OP_ENDIF");
-		Assert.ok(stop_idx !== -1, "inscription envelope missing END_IF statement");
+		const stop_idx = words.indexOf("OP_ENDIF", idx);
+		Assert.ok(stop_idx !== -1, "inscription envelope missing OP_ENDIF statement");
 
 		const env = words.slice(idx + 3, stop_idx);
 		envelopes.push(env);
-		idx += stop_idx;
+		idx = stop_idx;
 	}
 
 	return envelopes;
@@ -139,6 +192,24 @@ function decode_bytes(bytes: Bytes): string {
 	return Buff.bytes(bytes).hex;
 }
 
+/**
+ * Normalize a script word that may have been converted to an opcode.
+ * Small values (0-16) are converted to OP_0 through OP_16 by the script encoder.
+ * This function converts them back to their byte representation.
+ */
+function normalize_script_word(word: Bytes): Bytes {
+	if (typeof word === "string" && word.startsWith("OP_")) {
+		// OP_0 represents 0, OP_1-OP_16 represent 1-16
+		if (word === "OP_0") return Buff.num(0).hex;
+		const match = word.match(/^OP_(\d+)$/);
+		if (match) {
+			const num = parseInt(match[1], 10);
+			if (num >= 1 && num <= 16) return Buff.num(num).hex;
+		}
+	}
+	return word;
+}
+
 function encode_id(identifier: string): string {
 	Assert.ok(identifier.includes("i"), "identifier must include an index");
 	const parts = identifier.split("i");
@@ -150,6 +221,10 @@ function encode_id(identifier: string): string {
 
 function decode_id(identifier: Bytes): string {
 	const bytes = Buff.bytes(identifier);
+	// If exactly 32 bytes, no index was included (idx=0)
+	if (bytes.length === 32) {
+		return `${bytes.reverse().hex}i0`;
+	}
 	const idx = bytes.at(-1) ?? 0;
 	const txid = bytes.slice(0, -1).reverse().hex;
 	return `${txid}i${String(idx)}`;
@@ -160,7 +235,7 @@ function encode_pointer(pointer: number): string {
 }
 
 function decode_pointer(bytes: Bytes): number {
-	return Buff.bytes(bytes).reverse().num;
+	return Buff.bytes(normalize_script_word(bytes)).reverse().num;
 }
 
 function encode_label(label: string): string {
@@ -202,6 +277,7 @@ function encode_rune_label(label: string): string {
 		if (char >= "A" && char <= "Z") {
 			big = big * _26n + BigInt(char.charCodeAt(0) - ("A".charCodeAt(0) - 1));
 		} else {
+			throw new Error(`invalid character in rune label: '${char}' (only A-Z allowed)`);
 		}
 	}
 	big = big - _1n;
@@ -209,8 +285,10 @@ function encode_rune_label(label: string): string {
 }
 
 function decode_rune_label(label: Bytes): string {
+	// Normalize OP_N opcodes back to their byte values
+	const normalized = normalize_script_word(label);
 	// Convert hex to BigInt, with byte order reversed
-	let big = Buff.bytes(label).reverse().big;
+	let big = Buff.bytes(normalized).reverse().big;
 	// Add 1 as per the encoding algorithm
 	big = big + _1n;
 	// Initialize result string

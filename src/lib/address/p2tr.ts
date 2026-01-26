@@ -1,5 +1,15 @@
+/**
+ * P2TR (Pay-to-Taproot) address utilities.
+ *
+ * P2TR is the Taproot (SegWit v1) address format (addresses starting with "bc1p").
+ * Supports both key-path and script-path spending with improved privacy.
+ *
+ * @see https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki
+ * @module
+ */
+
 import { Buff, type Bytes } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
+import { Assert } from "@vbyte/util";
 import { LOCK_SCRIPT_TYPE } from "@/const.js";
 import { is_p2tr_script } from "@/lib/script/lock.js";
 import type { AddressInfo, ChainNetwork } from "@/types/index.js";
@@ -8,6 +18,19 @@ import { get_address_config, get_address_info } from "./util.js";
 
 const ADDRESS_TYPE = LOCK_SCRIPT_TYPE.P2TR;
 
+/**
+ * P2TR address namespace.
+ *
+ * @example
+ * ```typescript
+ * // Create address from x-only public key (32 bytes)
+ * const address = P2TR.create_address(xonlyPubkey, 'main')
+ * // Returns: bc1p...
+ *
+ * // Decode address to get script info
+ * const info = P2TR.decode_address('bc1p...')
+ * ```
+ */
 export namespace P2TR {
 	export const create_address = create_p2tr_address;
 	export const create_script = create_p2tr_script;
@@ -31,7 +54,7 @@ function create_p2tr_script(pubkey: Bytes): Buff {
 	// Convert the public key into bytes.
 	const bytes = Buff.bytes(pubkey);
 	// Assert the public key is 32 bytes.
-	Assert.size(bytes, 32, "invalid pubkey size");
+	Assert.ok(bytes.length === 32, "invalid pubkey size");
 	// Return the script.
 	return encode_p2tr_script(bytes);
 }
@@ -54,9 +77,8 @@ function encode_p2tr_address(
 		`unrecognized address config: ${ADDRESS_TYPE} on ${network}`,
 	);
 	// Assert the payload size is correct.
-	Assert.size(
-		pubkey,
-		config.size,
+	Assert.ok(
+		pubkey.length === config.size,
 		`invalid payload size: ${pubkey.length} !== ${config.size}`,
 	);
 	// Encode the address.

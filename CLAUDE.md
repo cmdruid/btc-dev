@@ -63,14 +63,14 @@ import { encode_script } from '@/lib/script/encode.js'      // Internal (note .j
 
 | Module | Status | Notes |
 |--------|--------|-------|
-| ADDRESS | ✅ Good | Use as pattern for new tests |
-| SIGHASH | ✅ Good | Well tested |
-| TAPROOT | ⚠️ Partial | Needs more coverage |
-| TX | ⚠️ Partial | create/encode/validate need tests |
-| SCRIPT | 🔴 None | Critical gap |
-| SIGNER | 🔴 None | Critical gap |
-| WITNESS | 🔴 None | Needs tests |
-| META | 🔴 None | Needs tests |
+| ADDRESS | ✅ Good | 5 test files, use as pattern |
+| SIGHASH | ✅ Good | 5 test files, well tested |
+| SCRIPT | ✅ Good | 6 test files (basic, opcodes, size, lock, decode-encode, malformed) |
+| TX | ✅ Good | 7 test files (essential, create, encode, error, size) |
+| SIGNER | ✅ Good | 3 test files (schnorr, scenarios, sighash-coverage) |
+| META | ✅ Good | 3 test files (locktime, sequence, ref) |
+| TAPROOT | ✅ Good | 5 test files (tree, unit, parse, depth, cblock) |
+| WITNESS | ⚠️ Partial | 2 test files (parse, edge-cases) |
 
 ## Key Dependencies
 

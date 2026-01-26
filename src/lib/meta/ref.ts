@@ -1,3 +1,5 @@
+import { ValidationError } from "@/error.js";
+
 export namespace RefPointer {
 	export const outpoint = {
 		encode: encode_outpoint,
@@ -38,7 +40,9 @@ function verify_inscription_id(inscription_id: string): boolean {
 
 function assert_inscription_id(inscription_id: string): void {
 	if (!verify_inscription_id(inscription_id)) {
-		throw new Error(`invalid inscription id: ${inscription_id}`);
+		throw new ValidationError(
+			`invalid inscription id: "${inscription_id}". Expected format: <64-char-txid>i<index> (e.g., "abc123...i0")`
+		);
 	}
 }
 
@@ -64,7 +68,9 @@ function verify_rune_id(rune_id: string): boolean {
 
 function assert_rune_id(rune_id: string): void {
 	if (!verify_rune_id(rune_id)) {
-		throw new Error(`invalid rune id: ${rune_id}`);
+		throw new ValidationError(
+			`invalid rune id: "${rune_id}". Expected format: <block_height>:<block_index> (e.g., "840000:1")`
+		);
 	}
 }
 
@@ -84,6 +90,8 @@ function verify_outpoint(outpoint: string): boolean {
 
 function assert_outpoint(outpoint: string): void {
 	if (!verify_outpoint(outpoint)) {
-		throw new Error(`invalid outpoint: ${outpoint}`);
+		throw new ValidationError(
+			`invalid outpoint: "${outpoint}". Expected format: <64-char-txid>:<vout> (e.g., "abc123...:0")`
+		);
 	}
 }

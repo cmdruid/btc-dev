@@ -11,6 +11,7 @@
  * that allows additional metadata to be encoded in the sequence field (to be used by on-chain indexers).
  */
 
+import { ValidationError } from "@/error.js";
 import type { SequenceConfig, SequenceData } from "@/types/index.js";
 
 /* ===== [ Constants ] ===================================================== */
@@ -53,7 +54,9 @@ export function encode_sequence(data: SequenceConfig): number {
 		return (TIMELOCK_TYPE | (stamp & TIMELOCK_VALUE_MASK)) >>> 0;
 	}
 	// Throw an error if the mode is unrecognized.
-	throw new Error(`invalid timelock mode: ${data.mode}`);
+	throw new ValidationError(
+		`invalid timelock mode: "${data.mode}". Valid modes are "height" or "stamp"`
+	);
 }
 
 /* ===== [ Decoder ] ========================================================= */
@@ -80,14 +83,18 @@ export function decode_sequence(
 		const stamp = value * TIMELOCK_GRANULARITY;
 		// Validate the timestamp value.
 		if (stamp > 0xffffffff) {
-			throw new Error("Decoded timestamp exceeds 32-bit limit");
+			throw new ValidationError(
+				`decoded timestamp ${stamp} exceeds 32-bit limit (max: ${0xffffffff})`
+			);
 		}
 		// Return the decoded timelock.
 		return { mode: "stamp", stamp };
 	} else {
 		// Validate the height value.
 		if (value > TIMELOCK_VALUE_MAX) {
-			throw new Error("Decoded height exceeds maximum");
+			throw new ValidationError(
+				`decoded height ${value} exceeds maximum (${TIMELOCK_VALUE_MAX})`
+			);
 		}
 		// Return the decoded heightlock.
 		return { mode: "height", height: value };
@@ -106,7 +113,9 @@ export function decode_sequence(
 function parse_sequence(sequence: number | string): number {
 	const seq = typeof sequence === "string" ? parseInt(sequence, 16) : sequence;
 	if (!Number.isInteger(seq) || seq < 0 || seq > 0xffffffff) {
-		throw new Error(`invalid sequence value: ${seq}`);
+		throw new ValidationError(
+			`invalid sequence value: ${seq}. Must be an integer between 0 and 0xffffffff`
+		);
 	}
 	return seq;
 }
@@ -120,14 +129,14 @@ function parse_sequence(sequence: number | string): number {
  */
 function parse_stamp(stamp?: number): number {
 	if (stamp === undefined || !Number.isInteger(stamp)) {
-		throw new Error(`timestamp must be a number`);
+		throw new ValidationError(`timestamp must be an integer, got: ${stamp}`);
 	}
 	// Convert timestamp to 512-second granularity units as per BIP-68.
 	const ts = Math.floor(stamp / TIMELOCK_GRANULARITY);
 	// Validate the timestamp value.
 	if (!Number.isInteger(ts) || ts < 0 || ts > TIMELOCK_VALUE_MAX) {
-		throw new Error(
-			`timelock value must be an integer between 0 and ${TIMELOCK_VALUE_MAX} (in 512-second increments)`,
+		throw new ValidationError(
+			`timelock value must be an integer between 0 and ${TIMELOCK_VALUE_MAX} (in 512-second increments)`
 		);
 	}
 	return ts;
@@ -147,8 +156,8 @@ function parse_height(height?: number): number {
 		height < 0 ||
 		height > TIMELOCK_VALUE_MAX
 	) {
-		throw new Error(
-			`Heightlock value must be an integer between 0 and ${TIMELOCK_VALUE_MAX}`,
+		throw new ValidationError(
+			`heightlock value must be an integer between 0 and ${TIMELOCK_VALUE_MAX}, got: ${height}`
 		);
 	}
 	return height;

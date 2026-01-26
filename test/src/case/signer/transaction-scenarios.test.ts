@@ -1,5 +1,5 @@
 import { Test } from 'tape'
-import { ECC } from '@vbyte/micro-lib'
+import { ECC } from '@vbyte/crypto'
 import { Buff } from '@vbyte/buff'
 
 import {
@@ -18,8 +18,8 @@ const TEST_SECKEY_1 = '000000000000000000000000000000000000000000000000000000000
 const TEST_SECKEY_2 = 'b7e151628aed2a6abf7158809cf4f3c762e7160f38b4da56a784d9045190cfef'
 
 // Derive test public keys (as hex strings)
-const TEST_PUBKEY_1 = ECC.get_pubkey(TEST_SECKEY_1, true).hex
-const TEST_PUBKEY_2 = ECC.get_pubkey(TEST_SECKEY_2, true).hex
+const TEST_PUBKEY_1 = ECC.get_pubkey(TEST_SECKEY_1, 'ecdsa').hex
+const TEST_PUBKEY_2 = ECC.get_pubkey(TEST_SECKEY_2, 'ecdsa').hex
 
 export default function (t: Test): void {
   t.test('Transaction signing functions exist', t => {

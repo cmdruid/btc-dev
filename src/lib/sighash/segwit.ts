@@ -1,7 +1,18 @@
+/**
+ * BIP-143 SegWit signature hash calculation.
+ *
+ * Implements the segwit v0 sighash algorithm as specified in BIP-143.
+ * Used for signing P2WPKH and P2WSH transaction inputs.
+ *
+ * @see https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki
+ * @module
+ */
+
 import { Buff } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
-import { hash160, hash256 } from "@vbyte/micro-lib/hash";
+import { Assert } from "@vbyte/util";
+import { hash160, hash256 } from "@vbyte/crypto/hash";
 import * as CONST from "@/const.js";
+import { ValidationError } from "@/error.js";
 
 import { decode_script, prefix_script_size } from "@/lib/script/index.js";
 
@@ -23,6 +34,38 @@ import type {
 } from "@/types/index.js";
 import { parse_txinput } from "./util.js";
 
+/**
+ * Compute the segwit signature hash for a transaction input.
+ *
+ * This function computes the BIP-143 signature hash used for signing
+ * SegWit v0 inputs (P2WPKH and P2WSH). For P2WPKH, provide a pubkey.
+ * For P2WSH, provide the witness script.
+ *
+ * @param txdata - Transaction data object
+ * @param options - Sighash options including txindex, sigflag, pubkey or script
+ * @returns 32-byte signature hash as Buff
+ * @throws {Error} If sigflag is invalid
+ * @throws {Error} If prevout value is missing
+ * @throws {Error} If neither pubkey nor script is provided
+ * @throws {Error} If script contains OP_CODESEPARATOR (not supported)
+ *
+ * @example
+ * ```typescript
+ * // P2WPKH signing
+ * const hash = hash_segwit_tx(tx, {
+ *   txindex: 0,
+ *   pubkey: '02...',
+ *   sigflag: 0x01 // SIGHASH_ALL
+ * })
+ *
+ * // P2WSH signing
+ * const hash = hash_segwit_tx(tx, {
+ *   txindex: 0,
+ *   script: witnessScript,
+ *   sigflag: 0x01
+ * })
+ * ```
+ */
 export function hash_segwit_tx(
 	txdata: TxData,
 	options: SigHashOptions = {},
@@ -37,7 +80,11 @@ export function hash_segwit_tx(
 	const flag = sigflag % 0x80;
 	// Check if the sigflag exists as a valid type.
 	if (!CONST.SIGHASH_SEGWIT.includes(flag)) {
-		throw new Error(`Invalid hash type: ${String(sigflag)}`);
+		throw new ValidationError(
+			`invalid sighash type: 0x${sigflag.toString(16)}. ` +
+			`Valid values: SIGHASH_ALL (0x01), SIGHASH_NONE (0x02), SIGHASH_SINGLE (0x03), ` +
+			`or combined with ANYONECANPAY (0x81, 0x82, 0x83)`
+		);
 	}
 	// Unpack the tx object.
 	const { version, vin, vout, locktime } = tx;
@@ -86,6 +133,15 @@ export function hash_segwit_tx(
 	return hash256(Buff.join(sighash));
 }
 
+/**
+ * Compute double-SHA256 hash of all input outpoints (txid:vout pairs).
+ *
+ * Returns zeroes if ANYONECANPAY flag is set.
+ *
+ * @param vin - Array of transaction inputs
+ * @param isAnypay - Whether ANYONECANPAY flag is set
+ * @returns Hash of outpoints, or 32 zero bytes if ANYONECANPAY
+ */
 export function bip143_hash_prevouts(
 	vin: TxInput[],
 	isAnypay?: boolean,
@@ -104,6 +160,16 @@ export function bip143_hash_prevouts(
 	return hash256(Buff.join(stack));
 }
 
+/**
+ * Compute double-SHA256 hash of all input sequence numbers.
+ *
+ * Returns zeroes if ANYONECANPAY flag is set or sigflag is not SIGHASH_ALL.
+ *
+ * @param vin - Array of transaction inputs
+ * @param sigflag - Signature hash type (normalized, without ANYONECANPAY bit)
+ * @param isAnyPay - Whether ANYONECANPAY flag is set
+ * @returns Hash of sequences, or 32 zero bytes if conditions not met
+ */
 export function bip143_hash_sequence(
 	vin: TxInput[],
 	sigflag: number,
@@ -121,6 +187,19 @@ export function bip143_hash_sequence(
 	return hash256(Buff.join(stack));
 }
 
+/**
+ * Compute double-SHA256 hash of transaction outputs.
+ *
+ * Behavior depends on sigflag:
+ * - SIGHASH_ALL (0x01): Hash all outputs
+ * - SIGHASH_SINGLE (0x03): Hash only the output at the given index
+ * - SIGHASH_NONE (0x02): Return 32 zero bytes
+ *
+ * @param vout - Array of transaction outputs
+ * @param sigflag - Signature hash type (normalized, without ANYONECANPAY bit)
+ * @param idx - Input index (required for SIGHASH_SINGLE)
+ * @returns Hash of outputs, or 32 zero bytes for SIGHASH_NONE
+ */
 export function bip143_hash_outputs(
 	vout: TxOutput[],
 	sigflag: number,

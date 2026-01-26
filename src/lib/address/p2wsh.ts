@@ -1,6 +1,15 @@
+/**
+ * P2WSH (Pay-to-Witness-Script-Hash) address utilities.
+ *
+ * P2WSH is native SegWit v0 for script-based outputs (addresses starting with "bc1q"
+ * but longer than P2WPKH). Used for native SegWit multisig and complex scripts.
+ *
+ * @module
+ */
+
 import { Buff, type Bytes } from "@vbyte/buff";
-import { Assert } from "@vbyte/micro-lib";
-import { sha256 } from "@vbyte/micro-lib/hash";
+import { Assert } from "@vbyte/util";
+import { sha256 } from "@vbyte/crypto/hash";
 import { LOCK_SCRIPT_TYPE } from "@/const.js";
 import { is_p2wsh_script } from "@/lib/script/lock.js";
 import type { AddressInfo, ChainNetwork } from "@/types/index.js";
@@ -9,6 +18,19 @@ import { get_address_config, get_address_info } from "./util.js";
 
 const ADDRESS_TYPE = LOCK_SCRIPT_TYPE.P2WSH;
 
+/**
+ * P2WSH address namespace.
+ *
+ * @example
+ * ```typescript
+ * // Create address from witness script
+ * const address = P2WSH.create_address(witnessScript, 'main')
+ * // Returns: bc1q... (62 characters)
+ *
+ * // Decode address to get script info
+ * const info = P2WSH.decode_address('bc1q...')
+ * ```
+ */
 export namespace P2WSH {
 	export const create_address = create_p2wsh_address;
 	export const create_script = create_p2wsh_script;
@@ -55,9 +77,8 @@ function encode_p2wsh_address(
 		`unrecognized address config: ${ADDRESS_TYPE} on ${network}`,
 	);
 	// Assert the payload size is correct.
-	Assert.size(
-		script_hash,
-		config.size,
+	Assert.ok(
+		script_hash.length === config.size,
 		`invalid payload size: ${script_hash.length} !== ${config.size}`,
 	);
 	// Encode the address.

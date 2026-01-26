@@ -1,7 +1,6 @@
 import { Buff, type Bytes } from "@vbyte/buff";
-import { ECC } from "@vbyte/micro-lib";
-import { hash160 } from "@vbyte/micro-lib/hash";
-import { get_lock_script_type } from "@/lib/script/lock.js";
+import { ECC } from "@vbyte/crypto";
+import { hash160 } from "@vbyte/crypto/hash";
 import { hash_segwit_tx } from "@/lib/sighash/segwit.js";
 import { hash_taproot_tx } from "@/lib/sighash/taproot.js";
 import { verify_taproot } from "@/lib/taproot/cblock.js";
@@ -116,20 +115,11 @@ function verify_input(
 			return { index, valid: false, type, error: "Missing prevout data" };
 		}
 
-		const scriptType = get_lock_script_type(prevout.script_pk);
-
 		// Dispatch to the appropriate verification method
 		if (version === 0) {
 			return verify_segwit_input(tx, vin, index, witnessData, options);
 		} else if (version === 1) {
-			return verify_taproot_input(
-				tx,
-				vin,
-				index,
-				witnessData,
-				scriptType,
-				options,
-			);
+			return verify_taproot_input(tx, vin, index, witnessData, options);
 		}
 
 		return {
@@ -247,7 +237,6 @@ function verify_taproot_input(
 	vin: TxInput,
 	index: number,
 	witnessData: WitnessData,
-	_scriptType: string | null,
 	options: VerifyOptions,
 ): InputVerifyResult {
 	const { type, params, script, cblock } = witnessData;

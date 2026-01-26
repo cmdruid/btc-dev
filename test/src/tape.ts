@@ -20,6 +20,7 @@ import unit_tests from './case/taproot/unit.test.js'
 import signer_essential_test from './case/signer/schnorr-essential.test.js'
 import signer_scenarios_test from './case/signer/transaction-scenarios.test.js'
 import signer_sighash_test from './case/signer/sighash-coverage.test.js'
+import signer_verify_test from './case/signer/verify-tx.test.js'
 import script_basic_test from './case/script/basic-patterns.test.js'
 import script_opcode_test from './case/script/opcode-essentials.test.js'
 import script_size_test from './case/script/size-limits.test.js'
@@ -33,6 +34,7 @@ import script_lock_test from './case/script/lock.test.js'
 import meta_locktime_test from './case/meta/locktime.test.js'
 import meta_sequence_test from './case/meta/sequence.test.js'
 import meta_ref_test from './case/meta/ref.test.js'
+import meta_scribe_test from './case/meta/scribe.test.js'
 import tx_size_test from './case/tx/size.test.js'
 
 // v2.0.0 release tests
@@ -44,6 +46,13 @@ import script_malformed_test from './case/script/malformed.test.js'
 
 // Integration tests
 import integration_e2e_test from './case/integration/e2e.test.js'
+
+// Custom error tests
+import error_custom_test from './case/error/custom-errors.test.js'
+
+// Additional taproot tests
+import taproot_depth_test from './case/taproot/depth.test.js'
+import taproot_cblock_test from './case/taproot/cblock.test.js'
 
 tape('Tapscript Test Suite', async t => {
   // Existing tests
@@ -64,6 +73,7 @@ tape('Tapscript Test Suite', async t => {
   signer_essential_test(t)
   signer_scenarios_test(t)
   signer_sighash_test(t)
+  signer_verify_test(t)
   script_basic_test(t)
   script_opcode_test(t)
   script_size_test(t)
@@ -77,6 +87,7 @@ tape('Tapscript Test Suite', async t => {
   meta_locktime_test(t)
   meta_sequence_test(t)
   meta_ref_test(t)
+  meta_scribe_test(t)
   tx_size_test(t)
 
   // Integration tests
@@ -88,4 +99,11 @@ tape('Tapscript Test Suite', async t => {
   taproot_parse_test(t)
   script_roundtrip_test(t)
   script_malformed_test(t)
+
+  // Custom error class tests
+  error_custom_test(t)
+
+  // Additional taproot tests
+  taproot_depth_test(t)
+  taproot_cblock_test(t)
 })

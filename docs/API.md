@@ -6,7 +6,7 @@ Complete API reference for all `@vbyte/btc-dev` modules.
 
 ```typescript
 // Namespace imports
-import { ADDRESS, TX, SCRIPT, SIGHASH, SIGNER, TAPROOT, WITNESS, META } from '@vbyte/btc-dev'
+import { ADDRESS, TX, SCRIPT, SIGHASH, SIGNER, TAPROOT, WITNESS, META, CONST, SCHEMA } from '@vbyte/btc-dev'
 
 // Tree-shaking imports
 import { p2wpkh, p2tr } from '@vbyte/btc-dev/address'
@@ -570,6 +570,98 @@ Verify a control block proof.
 verify_taproot(tapkey: Bytes, target: Bytes, cblock: Bytes): boolean
 ```
 
+### `TAPROOT.create_taproot(config)`
+
+Create a taproot output with optional script tree.
+
+```typescript
+create_taproot(config: TaprootConfig): TaprootContext
+```
+
+**Parameters:**
+- `config.pubkey` - Internal public key (32 bytes, x-only)
+- `config.leaves` - Optional array of tapleaf hashes
+- `config.target` - Optional target leaf for control block generation
+- `config.version` - Leaf version (default: 0xc0)
+
+**Returns:** `TaprootContext` with tapkey, control block, path, and tweaks
+
+```typescript
+// Key-path only
+const ctx = TAPROOT.create_taproot({ pubkey: internalKey })
+console.log(ctx.tapkey)  // Use in P2TR output
+
+// With script tree
+const ctx = TAPROOT.create_taproot({
+  pubkey: internalKey,
+  leaves: [scriptHash1, scriptHash2],
+  target: scriptHash1
+})
+console.log(ctx.cblock)  // Control block for script-path spend
+```
+
+### `TAPROOT.parse_taproot_witness(witness)`
+
+Parse a taproot script-path witness and extract spending data.
+
+```typescript
+parse_taproot_witness(witness: string[]): {
+  cblock: ControlBlock
+  params: string[]
+  script: string
+  tapkey: string
+  tweak: string
+}
+```
+
+**Parameters:**
+- `witness` - Array of witness stack elements (hex strings)
+
+**Returns:** Parsed taproot spending data
+
+### `TAPROOT.parse_cblock(cblock)`
+
+Parse a control block into its components.
+
+```typescript
+parse_cblock(cblock: Bytes): ControlBlock
+```
+
+**Returns:**
+- `int_key` - Internal public key (32 bytes hex)
+- `path` - Merkle path array
+- `parity` - Y-coordinate parity (0x02 or 0x03)
+- `version` - Leaf version
+
+```typescript
+const { int_key, path, version } = TAPROOT.parse_cblock(controlBlock)
+```
+
+### `TAPROOT.parse_cblock_parity(cbits)`
+
+Extract version and parity from control block version byte.
+
+```typescript
+parse_cblock_parity(cbits: number): [number, number]
+```
+
+**Returns:** Tuple of [version, parity]
+
+```typescript
+const [version, parity] = TAPROOT.parse_cblock_parity(0xc1)
+// [0xc0, 0x03] - version c0, odd parity
+```
+
+### `TAPROOT.parse_pubkey_parity(pubkey)`
+
+Extract parity bit from compressed public key.
+
+```typescript
+parse_pubkey_parity(pubkey: Bytes): number
+```
+
+**Returns:** 0 for even y-coordinate, 1 for odd
+
 ---
 
 ## WITNESS
@@ -704,6 +796,240 @@ META.RefPointer.rune_id.encode(blockHeight, txIndex)
 META.RefPointer.rune_id.decode(runeId)
 ```
 
+### `META.InscriptionUtil`
+
+Bitcoin inscription (Ordinals) encoding and decoding utilities.
+
+```typescript
+// Encode inscriptions to script
+META.InscriptionUtil.encode(data: InscriptionData[]): Buff
+
+// Decode inscriptions from script
+META.InscriptionUtil.decode(script: Bytes): InscriptionData[]
+```
+
+**InscriptionData:**
+
+```typescript
+interface InscriptionData {
+  mimetype?: string   // Content MIME type (e.g., 'text/plain')
+  content?: string    // Content as hex string
+  parent?: string     // Parent inscription ID
+  delegate?: string   // Delegate inscription ID
+  pointer?: number    // Output pointer
+  opcode?: number     // Custom opcode
+  rune?: string       // Rune name (A-Z only)
+  ref?: string        // Reference data
+}
+```
+
+**Example:**
+
+```typescript
+import { META } from '@vbyte/btc-dev'
+import { Buff } from '@vbyte/buff'
+
+// Create inscription
+const script = META.InscriptionUtil.encode([{
+  mimetype: 'text/plain',
+  content: Buff.str('Hello, Bitcoin!').hex
+}])
+
+// Decode inscription from witness script
+const inscriptions = META.InscriptionUtil.decode(witnessScript)
+console.log(inscriptions[0].mimetype)  // 'text/plain'
+```
+
+---
+
+## Error Classes
+
+The library provides custom error classes for better error handling.
+
+### `ValidationError`
+
+Thrown when input validation fails (invalid format, wrong length, type mismatch).
+
+```typescript
+import { ValidationError } from '@vbyte/btc-dev'
+
+class ValidationError extends Error {
+  name: 'ValidationError'
+  field?: string  // The field that failed validation
+}
+```
+
+**Common scenarios:**
+- Invalid secret key format in signing functions
+- Wrong pubkey length
+- Missing required fields
+
+```typescript
+try {
+  SIGNER.sign_segwit_tx('invalid', tx, options)
+} catch (err) {
+  if (err instanceof ValidationError) {
+    console.log(`Invalid ${err.field}: ${err.message}`)
+  }
+}
+```
+
+### `DecodingError`
+
+Thrown when decoding or parsing malformed data fails.
+
+```typescript
+import { DecodingError } from '@vbyte/btc-dev'
+
+class DecodingError extends Error {
+  name: 'DecodingError'
+  position?: number  // Byte position where error occurred
+}
+```
+
+**Common scenarios:**
+- Truncated transaction data
+- Invalid script opcodes
+- Malformed witness data
+
+```typescript
+try {
+  TX.decode(malformedHex)
+} catch (err) {
+  if (err instanceof DecodingError) {
+    console.log(`Decode error at position ${err.position}: ${err.message}`)
+  }
+}
+```
+
+### `ConfigError`
+
+Thrown when configuration is invalid.
+
+```typescript
+import { ConfigError } from '@vbyte/btc-dev'
+
+class ConfigError extends Error {
+  name: 'ConfigError'
+}
+```
+
+**Common scenarios:**
+- Invalid sighash flag
+- Unknown network type
+- Incompatible option combinations
+
+```typescript
+try {
+  SIGNER.sign_taproot_tx(seckey, tx, { sigflag: 0xFF })
+} catch (err) {
+  if (err instanceof ConfigError) {
+    console.log(`Config error: ${err.message}`)
+  }
+}
+```
+
+---
+
+## CONST
+
+Constants used throughout the library.
+
+### Transaction Defaults
+
+```typescript
+CONST.DEFAULT.VERSION     // 2 - Default transaction version
+CONST.DEFAULT.LOCKTIME    // 0 - Default locktime
+CONST.DEFAULT.SEQUENCE    // 0xffffffff - Default sequence (no RBF, no timelock)
+```
+
+### Coinbase Constants
+
+```typescript
+CONST.COINBASE.TXID   // '00'.repeat(32) - Coinbase previous txid (all zeros)
+CONST.COINBASE.VOUT   // 0xffffffff - Coinbase previous vout
+```
+
+### Script Types
+
+```typescript
+CONST.LOCK_SCRIPT_TYPE   // { P2PKH, P2SH, P2WPKH, P2WSH, P2TR, OPRETURN }
+CONST.SPEND_SCRIPT_TYPE  // { P2PKH, P2SH, P2WPKH, P2WSH, P2TR, P2TS }
+CONST.LOCK_SCRIPT_REGEX  // Regex patterns for each script type
+```
+
+### Sighash Flags
+
+```typescript
+CONST.SIGHASH_DEFAULT  // 0x01 - Default sighash (SIGHASH_ALL)
+CONST.SIGHASH_SEGWIT   // [0x01, 0x02, 0x03, 0x81, 0x82, 0x83] - Valid segwit flags
+CONST.SIGHASH_TAPROOT  // [0x00, ...SIGHASH_SEGWIT] - Valid taproot flags (includes DEFAULT)
+```
+
+### Taproot Constants
+
+```typescript
+CONST.TAPLEAF_DEFAULT_VERSION  // 0xc0 - Default tapleaf version
+CONST.TAPLEAF_VERSIONS         // Array of all valid tapleaf versions
+```
+
+### Size Limits
+
+```typescript
+CONST.MAX_SCRIPT_SIZE  // 10,000 - Bitcoin consensus script size limit
+CONST.MAX_VARINT_SIZE  // 520,000 - Maximum varint payload size
+CONST.OP_1_OFFSET      // 0x50 - Offset to convert 1-16 to OP_1-OP_16
+```
+
+### Transaction Size Components
+
+```typescript
+CONST.TX_SIZE.GLOBAL_BASE  // 8 - Base size without witness
+CONST.TX_SIZE.GLOBAL_WIT   // 10 - Base size with witness
+CONST.TX_SIZE.TXIN_BASE    // 40 - Input base size (32+4+4)
+CONST.TX_SIZE.TXOUT_BASE   // 8 - Output base size
+```
+
+---
+
+## SCHEMA
+
+Zod validation schemas for runtime type checking.
+
+### Transaction Schemas
+
+```typescript
+SCHEMA.tx.txid       // 32-byte hex string
+SCHEMA.tx.output     // { value: bigint, script_pk: string }
+SCHEMA.tx.input      // Transaction input schema
+SCHEMA.tx.template   // Transaction template for creation
+```
+
+### Taproot Schemas
+
+```typescript
+SCHEMA.taproot.taptree  // Single leaf or array of leaves
+SCHEMA.taproot.config   // { pubkey, leaves?, target?, version? }
+```
+
+### Usage
+
+```typescript
+import { SCHEMA } from '@vbyte/btc-dev'
+
+// Validate transaction template
+const result = SCHEMA.tx.template.safeParse(userInput)
+if (!result.success) {
+  console.error(result.error.issues)
+}
+
+// Validate taproot config
+SCHEMA.taproot.config.parse({
+  pubkey: '02'.repeat(32),
+  leaves: ['aa'.repeat(32)]
+})
+```
+
 ---
 
 ## Type Definitions
@@ -780,5 +1106,40 @@ interface SequenceData {
   mode: 'height' | 'stamp'
   height?: number
   stamp?: number
+}
+
+interface ControlBlock {
+  int_key: string     // Internal public key (32 bytes hex)
+  path: string[]      // Merkle path
+  parity: number      // Y-coordinate parity (0x02 or 0x03)
+  version: number     // Tapleaf version
+}
+
+interface TaprootConfig {
+  pubkey: string      // Internal public key (32 bytes)
+  leaves?: string[][] // Optional tapleaf hashes
+  target?: string     // Target leaf for control block
+  version?: number    // Leaf version (default: 0xc0)
+}
+
+interface TaprootContext {
+  int_key: string     // Internal public key
+  path: string[]      // Merkle proof path
+  parity: number      // Output key parity
+  taproot: string | null  // Merkle root
+  cblock: string      // Control block hex
+  tapkey: string      // Tweaked output key
+  taptweak: string    // Tweak value
+}
+
+interface InscriptionData {
+  mimetype?: string   // Content MIME type
+  content?: string    // Content as hex string
+  parent?: string     // Parent inscription ID
+  delegate?: string   // Delegate inscription ID
+  pointer?: number    // Output pointer
+  opcode?: number     // Custom opcode
+  rune?: string       // Rune name (A-Z only)
+  ref?: string        // Reference data
 }
 ```

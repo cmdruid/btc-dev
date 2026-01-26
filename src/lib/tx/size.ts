@@ -15,8 +15,7 @@ const WIT_FLAG_BYTES = 2;
 
 export function get_vsize(bytes: Bytes): number {
 	const weight = Buff.bytes(bytes).length;
-	const remain = weight % 4 > 0 ? 1 : 0;
-	return Math.ceil(weight / 4) + remain;
+	return Math.ceil(weight / 4);
 }
 
 export function get_txsize(txdata: string | TxData): TxSize {
@@ -24,8 +23,7 @@ export function get_txsize(txdata: string | TxData): TxSize {
 	const base = encode_tx(json, false).length;
 	const total = encode_tx(json, true).length;
 	const weight = base * 3 + total;
-	const remain = weight % 4 > 0 ? 1 : 0;
-	const vsize = Math.ceil(weight / 4) + remain;
+	const vsize = Math.ceil(weight / 4);
 	return { base, total, vsize, weight };
 }
 

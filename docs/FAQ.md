@@ -234,6 +234,78 @@ const script = SCRIPT.encode([
 ])
 ```
 
+## Error Handling
+
+### What error types does the library throw?
+
+The library provides three custom error classes for better error handling:
+
+```typescript
+import { ValidationError, DecodingError, ConfigError } from '@vbyte/btc-dev'
+
+try {
+  const tx = TX.decode(malformedData)
+} catch (err) {
+  if (err instanceof DecodingError) {
+    console.log('Malformed data at position:', err.position)
+  } else if (err instanceof ValidationError) {
+    console.log('Invalid input field:', err.field)
+  } else if (err instanceof ConfigError) {
+    console.log('Configuration error:', err.message)
+  }
+}
+```
+
+| Error Class | When Thrown | Properties |
+|-------------|-------------|------------|
+| `ValidationError` | Invalid input format, wrong length, type mismatch | `field?: string` |
+| `DecodingError` | Malformed data, truncated input, invalid structure | `position?: number` |
+| `ConfigError` | Invalid sigflag, unknown network, bad configuration | - |
+
+### How do I catch specific errors?
+
+Use `instanceof` to check the error type:
+
+```typescript
+try {
+  SIGNER.sign_segwit_tx('invalid', tx, options)
+} catch (err) {
+  if (err instanceof ValidationError) {
+    // Handle invalid secret key format
+    console.log(`Validation failed for: ${err.field}`)
+  }
+}
+```
+
+### Which functions throw which errors?
+
+**ValidationError:**
+- `sign_segwit_tx`, `sign_taproot_tx` - Invalid secret key format
+- Most functions with input validation
+
+**DecodingError:**
+- `decode_tx` - Malformed transaction data
+- `decode_script` - Invalid script (truncated pushdata, invalid opcodes)
+
+**ConfigError:**
+- `sign_segwit_tx`, `sign_taproot_tx` - Invalid sigflag
+- Address functions - Unknown network
+
+### How do I handle errors gracefully?
+
+```typescript
+function safeDecode(hexData: string) {
+  try {
+    return { success: true, data: TX.decode(hexData) }
+  } catch (err) {
+    if (err instanceof DecodingError) {
+      return { success: false, error: `Decode error at ${err.position}: ${err.message}` }
+    }
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+  }
+}
+```
+
 ## Security
 
 ### Is this library audited?

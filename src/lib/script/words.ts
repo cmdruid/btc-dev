@@ -1,3 +1,5 @@
+import { ValidationError } from "@/error.js";
+
 export const OPCODE_MAP = {
 	OP_0: 0x00,
 	OP_PUSHDATA1: 0x4c,
@@ -122,7 +124,9 @@ export function get_op_code(num: number): string {
 	for (const [k, v] of Object.entries(OPCODE_MAP)) {
 		if (v === num) return k;
 	}
-	throw new Error(`OPCODE not found:${String(num)}`);
+	throw new ValidationError(
+		`opcode not found for value: ${num} (0x${num.toString(16)}). Valid range is 0x00-0xba`
+	);
 }
 
 /**
@@ -133,7 +137,9 @@ export function get_asm_code(string: string): number {
 	for (const [k, v] of Object.entries(OPCODE_MAP)) {
 		if (k === string) return Number(v);
 	}
-	throw new Error(`OPCODE not found:${string}`);
+	throw new ValidationError(
+		`opcode not found: "${string}". Valid opcodes start with "OP_" (e.g., OP_DUP, OP_CHECKSIG)`
+	);
 }
 
 /**
@@ -154,7 +160,7 @@ export function get_op_type(word: number): string {
 		case word <= 254:
 			return "opcode";
 		default:
-			throw new Error(`Invalid word range: ${word}`);
+			throw new ValidationError(`invalid word value: ${word}. Expected 0-254`);
 	}
 }
 

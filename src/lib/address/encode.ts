@@ -1,6 +1,7 @@
 import { Buff } from "@vbyte/buff";
 
-import { Assert, B58chk, Bech32, Bech32m } from "@vbyte/micro-lib";
+import { Assert } from "@vbyte/util";
+import { B58chk, Bech32, Bech32m } from "@vbyte/crypto";
 
 import type { AddressFormat, EncoderConfig } from "@/types/address.js";
 
